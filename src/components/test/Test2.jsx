@@ -6,6 +6,7 @@ const Test2 = () => {
   const [applePredictions, setApplePredictions] = useState(null);
   const [onionPredictions, setOnionPredictions] = useState(null);
   const [potatoPredictions, setPotatoPredictions] = useState(null);
+  const [cucumberPredictions, setCucumberPredictions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('cabbage'); // 현재 활성화된 탭
@@ -14,11 +15,12 @@ const Test2 = () => {
     const fetchPredictions = async () => {
       try {
         setLoading(true);
-        const [cabbageResponse, appleResponse, onionResponse, potatoResponse] = await Promise.all([
+        const [cabbageResponse, appleResponse, onionResponse, potatoResponse, cucumberResponse] = await Promise.all([
           axios.get('http://localhost:8000/predictions/cabbage/Seoul'),
           axios.get('http://localhost:8000/predictions/apple/Seoul'),
           axios.get('http://localhost:8000/predictions/onion/Seoul'),
-          axios.get('http://localhost:8000/predictions/potato/Seoul')
+          axios.get('http://localhost:8000/predictions/potato/Seoul'),
+          axios.get('http://localhost:8000/predictions/cucumber/Seoul')
         ]);
         
         if (cabbageResponse.data.error) {
@@ -33,11 +35,15 @@ const Test2 = () => {
         if (potatoResponse.data.error) {
           throw new Error(potatoResponse.data.error);
         }
+        if (cucumberResponse.data.error) {
+          throw new Error(cucumberResponse.data.error);
+        }
         
         setCabbagePredictions(cabbageResponse.data.predictions);
         setApplePredictions(appleResponse.data.predictions);
         setOnionPredictions(onionResponse.data.predictions);
         setPotatoPredictions(potatoResponse.data.predictions);
+        setCucumberPredictions(cucumberResponse.data.predictions);
       } catch (err) {
         console.error('예측 데이터 가져오기 오류:', err);
         setError(err.message);
@@ -51,14 +57,15 @@ const Test2 = () => {
 
   if (loading) return <div className="text-center p-4">로딩중...</div>;
   if (error) return <div className="text-center p-4 text-red-500">에러: {error}</div>;
-  if (!cabbagePredictions || !applePredictions || !onionPredictions || !potatoPredictions) return <div className="text-center p-4">데이터가 없습니다.</div>;
+  if (!cabbagePredictions || !applePredictions || !onionPredictions || !potatoPredictions || !cucumberPredictions) return <div className="text-center p-4">데이터가 없습니다.</div>;
 
   // 탭 설정 - 이모지 추가
   const tabs = [
     { id: 'cabbage', name: '🥬 배추', color: 'green' },
     { id: 'apple', name: '🍎 사과', color: 'red' },
     { id: 'onion', name: '🧅 양파', color: 'yellow' },
-    { id: 'potato', name: '🥔 감자', color: 'brown' }
+    { id: 'potato', name: '🥔 감자', color: 'brown' },
+    { id: 'cucumber', name: '🥒 오이', color: 'emerald' }
   ];
 
   const PriceCard = ({ title, current, tomorrow, weekly, color, emoji }) => (
@@ -177,6 +184,16 @@ const Test2 = () => {
           weekly={potatoPredictions.weekly}
           color="brown"
           emoji="🥔"
+        />
+      )}
+      {activeTab === 'cucumber' && (
+        <PriceCard 
+          title="오이 가격 예측"
+          current={cucumberPredictions.current}
+          tomorrow={cucumberPredictions.tomorrow}
+          weekly={cucumberPredictions.weekly}
+          color="emerald"
+          emoji="🥒"
         />
       )}
 
