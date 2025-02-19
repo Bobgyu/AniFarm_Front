@@ -7,6 +7,11 @@ const Test2 = () => {
   const [onionPredictions, setOnionPredictions] = useState(null);
   const [potatoPredictions, setPotatoPredictions] = useState(null);
   const [cucumberPredictions, setCucumberPredictions] = useState(null);
+  const [tomatoPredictions, setTomatoPredictions] = useState(null);
+  const [spinachPredictions, setSpinachPredictions] = useState(null);
+  const [paprikaPredictions, setPaprikaPredictions] = useState(null);
+  const [pepperPredictions, setPepperPredictions] = useState(null);
+  const [lettucePredictions, setLettucePredictions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('cabbage'); // 현재 활성화된 탭
@@ -15,12 +20,18 @@ const Test2 = () => {
     const fetchPredictions = async () => {
       try {
         setLoading(true);
-        const [cabbageResponse, appleResponse, onionResponse, potatoResponse, cucumberResponse] = await Promise.all([
+        const [cabbageResponse, appleResponse, onionResponse, potatoResponse, cucumberResponse, tomatoResponse, 
+          spinachResponse, paprikaResponse, pepperResponse, lettuceResponse] = await Promise.all([
           axios.get('http://localhost:8000/predictions/cabbage/Seoul'),
           axios.get('http://localhost:8000/predictions/apple/Seoul'),
           axios.get('http://localhost:8000/predictions/onion/Seoul'),
           axios.get('http://localhost:8000/predictions/potato/Seoul'),
-          axios.get('http://localhost:8000/predictions/cucumber/Seoul')
+          axios.get('http://localhost:8000/predictions/cucumber/Seoul'),
+          axios.get('http://localhost:8000/predictions/tomato/Seoul'),
+          axios.get('http://localhost:8000/predictions/spinach/Seoul'),
+          axios.get('http://localhost:8000/predictions/paprika/Seoul'),
+          axios.get('http://localhost:8000/predictions/pepper/Seoul'),
+          axios.get('http://localhost:8000/predictions/lettuce/Seoul')
         ]);
         
         if (cabbageResponse.data.error) {
@@ -38,12 +49,32 @@ const Test2 = () => {
         if (cucumberResponse.data.error) {
           throw new Error(cucumberResponse.data.error);
         }
+        if (tomatoResponse.data.error) {
+          throw new Error(tomatoResponse.data.error);
+        }
+        if (spinachResponse.data.error) {
+          throw new Error(spinachResponse.data.error);
+        }
+        if (paprikaResponse.data.error) {
+          throw new Error(paprikaResponse.data.error);
+        }
+        if (pepperResponse.data.error) {
+          throw new Error(pepperResponse.data.error);
+        }
+        if (lettuceResponse.data.error) {
+          throw new Error(lettuceResponse.data.error);
+        }
         
         setCabbagePredictions(cabbageResponse.data.predictions);
         setApplePredictions(appleResponse.data.predictions);
         setOnionPredictions(onionResponse.data.predictions);
         setPotatoPredictions(potatoResponse.data.predictions);
         setCucumberPredictions(cucumberResponse.data.predictions);
+        setTomatoPredictions(tomatoResponse.data.predictions);
+        setSpinachPredictions(spinachResponse.data.predictions);
+        setPaprikaPredictions(paprikaResponse.data.predictions);
+        setPepperPredictions(pepperResponse.data.predictions);
+        setLettucePredictions(lettuceResponse.data.predictions);
       } catch (err) {
         console.error('예측 데이터 가져오기 오류:', err);
         setError(err.message);
@@ -57,15 +88,20 @@ const Test2 = () => {
 
   if (loading) return <div className="text-center p-4">로딩중...</div>;
   if (error) return <div className="text-center p-4 text-red-500">에러: {error}</div>;
-  if (!cabbagePredictions || !applePredictions || !onionPredictions || !potatoPredictions || !cucumberPredictions) return <div className="text-center p-4">데이터가 없습니다.</div>;
+  if (!cabbagePredictions || !applePredictions || !onionPredictions || !potatoPredictions || !cucumberPredictions || !tomatoPredictions || !spinachPredictions || !paprikaPredictions || !pepperPredictions || !lettucePredictions) return <div className="text-center p-4">데이터가 없습니다.</div>;
 
-  // 탭 설정 - 이모지 추가
+  // 탭 설정 - 이모지 변경
   const tabs = [
     { id: 'cabbage', name: '🥬 배추', color: 'green' },
     { id: 'apple', name: '🍎 사과', color: 'red' },
     { id: 'onion', name: '🧅 양파', color: 'yellow' },
     { id: 'potato', name: '🥔 감자', color: 'brown' },
-    { id: 'cucumber', name: '🥒 오이', color: 'emerald' }
+    { id: 'cucumber', name: '🥒 오이', color: 'emerald' },
+    { id: 'tomato', name: '🍅 토마토', color: 'red' },
+    { id: 'spinach', name: '🍃 시금치', color: 'green' },
+    { id: 'paprika', name: '🫑 파프리카', color: 'red' },
+    { id: 'pepper', name: '🌶️ 고추', color: 'red' },
+    { id: 'lettuce', name: '🥙 상추', color: 'green' }
   ];
 
   const PriceCard = ({ title, current, tomorrow, weekly, color, emoji }) => (
@@ -194,6 +230,56 @@ const Test2 = () => {
           weekly={cucumberPredictions.weekly}
           color="emerald"
           emoji="🥒"
+        />
+      )}
+      {activeTab === 'tomato' && (
+        <PriceCard 
+          title="토마토 가격 예측"
+          current={tomatoPredictions.current}
+          tomorrow={tomatoPredictions.tomorrow}
+          weekly={tomatoPredictions.weekly}
+          color="red"
+          emoji="🍅"
+        />
+      )}
+      {activeTab === 'spinach' && (
+        <PriceCard 
+          title="시금치 가격 예측"
+          current={spinachPredictions.current}
+          tomorrow={spinachPredictions.tomorrow}
+          weekly={spinachPredictions.weekly}
+          color="green"
+          emoji="🍃"
+        />
+      )}
+      {activeTab === 'paprika' && (
+        <PriceCard 
+          title="파프리카 가격 예측"
+          current={paprikaPredictions.current}
+          tomorrow={paprikaPredictions.tomorrow}
+          weekly={paprikaPredictions.weekly}
+          color="red"
+          emoji="🫑"
+        />
+      )}
+      {activeTab === 'pepper' && (
+        <PriceCard 
+          title="고추 가격 예측"
+          current={pepperPredictions.current}
+          tomorrow={pepperPredictions.tomorrow}
+          weekly={pepperPredictions.weekly}
+          color="red"
+          emoji="🌶️"
+        />
+      )}
+      {activeTab === 'lettuce' && (
+        <PriceCard 
+          title="상추 가격 예측"
+          current={lettucePredictions.current}
+          tomorrow={lettucePredictions.tomorrow}
+          weekly={lettucePredictions.weekly}
+          color="green"
+          emoji="🥙"
         />
       )}
 
