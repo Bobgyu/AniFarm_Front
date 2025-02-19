@@ -96,17 +96,42 @@ export const fetchComments = (postId) => async (dispatch) => {
 export const createComment = (commentData) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
-    const response = await postRequest("comments", {
-      body: JSON.stringify(commentData),
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("로그인이 필요합니다.");
+    }
+
+    console.log("댓글 작성 요청 데이터:", {
+      post_id: commentData.post_id,
+      content: commentData.content,
     });
+
+    const response = await postRequest("comments", {
+      body: JSON.stringify({
+        post_id: commentData.post_id,
+        content: commentData.content,
+      }),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
     console.log("댓글 작성 응답:", response);
 
-    if (response.status === 201 || response.success) {
+    if (response && response.data) {
       dispatch(addComment(response.data));
+      return response;
+    } else {
+      // console.error("서버 응답 내용:", response);
+      throw new Error(response.message || "댓글 작성에 실패했습니다.");
     }
   } catch (error) {
-    console.error("댓글 작성 실패:", error);
+    // console.error("댓글 작성 실패:", error);
     dispatch(setError(error.message));
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
   }
 };
 

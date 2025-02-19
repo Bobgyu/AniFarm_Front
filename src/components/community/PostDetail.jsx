@@ -129,6 +129,8 @@ const PostDetail = () => {
       );
 
       setNewComment("");
+      // 댓글 작성 후 댓글 목록 새로고침
+      dispatch(fetchComments(postId));
       Swal.fire("성공", "댓글이 작성되었습니다.", "success");
     } catch (error) {
       console.error("댓글 작성 실패:", error);
