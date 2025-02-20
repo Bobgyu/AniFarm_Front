@@ -1,7 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Traintestimg from "../../assets/Traintestimg.jpg";
 import apple from "../../assets/images/apple.jpg";
 
+// 육성법 
 const TrainingMethod = () => {
   return (
     <>
@@ -30,9 +32,11 @@ const TrainingMethod = () => {
                 </div>
               </div>
               <div>
-                <button className="border border-white text-white font-bold py-2 px-4 hover:bg-white hover:text-black transition">
-                  더 많은 정보 보기
-                </button>
+                <Link to="/trainingDetail">
+                  <button className="border border-white text-white font-bold py-2 px-4 hover:bg-white hover:text-black transition">
+                    더 많은 정보 보기
+                  </button>
+                </Link>
               </div>
             </div>
           </div>

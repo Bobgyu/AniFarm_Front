@@ -20,6 +20,7 @@ import Write from "./components/community/Write";
 import { useDispatch } from "react-redux";
 import { logout } from "./redux/slices/authslice";
 import AccordionItem from "./components/common/AccordionItem";
+import TrainingDetail from "./components/trainingMethod/TrainingDetail";
 
 function App() {
   const dispatch = useDispatch();
@@ -111,6 +112,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/trainingMethod" element={<TrainingMethod />} />
+          <Route path="/trainingDetail" element={<TrainingDetail />} />
           <Route path="/test1" element={<Test1 />} />
           <Route path="/test2" element={<Test2 />} />
           <Route path="/test3" element={<Test3 />} />
