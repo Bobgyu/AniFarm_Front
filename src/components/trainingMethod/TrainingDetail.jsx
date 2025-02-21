@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { cropData } from './TrainData';  // Import cropData from TrainData.jsx
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { cropData } from './TrainData';
 
 const TrainingDetail = () => {
-  const [selectedCrop, setSelectedCrop] = useState('crop1');  // Add state here
+  const location = useLocation();
+  const [selectedCrop, setSelectedCrop] = useState(location.state?.selectedCrop || 'crop1');
   const [currentPage, setCurrentPage] = useState(1); // 페이지 상태 추가
   const itemsPerPage = 10; // 한 페이지당 보여줄 작물 수
 

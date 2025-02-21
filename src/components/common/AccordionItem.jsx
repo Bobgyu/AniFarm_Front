@@ -148,7 +148,7 @@ const Test3 = () => {
             <h3 className="absolute top-4 left-1/2 transform -translate-x-1/2 text-white text-xl font-bold z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
               {image.title}
             </h3>
-            {activeIndex === index && (
+            {activeIndex === index && image.link !== "/" && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
