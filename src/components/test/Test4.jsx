@@ -5,6 +5,7 @@ import { fetchGetTop5Data } from '../../redux/slices/apiSlice'
 import { createTop5Chart } from '../../data/createTop10Chart'
 import tomatoes from '../../assets/images/tomatoes.jpg'
 import pears from '../../assets/images/pears.jpg'
+import defaultNewsImage from '../../assets/images/news.jpg'
 import Test1 from './Test1'
 import axios from 'axios'
 
@@ -14,7 +15,8 @@ const Test4 = () => {
   const top5Data = useSelector((state) => state.apis.getTop5Data)
   const [videos, setVideos] = useState([])
   const [news, setNews] = useState([])
-  const [rssNews, setRssNews] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const API_KEY = 'AIzaSyCqsyKiB_nNRn-1fxL3uPvH5a5lzmMHwj8' // YouTube API 키
 
   useEffect(() => {
@@ -49,34 +51,25 @@ const Test4 = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get('/api/news');
-        setNews(response.data);
-      } catch (error) {
-        console.error('뉴스 불러오기 실패:', error);
+        const response = await axios.get('http://localhost:9000/api/news');
+        setNews(response.data || []);
+        setLoading(false);
+      } catch (err) {
+        setError('뉴스를 불러오는데 실패했습니다.');
+        setLoading(false);
+        console.error('뉴스 데이터 fetch 오류:', err);
       }
     };
 
     fetchNews();
   }, []);
 
-  useEffect(() => {
-    const fetchRssNews = async () => {
-      try {
-        // RSS를 JSON으로 변환하는 서비스 사용 (예: rss2json.com)
-        const response = await axios.get(
-          `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('RSS_FEED_URL')}`
-        );
-        setRssNews(response.data.items);
-      } catch (error) {
-        console.error('RSS 피드 로딩 오류:', error);
-      }
-    };
 
-    fetchRssNews();
-  }, []);
+  if (loading) return <div className="text-center py-4">뉴스를 불러오는 중...</div>;
+  if (error) return <div className="text-center py-4 text-red-500">{error}</div>;
 
   return (
-    <main className="w-full p-8">
+    <main className="w-full p-8 min-h-screen bg-gradient-to-b from-white to-green-50">
         {/* 카테고리 박스 */}
         <div className="relative flex justify-center gap-8">
           <div className="flex flex-col items-center">
@@ -149,21 +142,35 @@ const Test4 = () => {
         
         {/* 두 번째 줄 - 뉴스 카드 */}
         {news.map((item, index) => (
-          <div key={index} className="border border-gray-300 rounded-lg p-4 h-[250px] overflow-auto">
-            <h3 className="font-bold mb-2">
-              {item.title.replace(/(<([^>]+)>)/ig, '')}
-            </h3>
-            <p className="text-sm text-gray-600 mb-2">
-              {item.description.replace(/(<([^>]+)>)/ig, '')}
-            </p>
-            <a 
-              href={item.link} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:underline"
-            >
-              자세히 보기
-            </a>
+          <div key={index} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <img 
+              src={item.imageUrl || defaultNewsImage} 
+              alt={item.title}
+              className="w-full h-48 object-cover rounded-lg mb-4"
+              onError={(e) => {
+                e.target.onerror = null; // 무한 루프 방지
+                e.target.src = defaultNewsImage;
+              }}
+            />
+            <h2 
+              className="text-xl font-semibold mb-2"
+              dangerouslySetInnerHTML={{ __html: item.title }}
+            />
+            <p 
+              className="text-gray-600 mb-4"
+              dangerouslySetInnerHTML={{ __html: item.description }}
+            />
+            <div className="flex justify-between items-center text-sm text-gray-500">
+              <a 
+                href={item.link} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800"
+              >
+                자세히 보기 →
+              </a>
+              <span>{new Date(item.pubDate).toLocaleDateString()}</span>
+            </div>
           </div>
         ))}
       </div>
