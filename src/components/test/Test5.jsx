@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { gsap } from "gsap";
 import { useNavigate } from "react-router-dom";
 
-const Test3 = () => {
+const Test5 = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const navigate = useNavigate();
   const images = useMemo(
@@ -26,16 +26,6 @@ const Test3 = () => {
         ),
       },
       {
-        src: "http://www.cimon.co.kr/wp-content/uploads/2017/02/farm_02-e1486360904274.jpg",
-        link: "/pricingInformation",
-        title: "소비 트렌드",
-      },
-      {
-        src: "https://cdn.hankyung.com/photo/202311/01.32189912.1.jpg",
-        link: "/sellInformation",
-        title: "가격예측",
-      },
-      {
         src: "https://img.etnews.com/photonews/2208/1564644_20220824165655_096_0003.jpg",
         link: "/pests",
         title: "병충해",
@@ -45,13 +35,7 @@ const Test3 = () => {
         link: "/trainingMethod",
         title: "작물육성방법",
       },
-      {
-        src: "https://www.industrynews.co.kr/news/photo/201807/24889_15849_5548.jpg",
-        link: "/Community",
-        title: "게시글 작성",
-      },
     ],
-    []
   );
 
   useEffect(() => {
@@ -166,4 +150,4 @@ const Test3 = () => {
   );
 };
 
-export default Test3;
+export default Test5;

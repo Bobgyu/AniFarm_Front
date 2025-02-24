@@ -35,16 +35,16 @@ const Test4 = () => {
   useEffect(() => {
     const fetchYoutubeVideos = async () => {
       try {
-        const response = await axios.get('http://localhost:9000/api/youtube-videos')
-        setVideos(response.data)
+        const response = await axios.get('http://localhost:9000/api/youtube-videos');
+        setVideos(response.data || []);
       } catch (error) {
-        console.error('YouTube 비디오 로딩 실패:', error)
-        setError('YouTube 비디오를 불러오는데 실패했습니다.')
+        console.error('YouTube 데이터 fetch 오류:', error);
+        setVideos([]);
       }
     }
 
-    fetchYoutubeVideos()
-  }, [])
+    fetchYoutubeVideos();
+  }, []);
 
   useEffect(() => {
     const fetchNews = async () => {
