@@ -78,7 +78,7 @@ export const createTop5Chart = (containerId, rawData) => {
     chart: {
       type: "bar",
       backgroundColor: "#C6CBC9",
-      height: 300, // 차트 높이 설정
+      height: 500, // 차트 높이 설정
       width: 600, // 차트 너비 설정
     },
     title: {

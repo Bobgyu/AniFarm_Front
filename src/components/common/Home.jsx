@@ -26,27 +26,35 @@ const Home = () => {
   }, [top5Data]);
 
   return (
-    <div className="w-full">
-      {/* 아코디안 아이템 */}
-      <AccordionItem />
-      <div className="relative">
-        {/* 날씨정보 API */}
-        <div className="flex justify-center items-center relative max-h-[600px] min-h-[300px]">
-          <div className="absolute opacity-30 overlay w-full h-full bg-transparent left-0 top-0"></div>
-          <div className="flex w-full h-full text-white rounded-lg p-4">
-            <div id="top5-chart" ref={chartRef} />
+    <div className="min-h-screen bg-gradient-to-b from-white to-green-50">
+      {/* Hero Section with AccordionItem */}
+      <section className="w-full h-[80vh] relative overflow-hidden">
+        <AccordionItem />
+      </section>
+
+      {/* Charts Section */}
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Top 5 Chart */}
+          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">
+              Top 5 농산물 현황
+            </h2>
+            <div 
+              id="top5-chart" 
+              ref={chartRef} 
+              className="w-full h-[400px]"
+            />
+          </div>
+          {/* Test1 Component */}
+          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">
+              실시간 데이터
+            </h2>
             <Test1 />
           </div>
         </div>
-        <div className="container">
-          {/* <img
-            src={landingImg}
-            alt=""
-            className="w-full max-h-[600px] min-h-[300px]"
-          /> */}
-          <div className="w-[500px] h-[420px] text-white rounded-lg p-4"></div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 };
