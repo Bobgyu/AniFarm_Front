@@ -5,7 +5,6 @@ import {
   getPostsSuccess,
   getPostsFailure,
   selectPosts,
-  selectLoading,
 } from "../../redux/slices/writeSlice";
 import Write from "./Write";
 import CreatePostModal from "./WriteModal";
@@ -14,9 +13,19 @@ import { getRequest } from "../../utils/requestMethods";
 const Community = () => {
   const dispatch = useDispatch();
   const posts = useSelector(selectPosts);
-  const loading = useSelector(selectLoading);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const categories = [
+    { id: "all", name: "전체" },
+    { id: "general", name: "일반 토론" },
+    { id: "food", name: "식물 재배" },
+    { id: "indoor", name: "실내 식물" },
+    { id: "pests", name: "병충해 관리" },
+    { id: "hydroponic", name: "수경 재배" },
+  ];
 
   const fetchPosts = async () => {
     dispatch(getPostsStart());
@@ -40,24 +49,29 @@ const Community = () => {
     fetchPosts(); // 모달이 닫힐 때 게시글 목록 새로고침
   };
 
-  // 검색된 게시물을 필터링하는 함수
+  // 필터링 함수 수정
   const filteredPosts = posts.filter((post) => {
     if (!post.title) return false;
 
     const postTitle = post.title.toString().toLowerCase();
-    const postId = post.post_id ? post.post_id.toString() : ""; // post_id 사용
     const searchQuery = searchTerm.toLowerCase();
 
-    // console.log("검색어:", searchTerm);
-    // console.log("게시물 post_id:", postId);
-    // console.log("게시물 제목:", post.title);
-    // console.log(
-    //   "포함 여부:",
-    //   postTitle.includes(searchQuery) || postId.includes(searchQuery)
-    // );
+    // 제목으로만 검색하도록 수정
+    const searchMatch = postTitle.includes(searchQuery);
 
-    return postTitle.includes(searchQuery) || postId.includes(searchQuery);
+    // 카테고리 필터링
+    const categoryMatch =
+      selectedCategory === "all" || post.category === selectedCategory;
+
+    return searchMatch && categoryMatch;
   });
+
+  // 카테고리 변경 핸들러
+  const handleCategoryChange = (categoryId) => {
+    // console.log("선택된 카테고리 ID:", categoryId);
+    setSelectedCategory(categoryId);
+    setIsDropdownOpen(false);
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-5">
@@ -71,16 +85,41 @@ const Community = () => {
 
       {/* 검색 및 필터 섹션 */}
       <div className="flex justify-between items-center mb-6">
-        <div className="space-x-4">
-          <span className="text-gray-600 cursor-pointer hover:text-gray-800">
-            Categories
-          </span>
-          <span className="text-gray-600 cursor-pointer hover:text-gray-800">
-            All Posts
-          </span>
-          <span className="text-gray-600 cursor-pointer hover:text-gray-800">
-            My Posts
-          </span>
+        <div className="relative">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="text-gray-600 cursor-pointer hover:text-gray-800 border border-gray-300 rounded-lg px-4 py-2 flex items-center"
+          >
+            {categories.find((cat) => cat.id === selectedCategory)?.name ||
+              "Categories"}
+            <svg
+              className="w-4 h-4 ml-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {isDropdownOpen && (
+            <div className="absolute z-10 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => handleCategoryChange(category.id)}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex items-center space-x-4">
           <input
