@@ -144,32 +144,54 @@ const Weather = () => {
     return new Intl.NumberFormat('ko-KR').format(Math.round(price));
   };
 
+  // 탭 스타일을 위한 함수 추가
+  const getTabStyle = (city) => {
+    return `px-4 py-2 rounded-lg transition-all duration-200 ${
+      selectedCity === city
+        ? "bg-blue-500 text-white shadow-md"
+        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+    }`;
+  };
+
   if (loading) return <div>로딩중...</div>;
   if (error) return <div>에러: {error}</div>;
   if (!weatherData) return <div>날씨 데이터가 없습니다.</div>;
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
-      {/* 도시 선택 드롭다운 추가 */}
-      <div className="mb-4">
-        <select
-          value={selectedCity}
-          onChange={(e) => setSelectedCity(e.target.value)}
-          className="p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+      {/* 도시 선택 탭 */}
+      <div className="mb-6">
+        <div className="grid grid-cols-2 gap-2 mb-2">
+          <h2 className="text-xl font-medium col-span-2">지역별 날씨</h2>
+        </div>
+        <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-xl shadow-sm">
           {cities.map((city) => (
-            <option key={city} value={city}>
+            <button
+              key={city}
+              onClick={() => setSelectedCity(city)}
+              className={getTabStyle(city)}
+            >
               {city}
-            </option>
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
       {/* 날씨 섹션 */}
       <div className="mb-8">
-        <h2 className="text-xl font-medium mb-4 text-black">
-          {selectedCity} 주간예보
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-medium text-black">
+            {selectedCity} 주간예보
+          </h2>
+          <span className="text-sm text-gray-500">
+            {new Date().toLocaleDateString('ko-KR', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </span>
+        </div>
+
         {/* 전체 컨테이너에 동일한 width 적용 */}
         <div className="max-w-3xl mx-auto">
           {/* 오늘과 내일 날씨 */}
