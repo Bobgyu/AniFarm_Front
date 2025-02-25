@@ -8,6 +8,18 @@ const Pests = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const resetState = () => {
+    setSelectedImage(null);
+    setResult(null);
+    setError(null);
+    setIsLoading(false);
+    // 파일 입력 초기화
+    const fileInput = document.getElementById("image-upload");
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
+
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -43,12 +55,17 @@ const Pests = () => {
 
         if (data.success) {
           const confidence =
-            Math.max(data.downy_probability, data.powdery_probability) * 100;
+            data.result === "유효하지 않은 이미지"
+              ? data.plant_probability * 100
+              : Object.values(data.probabilities)[
+                  Object.values(data.probabilities).length - 1
+                ] * 100;
 
           setResult({
             status: data.result === "정상" ? "healthy" : "diseased",
             disease: data.result,
             confidence: confidence.toFixed(1),
+            details: data.details,
             recommendation: getRecommendation(data.result),
           });
         } else {
@@ -69,6 +86,8 @@ const Pests = () => {
         return "1. 통풍과 환기를 개선하세요.\n2. 적절한 살균제를 사용하세요.\n3. 병든 잎은 즉시 제거하세요.";
       case "흰가루병":
         return "1. 습도를 낮추고 통풍을 개선하세요.\n2. 규산질 비료를 사용하세요.\n3. 저항성 품종을 선택하세요.";
+      case "유효하지 않은 이미지":
+        return "참외 식물이 아닙니다. 참외 식물 이미지를 업로드해주세요.";
       default:
         return "작물이 건강한 상태입니다. 현재 관리 방법을 유지하세요.";
     }
@@ -90,24 +109,38 @@ const Pests = () => {
             alignItems: "center",
           }}
         >
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            id="image-upload"
-            onChange={handleImageUpload}
-          />
-          <label htmlFor="image-upload">
-            <Button
-              variant="contained"
-              component="span"
-              startIcon={<CloudUploadIcon />}
-              sx={{ mb: 3 }}
-              disabled={isLoading}
-            >
-              {isLoading ? "분석 중..." : "이미지 업로드"}
-            </Button>
-          </label>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              id="image-upload"
+              key={selectedImage ? "has-image" : "no-image"}
+              onChange={handleImageUpload}
+            />
+            <label htmlFor="image-upload">
+              <Button
+                variant="contained"
+                component="span"
+                startIcon={<CloudUploadIcon />}
+                sx={{ mb: 3 }}
+                disabled={isLoading}
+              >
+                {isLoading ? "분석 중..." : "이미지 업로드"}
+              </Button>
+            </label>
+            {(selectedImage || result || error) && (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={resetState}
+                sx={{ mb: 3 }}
+                disabled={isLoading}
+              >
+                다시 시도
+              </Button>
+            )}
+          </Box>
 
           {error && (
             <Typography color="error" sx={{ mt: 2 }}>
@@ -144,21 +177,31 @@ const Pests = () => {
                 }}
               >
                 <Typography variant="body1" gutterBottom>
-                  상태: {result.status === "healthy" ? "정상" : "병충해 감지"}
+                  상태:{" "}
+                  {result.disease === "유효하지 않은 이미지"
+                    ? "유효하지 않은 이미지"
+                    : result.status === "healthy"
+                    ? "정상"
+                    : "병충해 감지"}
                 </Typography>
-                {result.status === "diseased" && (
-                  <>
-                    <Typography variant="body1" gutterBottom>
-                      진단된 병명: {result.disease}
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                      신뢰도: {result.confidence}%
-                    </Typography>
-                    <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
-                      권장 조치: {result.recommendation}
-                    </Typography>
-                  </>
-                )}
+                <Typography variant="body1" gutterBottom>
+                  {result.disease === "유효하지 않은 이미지"
+                    ? "참외 식물 인식 확률"
+                    : "진단 결과"}
+                  : {result.disease}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  신뢰도: {result.confidence}%
+                </Typography>
+                <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+                  상세 정보: {result.details}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ whiteSpace: "pre-line", mt: 2 }}
+                >
+                  권장 조치: {result.recommendation}
+                </Typography>
               </Paper>
             </Box>
           )}
