@@ -20,7 +20,7 @@ const Pests = () => {
   const crops = [
     { value: "chamoe", label: "🍋참외" },
     { value: "strawberry", label: "🍓딸기" },
-    { value: "tomato", label: "🥝키위" },
+    { value: "kiwi", label: "🥝키위" },
   ];
 
   const resetState = () => {
