@@ -16,7 +16,26 @@ const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cities, setCities] = useState([]);  // 도시 목록
+  const [selectedCity, setSelectedCity] = useState("서울");  // 선택된 도시
 
+  // 도시 목록 가져오기
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/cities");
+        if (response.data.success) {
+          setCities(response.data.data.cities);
+        }
+      } catch (err) {
+        console.error("도시 목록 가져오기 오류:", err);
+      }
+    };
+
+    fetchCities();
+  }, []);
+
+  // 날씨 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,7 +43,7 @@ const Weather = () => {
         const weatherResponse = await axios.get(
           "http://localhost:8000/weather",
           {
-            params: { city: 'Seoul' },
+            params: { city: selectedCity },
             headers: {
               'Accept': 'application/json',
             }
@@ -33,9 +52,8 @@ const Weather = () => {
 
         console.log("날씨 데이터 응답:", weatherResponse);
 
-        // raw 데이터에서 list 추출
-        if (weatherResponse.data && weatherResponse.data.raw && weatherResponse.data.raw.list) {
-          const dailyData = processWeatherData(weatherResponse.data.raw.list);
+        if (weatherResponse.data.success && weatherResponse.data.data.raw && weatherResponse.data.data.raw.list) {
+          const dailyData = processWeatherData(weatherResponse.data.data.raw.list);
           setWeatherData(dailyData);
         } else {
           throw new Error("날씨 데이터 형식이 올바르지 않습니다");
@@ -49,7 +67,7 @@ const Weather = () => {
     };
 
     fetchData();
-  }, []);
+  }, [selectedCity]);  // selectedCity가 변경될 때마다 실행
 
   const processWeatherData = (list) => {
     if (!Array.isArray(list)) {
@@ -132,9 +150,26 @@ const Weather = () => {
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
+      {/* 도시 선택 드롭다운 추가 */}
+      <div className="mb-4">
+        <select
+          value={selectedCity}
+          onChange={(e) => setSelectedCity(e.target.value)}
+          className="p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {cities.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* 날씨 섹션 */}
       <div className="mb-8">
-        <h2 className="text-xl font-medium mb-4 text-black">주간예보</h2>
+        <h2 className="text-xl font-medium mb-4 text-black">
+          {selectedCity} 주간예보
+        </h2>
         {/* 전체 컨테이너에 동일한 width 적용 */}
         <div className="max-w-3xl mx-auto">
           {/* 오늘과 내일 날씨 */}
