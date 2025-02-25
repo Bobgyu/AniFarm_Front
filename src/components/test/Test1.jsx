@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   BsSun,
@@ -18,6 +18,9 @@ const Weather = () => {
   const [error, setError] = useState(null);
   const [cities, setCities] = useState([]);  // 도시 목록
   const [selectedCity, setSelectedCity] = useState("서울");  // 선택된 도시
+  const [satelliteData, setSatelliteData] = useState(null);
+  const [imageType, setImageType] = useState('truecolor');
+  const mapRef = useRef(null);
 
   // 도시 목록 가져오기
   useEffect(() => {
@@ -68,6 +71,26 @@ const Weather = () => {
 
     fetchData();
   }, [selectedCity]);  // selectedCity가 변경될 때마다 실행
+
+  // 위성 이미지 데이터 가져오기
+  useEffect(() => {
+    const fetchSatelliteData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/satellite");
+        console.log("Satellite API Response:", response.data);  // 로그 추가
+        
+        if (response.data.success && response.data.data) {
+          setSatelliteData(response.data);
+        } else {
+          console.error("위성 데이터 형식이 올바르지 않습니다:", response.data);
+        }
+      } catch (err) {
+        console.error("위성 데이터 가져오기 오류:", err);
+      }
+    };
+
+    fetchSatelliteData();
+  }, []);
 
   const processWeatherData = (list) => {
     if (!Array.isArray(list)) {
@@ -279,6 +302,60 @@ const Weather = () => {
               );
             })}
           </div>
+        </div>
+      </div>
+
+      {/* 위성 이미지 섹션 */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-medium">한반도 위성 영상</h2>
+          <span className="text-sm text-gray-500">
+            {satelliteData?.data?.timestamp ? 
+              new Date(satelliteData.data.timestamp).toLocaleString() : 
+              '10분마다 업데이트'
+            }
+          </span>
+        </div>
+        <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-100">
+          <div className="flex flex-col h-full">
+            <div className="flex-1 relative">
+              {satelliteData?.data?.imageUrl && (
+                <div className="w-full h-full">
+                  <iframe
+                    src={satelliteData.data.imageUrl}
+                    title="한반도 위성 영상"
+                    className="w-full h-full border-0"
+                    style={{ 
+                      minHeight: '700px',  // 높이 증가
+                      width: '100%'
+                    }}
+                    sandbox="allow-same-origin allow-scripts"
+                    loading="lazy"
+                    onError={(e) => {
+                      console.log("iframe 로딩 실패:", satelliteData.data.imageUrl);
+                      const container = e.target.parentElement;
+                      if (container) {
+                        container.innerHTML = `
+                          <div class="flex items-center justify-center h-full text-gray-500">
+                            <div class="text-center">
+                              <p>위성 영상을 불러올 수 없습니다</p>
+                              <p class="text-sm mt-2">잠시 후 다시 시도해주세요</p>
+                            </div>
+                          </div>
+                        `;
+                      }
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
+            기상청 제공
+          </div>
+        </div>
+        <div className="mt-2 text-sm text-gray-500 text-center">
+          * 위성 영상은 10분마다 업데이트됩니다
         </div>
       </div>
     </div>
