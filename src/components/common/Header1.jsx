@@ -51,7 +51,7 @@ const Header = () => {
           path = "/Pests";
           break;
         case "날씨":
-          path = "/Test2";
+          path = "/Test1";
           break;
         default:
           path = "/culture";
