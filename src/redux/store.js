@@ -6,6 +6,7 @@ import loginReducer from "./slices/loginslice";
 import apiReducer from "./slices/apiSlice";
 import writeReducer from "./slices/writeSlice";
 import commentReducer from "./slices/commentSlice";
+import imageModelReducer from "./slices/imageModelSlice";
 
 const store = configureStore({
   reducer: combineReducers({
@@ -14,6 +15,7 @@ const store = configureStore({
     apis: apiReducer,
     write: writeReducer,
     comments: commentReducer,
+    imageModel: imageModelReducer,
   }),
 });
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   BsSun,
@@ -16,7 +16,29 @@ const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cities, setCities] = useState([]);  // 도시 목록
+  const [selectedCity, setSelectedCity] = useState("서울");  // 선택된 도시
+  const [satelliteData, setSatelliteData] = useState(null);
+  const [imageType, setImageType] = useState('truecolor');
+  const mapRef = useRef(null);
 
+  // 도시 목록 가져오기
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/cities");
+        if (response.data.success) {
+          setCities(response.data.data.cities);
+        }
+      } catch (err) {
+        console.error("도시 목록 가져오기 오류:", err);
+      }
+    };
+
+    fetchCities();
+  }, []);
+
+  // 날씨 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,7 +46,7 @@ const Weather = () => {
         const weatherResponse = await axios.get(
           "http://localhost:8000/weather",
           {
-            params: { city: 'Seoul' },
+            params: { city: selectedCity },
             headers: {
               'Accept': 'application/json',
             }
@@ -33,9 +55,8 @@ const Weather = () => {
 
         console.log("날씨 데이터 응답:", weatherResponse);
 
-        // raw 데이터에서 list 추출
-        if (weatherResponse.data && weatherResponse.data.raw && weatherResponse.data.raw.list) {
-          const dailyData = processWeatherData(weatherResponse.data.raw.list);
+        if (weatherResponse.data.success && weatherResponse.data.data.raw && weatherResponse.data.data.raw.list) {
+          const dailyData = processWeatherData(weatherResponse.data.data.raw.list);
           setWeatherData(dailyData);
         } else {
           throw new Error("날씨 데이터 형식이 올바르지 않습니다");
@@ -49,6 +70,26 @@ const Weather = () => {
     };
 
     fetchData();
+  }, [selectedCity]);  // selectedCity가 변경될 때마다 실행
+
+  // 위성 이미지 데이터 가져오기
+  useEffect(() => {
+    const fetchSatelliteData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/satellite");
+        console.log("Satellite API Response:", response.data);  // 로그 추가
+        
+        if (response.data.success && response.data.data) {
+          setSatelliteData(response.data);
+        } else {
+          console.error("위성 데이터 형식이 올바르지 않습니다:", response.data);
+        }
+      } catch (err) {
+        console.error("위성 데이터 가져오기 오류:", err);
+      }
+    };
+
+    fetchSatelliteData();
   }, []);
 
   const processWeatherData = (list) => {
@@ -126,15 +167,54 @@ const Weather = () => {
     return new Intl.NumberFormat('ko-KR').format(Math.round(price));
   };
 
+  // 탭 스타일을 위한 함수 추가
+  const getTabStyle = (city) => {
+    return `px-4 py-2 rounded-lg transition-all duration-200 ${
+      selectedCity === city
+        ? "bg-blue-500 text-white shadow-md"
+        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+    }`;
+  };
+
   if (loading) return <div>로딩중...</div>;
   if (error) return <div>에러: {error}</div>;
   if (!weatherData) return <div>날씨 데이터가 없습니다.</div>;
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
+      {/* 도시 선택 탭 */}
+      <div className="mb-6">
+        <div className="grid grid-cols-2 gap-2 mb-2">
+          <h2 className="text-xl font-medium col-span-2">지역별 날씨</h2>
+        </div>
+        <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-xl shadow-sm">
+          {cities.map((city) => (
+            <button
+              key={city}
+              onClick={() => setSelectedCity(city)}
+              className={getTabStyle(city)}
+            >
+              {city}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* 날씨 섹션 */}
       <div className="mb-8">
-        <h2 className="text-xl font-medium mb-4 text-black">주간예보</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-medium text-black">
+            {selectedCity} 주간예보
+          </h2>
+          <span className="text-sm text-gray-500">
+            {new Date().toLocaleDateString('ko-KR', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </span>
+        </div>
+
         {/* 전체 컨테이너에 동일한 width 적용 */}
         <div className="max-w-3xl mx-auto">
           {/* 오늘과 내일 날씨 */}
@@ -222,6 +302,60 @@ const Weather = () => {
               );
             })}
           </div>
+        </div>
+      </div>
+
+      {/* 위성 이미지 섹션 */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-medium">한반도 위성 영상</h2>
+          <span className="text-sm text-gray-500">
+            {satelliteData?.data?.timestamp ? 
+              new Date(satelliteData.data.timestamp).toLocaleString() : 
+              '10분마다 업데이트'
+            }
+          </span>
+        </div>
+        <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-100">
+          <div className="flex flex-col h-full">
+            <div className="flex-1 relative">
+              {satelliteData?.data?.imageUrl && (
+                <div className="w-full h-full">
+                  <iframe
+                    src={satelliteData.data.imageUrl}
+                    title="한반도 위성 영상"
+                    className="w-full h-full border-0"
+                    style={{ 
+                      minHeight: '700px',  // 높이 증가
+                      width: '100%'
+                    }}
+                    sandbox="allow-same-origin allow-scripts"
+                    loading="lazy"
+                    onError={(e) => {
+                      console.log("iframe 로딩 실패:", satelliteData.data.imageUrl);
+                      const container = e.target.parentElement;
+                      if (container) {
+                        container.innerHTML = `
+                          <div class="flex items-center justify-center h-full text-gray-500">
+                            <div class="text-center">
+                              <p>위성 영상을 불러올 수 없습니다</p>
+                              <p class="text-sm mt-2">잠시 후 다시 시도해주세요</p>
+                            </div>
+                          </div>
+                        `;
+                      }
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
+            기상청 제공
+          </div>
+        </div>
+        <div className="mt-2 text-sm text-gray-500 text-center">
+          * 위성 영상은 10분마다 업데이트됩니다
         </div>
       </div>
     </div>
