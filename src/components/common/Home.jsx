@@ -6,25 +6,6 @@ import AccordionItem from "../common/AccordionItem";
 import Test1 from "../test/Test1";
 
 const Home = () => {
-  const chartRef = useRef(null);
-  const dispatch = useDispatch();
-  const top5Data = useSelector((state) => state.apis.getTop5Data);
-
-  useEffect(() => {
-    dispatch(fetchGetTop5Data());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (top5Data) {
-      // console.log("Top5 데이터:", top5Data);
-      try {
-        createTop5Chart("top5-chart", top5Data);
-      } catch (error) {
-        // console.error("차트 생성 중 오류:", error);
-      }
-    }
-  }, [top5Data]);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-green-50">
       {/* Hero Section with AccordionItem */}

@@ -67,9 +67,9 @@ const Test4 = () => {
   if (error) return <div className="text-center py-4 text-red-500">{error}</div>;
 
   return (
-    <main className="w-full p-8 min-h-screen bg-gradient-to-b from-white to-green-50">
+    <main className="container">
         {/* 카테고리 박스 */}
-        <div className="relative flex justify-center gap-8">
+        <section className="relative flex justify-center gap-8">
           <div className="flex flex-col items-center">
             <Link to="/test5">
               <h3 className="text-center mb-4 hover:text-blue-500 text-2xl font-semibold">작물</h3>
@@ -95,7 +95,7 @@ const Test4 = () => {
               />
             </Link>
           </div>
-        </div>
+        </section>
 
       {/* 중간 2개 박스 */}
       <section className="max-w-7xl mx-auto px-4 py-12">
