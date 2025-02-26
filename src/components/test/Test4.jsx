@@ -173,9 +173,9 @@ const Test4 = () => {
         ))}
       </div>
 
-      {/* 맨 하단 긴 박스 */}
+      {/* 커뮤니티 박스 */}
       <Link to="/community" className="block">
-        <div className="border border-gray-300  bg-white rounded-lg p-6 h-[100px] transition-colors duration-300 flex flex-col justify-center items-center cursor-pointer shadow-sm hover:shadow-md">
+        <div className="border border-gray-300  hover:bg-green-300  bg-white rounded-lg p-6 h-[100px] transition-colors duration-300 flex flex-col justify-center items-center cursor-pointer shadow-sm hover:shadow-md">
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">커뮤니티</h2>
           <p className="text-gray-600">농산물 정보와 경험을 공유하는 공간입니다</p>
         </div>

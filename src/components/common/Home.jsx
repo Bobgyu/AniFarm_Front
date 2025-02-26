@@ -1,41 +1,30 @@
-import React, { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { createTop5Chart } from "../../data/createTop10Chart";
-import { fetchGetTop5Data } from "../../redux/slices/apiSlice";
-import AccordionItem from "../common/AccordionItem";
-import Test1 from "../test/Test1";
+import React from "react";
 
 const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-green-50">
-      {/* Hero Section with AccordionItem */}
-      <section className="w-full h-[80vh] relative overflow-hidden">
-        <AccordionItem />
-      </section>
-
-      {/* Charts Section */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Top 5 Chart */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">
-              Top 5 농산물 현황
-            </h2>
-            <div 
-              id="top5-chart" 
-              ref={chartRef} 
-              className="w-full h-[400px]"
-            />
-          </div>
-          {/* Test1 Component */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">
-              실시간 데이터
-            </h2>
-            <Test1 />
+      {/* Hero Section with Background Image */}
+      <div 
+        className="relative h-[500px] bg-cover bg-center"
+        style={{
+          backgroundImage: `url('https://cdn.pixabay.com/photo/2016/09/21/04/46/barley-field-1684052_1280.jpg')`
+        }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-40">
+          <div className="max-w-7xl mx-auto px-4 h-full flex items-center">
+            <div className="text-white">
+              <h1 className="text-4xl font-bold mb-4">AnI Farm</h1>
+              <p className="text-xl mb-4">
+                AI로 심고, 데이터로 키우는 당신을 위한 smart한 농사의 시작
+              </p>
+              <p className="text-l">
+                지혜가 모이고 소통하는 공간, 함께 키워가는 AI 농업 커뮤니티
+              </p>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+
     </div>
   );
 };

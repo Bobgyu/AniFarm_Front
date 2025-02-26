@@ -1,8 +1,11 @@
 import "./App.css";
 import React, { useEffect, useCallback } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./components/common/Home";
-import Header from "./components/common/Header";
+import Culture from "./components/common/Culture";
+import Sale from "./components/common/Sale";  
+import Header1 from "./components/common/Header1";
+import Header2 from "./components/common/Header2";
 import Footer from "./components/common/Footer";
 import Register from "./components/login/Register";
 import Login from "./components/login/details/Login";
@@ -25,7 +28,18 @@ import { logout } from "./redux/slices/authslice";
 import AccordionItem from "./components/common/AccordionItem";
 import TrainingDetail from "./components/trainingMethod/TrainingDetail";
 
+
 function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}
+
+// 새로운 컴포넌트를 만들어 Router 내부에서 useLocation을 사용
+function AppContent() {
+  const location = useLocation();
   const dispatch = useDispatch();
   // const INACTIVE_TIMEOUT = 60 * 1000; // 1분으로 변경 (테스트용)
   const INACTIVE_TIMEOUT = 2 * 60 * 60 * 1000; // 2시간으로 설정
@@ -99,34 +113,38 @@ function App() {
     };
   }, [handleUserActivity]);
 
+  // 특정 페이지에서 Header2를 사용할 경로 목록
+  const header2Routes = ['/trainingMethod', '/pests', '/Community'];
+  const shouldUseHeader2 = header2Routes.includes(location.pathname);
+
   return (
-    <Router>
-      <div className="App">
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/pricingInformation" element={<PricingInformation />} />
-          <Route path="/Community" element={<Community />} />
-          <Route path="/Community/:postId" element={<PostDetail />} />
-          <Route path="/Community/write" element={<Write />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/sellInformation" element={<SalsesInformation />} />
-          <Route path="/pests" element={<Pests />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/mypage" element={<Mypage />} />
-          <Route path="/trainingMethod" element={<TrainingMethod />} />
-          <Route path="/trainingDetail" element={<TrainingDetail />} />
-          <Route path="/test1" element={<Test1 />} />
-          <Route path="/test2" element={<Test2 />} />
-          <Route path="/test3" element={<Test3 />} />
-          <Route path="/test4" element={<Test4 />} />
-          <Route path="/test5" element={<Test5 />} />
-          <Route path="/test6" element={<Test6 />} />
-          <Route path="/accordionitem" element={<AccordionItem />} />
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
+    <div className="App">
+      {shouldUseHeader2 ? <Header2 /> : <Header1 />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/culture" element={<Culture />} />
+        <Route path="/sale" element={<Sale />} />
+        <Route path="/pricingInformation" element={<PricingInformation />} />
+        <Route path="/Community" element={<Community />} />
+        <Route path="/Community/:postId" element={<PostDetail />} />
+        <Route path="/Community/write" element={<Write />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/sellInformation" element={<SalsesInformation />} />
+        <Route path="/pests" element={<Pests />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/mypage" element={<Mypage />} />
+        <Route path="/trainingMethod" element={<TrainingMethod />} />
+        <Route path="/trainingDetail" element={<TrainingDetail />} />
+        <Route path="/test1" element={<Test1 />} />
+        <Route path="/test2" element={<Test2 />} />
+        <Route path="/test3" element={<Test3 />} />
+        <Route path="/test4" element={<Test4 />} />
+        <Route path="/test5" element={<Test5 />} />
+        <Route path="/test6" element={<Test6 />} />
+        <Route path="/accordionitem" element={<AccordionItem />} />
+      </Routes>
+      <Footer />
+    </div>
   );
 }
 
