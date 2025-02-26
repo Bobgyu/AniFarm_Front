@@ -9,12 +9,18 @@ import {
   Tab,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setSelectedImage,
+  resetState,
+  analyzeImage,
+} from "../../redux/slices/imageModelSlice";
 
 const Pests = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [result, setResult] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { selectedImage, result, isLoading, error } = useSelector(
+    (state) => state.imageModel
+  );
   const [selectedTab, setSelectedTab] = useState(0);
 
   const crops = [
@@ -23,11 +29,8 @@ const Pests = () => {
     { value: "kiwi", label: "🥝키위" },
   ];
 
-  const resetState = () => {
-    setSelectedImage(null);
-    setResult(null);
-    setError(null);
-    setIsLoading(false);
+  const resetStateHandler = () => {
+    dispatch(resetState());
     const fileInput = document.getElementById("image-upload");
     if (fileInput) {
       fileInput.value = "";
@@ -36,7 +39,7 @@ const Pests = () => {
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
-    resetState();
+    resetStateHandler();
   };
 
   const handleImageUpload = (event) => {
@@ -52,9 +55,7 @@ const Pests = () => {
         return;
       }
 
-      setSelectedImage(URL.createObjectURL(file));
-      setResult(null);
-      setError(null);
+      dispatch(setSelectedImage(URL.createObjectURL(file)));
     }
   };
 
@@ -64,63 +65,12 @@ const Pests = () => {
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
+    const fileInput = document.getElementById("image-upload");
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
 
-    try {
-      const fileInput = document.getElementById("image-upload");
-      const file = fileInput.files[0];
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("http://localhost:8000/predict", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("서버 응답에 문제가 있습니다.");
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        const confidence =
-          data.result === "유효하지 않은 이미지"
-            ? data.plant_probability * 100
-            : Object.values(data.probabilities)[
-                Object.values(data.probabilities).length - 1
-              ] * 100;
-
-        setResult({
-          status: data.result === "정상" ? "healthy" : "diseased",
-          disease: data.result,
-          confidence: confidence.toFixed(1),
-          details: data.details,
-          recommendation: getRecommendation(data.result),
-        });
-      } else {
-        setError(data.error || "이미지 분석 중 오류가 발생했습니다.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setError("서버 연결에 실패했습니다. 다시 시도해주세요.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getRecommendation = (disease) => {
-    switch (disease) {
-      case "노균병":
-        return "1. 식물 주변의 통풍을 원활하게 하고 습도가 높아지지 않도록 관리하세요.\n2. 병의 예방과 확산 방지를 위해 적절한 살균제를 주기적으로 사용하세요.\n3. 감염된 잎은 즉시 제거하고, 주변 식물로 전염되지 않도록 주의하세요.";
-      case "흰가루병":
-        return "1. 습도가 너무 높아지지 않도록 관리하고, 식물 주변의 공기 흐름을 원활하게 하여 통풍을 개선하세요.\n2. 식물의 세포벽을 강화하고 저항력을 높이기 위해 규산질 비료나 유기농 자재를 적절히 사용하세요.\n3. 흰가루병에 강한 저항성을 가진 품종을 선택하여 재배하면 발생 위험을 줄일 수 있습니다.";
-      case "유효하지 않은 이미지":
-        return "참외 식물이 아닙니다. 참외 식물 이미지를 업로드해주세요.";
-      default:
-        return "작물이 건강한 상태입니다. 현재 관리 방법을 유지하세요.";
-    }
+    dispatch(analyzeImage(formData));
   };
 
   return (
@@ -130,7 +80,7 @@ const Pests = () => {
           병충해 진단
         </Typography>
 
-        <Paper className="p-6 mt-6 flex flex-col items-center">
+        <Paper className="p-6 mt-6 flex flex-col items-center border-2 border-gray-200">
           <Box className="w-full border-b border-gray-200">
             <Tabs
               value={selectedTab}
@@ -156,7 +106,7 @@ const Pests = () => {
             </Tabs>
           </Box>
 
-          <Box className="flex gap-4 h-56 mt-6">
+          <Box className="flex gap-4 h-24 mt-6">
             <input
               type="file"
               accept="image/*"
@@ -179,9 +129,9 @@ const Pests = () => {
               <Button
                 variant="outlined"
                 color="primary"
-                onClick={resetState}
+                onClick={resetStateHandler}
                 disabled={isLoading}
-                className="min-w-[120px]"
+                className="min-w-[120px] h-[2.4rem]"
               >
                 다시 시도
               </Button>
@@ -196,8 +146,8 @@ const Pests = () => {
 
           {selectedImage && (
             <>
-              <Box className="mt-2 w-full max-w-[500px]">
-                <Typography variant="h6" className="mb-4">
+              <Box className="mt-2 w-full max-w-[500px] pb-4">
+                <Typography variant="h6" className="mb-4 pb-2">
                   업로드된 이미지
                 </Typography>
                 <img

@@ -4,6 +4,13 @@ import "./index.css";
 import App from "./App";
 import { Provider } from "react-redux";
 import store from "./redux/store";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: ["Gowun Dodum", "sans-serif"].join(","),
+  },
+});
 
 // 페이지 최초 로드 시 localStorage 초기화
 const initializeAuth = () => {
@@ -21,7 +28,11 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
     </Provider>
   </React.StrictMode>
 );
+
+export default theme;
