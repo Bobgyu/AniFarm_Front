@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import culture from "../../assets/images/culture.png";
 
 const Culture = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
@@ -95,7 +96,7 @@ const Culture = () => {
                     날씨
                   </h3>
                   <p className="text-gray-600">
-                    실시간 날씨 정보와 농작물 가격 예측을 확인하세요
+                    실시간 날씨 정보와 예측 정보를 확인하세요
                   </p>
                 </div>
               </motion.div>
@@ -123,28 +124,34 @@ const Culture = () => {
           </div>
 
           {/* 오른쪽 콘텐츠 영역 */}
-          <div className="flex-1 bg-white rounded-lg shadow-lg p-6 min-h-[500px]">
-            <div
-              id="contentArea"
-              className="w-full h-full flex flex-col items-center justify-center"
-            >
-              {hoveredContent ? (
-                <>
+          <div className="overflow-hidden flex-1 bg-white rounded-lg shadow-lg p-2">
+            {hoveredContent ? (
+              <>
+                <div className="w-[100%] h-[80%]">
                   <img
                     src={contentMap[hoveredContent].image}
                     alt={hoveredContent}
-                    className="w-full h-[300px] object-contain mb-4"
+                    className="w-auto h-[80%]"
                   />
-                  <p className="text-lg text-gray-700 text-center">
-                    {contentMap[hoveredContent].text}
-                  </p>
-                </>
-              ) : (
-                <p className="text-lg text-gray-500">
-                  왼쪽의 메뉴에 마우스를 올려보세요
+                </div>
+                <p className="text-lg text-gray-500 text-center mt-4">
+                  {contentMap[hoveredContent].text}
                 </p>
-              )}
-            </div>
+              </>
+            ) : (
+              <>
+                <div className="w-[100%] h-[80%]">
+                  <img
+                    src={culture}
+                    alt="기본 이미지"
+                    className="w-auto h-[80%]"
+                  />
+                </div>
+                <p className="text-lg text-gray-500 text-center mt-4">
+                  재배하기 내용
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>
