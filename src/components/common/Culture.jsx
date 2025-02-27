@@ -1,40 +1,63 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from "framer-motion";
-import culture from "../../assets/images/culture.png";
+import culture from "../../assets/images/culture.jpg";
+import train from "../../assets/images/train.jpg";
+import pests from "../../assets/images/pests.jpg";
+import weather from "../../assets/images/weather.jpg";
+import community from "../../assets/images/community.png";
+
 
 const Culture = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
+  const [showDefaultContent, setShowDefaultContent] = useState(false);
 
   const contentMap = {
     training: {
-      image: "/images/training-preview.jpg",
-      text: "작물 육성법에 대한 상세 정보를 확인하실 수 있습니다."
+      image: train,
     },
     pests: {
-      image: "/images/pests-preview.jpg",
-      text: "병충해 진단 및 해결책을 확인하실 수 있습니다."
+      image: pests,
     },
     weather: {
-      image: "/images/weather-preview.jpg",
-      text: "실시간 날씨 정보와 예측 정보를 확인하실 수 있습니다."
+      image: weather,
     },
     community: {
-      image: "/images/community-preview.jpg",
-      text: "농부들과의 소통 공간입니다."
+      image: community,
     }
   };
 
+  const handleMouseEnter = (content) => {
+    setHoveredContent(content);
+  };
+
+  const handleMouseLeave = () => {
+    // 빈 함수로 수정 (마우스가 떠나도 상태 유지)
+  };
+
+  const handleTitleHover = () => {
+    setHoveredContent(null);
+    setShowDefaultContent(true);
+  };
+
+  const handleTitleLeave = () => {
+    setShowDefaultContent(false);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-green-50 py-12">
+    <div className="min-h-screen bg-gradient-to-b from-white to-green-50 py-12 ">
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-8">
-            스마트 농업 관리 시스템
+          <h1 
+            className="text-4xl font-bold text-gray-900 mb-8 cursor-pointer"
+            onMouseEnter={handleTitleHover}
+            onMouseLeave={handleTitleLeave}
+          >
+            재배하기
           </h1>
           <p className="text-xl text-gray-600 mb-12">
-            AI 기반 작물 관리와 병충해 예방으로 더 나은 농작물 생산을 시작하세요
+
           </p>
         </div>
 
@@ -46,8 +69,8 @@ const Culture = () => {
             <Link to="/trainingMethod">
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                onMouseEnter={() => setHoveredContent('training')}
-                onMouseLeave={() => setHoveredContent(null)}
+                onMouseEnter={() => handleMouseEnter('training')}
+                onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="p-6">
@@ -62,8 +85,8 @@ const Culture = () => {
             <Link to="/pests">
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                onMouseEnter={() => setHoveredContent('pests')}
-                onMouseLeave={() => setHoveredContent(null)}
+                onMouseEnter={() => handleMouseEnter('pests')}
+                onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="p-6">
@@ -78,8 +101,8 @@ const Culture = () => {
             <Link to="/test1">
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                onMouseEnter={() => setHoveredContent('weather')}
-                onMouseLeave={() => setHoveredContent(null)}
+                onMouseEnter={() => handleMouseEnter('weather')}
+                onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="p-6">
@@ -94,8 +117,8 @@ const Culture = () => {
             <Link to="/Community">
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                onMouseEnter={() => setHoveredContent('community')}
-                onMouseLeave={() => setHoveredContent(null)}
+                onMouseEnter={() => handleMouseEnter('community')}
+                onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="p-6">
@@ -108,37 +131,54 @@ const Culture = () => {
           </div>
 
           {/* 오른쪽 콘텐츠 영역 */}
-          <div className="overflow-hidden flex-1 bg-white rounded-lg shadow-lg p-2">
-        
-              {hoveredContent ? (
-                <>
-                  <div className="w-[100%] h-[80%]">  {/* 호버 시 이미지 전용 컨테이너 */}
-                    <img 
-                      src={contentMap[hoveredContent].image}
-                      alt={hoveredContent}
-                      className="w-auto h-[80%]"
-                    />
-                  </div>
-                  <p className="text-lg text-gray-500 text-center mt-4">
-                    {contentMap[hoveredContent].text}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="w-[100%] h-[80%]">  {/* 디폴트 이미지 전용 컨테이너 */}
-                    <img 
-                      src={culture}
-                      alt="기본 이미지"
-                      className="w-auto h-[80%]"
-                    />
-                  </div>
-                  <p className="text-lg text-gray-500 text-center mt-4">
-                    재배하기 내용
-                  </p>
-                </>
-              )}
-            </div>
-  
+          <div className="relative overflow-hidden w-full h-[auto]">
+            {showDefaultContent ? (
+              <div className="relative h-full">
+                <img 
+                  src={culture}
+                  alt="기본 이미지"                 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-20" />
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                  <h2 className="text-4xl font-bold text-white tracking-wider">
+                    재배하기에 관한 내용
+                  </h2>
+                </div>
+              </div>
+            ) : hoveredContent ? (
+              <>
+                <img 
+                  src={contentMap[hoveredContent].image}
+                  alt={hoveredContent}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-30" />
+                <div className="absolute w-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                  <h3 className="text-4xl font-bold text-white tracking-wider">
+                    {hoveredContent === 'training' && '육성법에 관한 내용'}
+                    {hoveredContent === 'pests' && '병충해에 관한 내용'}
+                    {hoveredContent === 'weather' && '날씨 정보에 관한 내용'}
+                    {hoveredContent === 'community' && '커뮤니티 소개에 관한 내용'}
+                  </h3>
+                </div>
+              </>
+            ) : (
+              <div className="relative overflow-hidden h-full h-[auto]">
+                <img 
+                  src={culture}
+                  alt="기본 이미지"                 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-20" />
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                  <h2 className="text-4xl font-bold text-white tracking-wider">
+                    재배하기에 관한 내용
+                  </h2>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
