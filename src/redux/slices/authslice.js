@@ -57,11 +57,11 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      console.log("로그인 요청:", credentials);
+      // console.log("로그인 요청:", credentials);
       const response = await postRequest("auth/login", {
         body: JSON.stringify(credentials),
       });
-      console.log("로그인 응답:", response);
+      // console.log("로그인 응답:", response);
 
       // response.data가 있고 status가 201인 경우 성공
       if (response.status === 201 && response.data) {
@@ -71,7 +71,7 @@ export const loginUser = createAsyncThunk(
 
       return rejectWithValue("로그인 실패");
     } catch (error) {
-      console.error("로그인 에러:", error);
+      // console.error("로그인 에러:", error);
       return rejectWithValue(error.message || "로그인 실패");
     }
   }
