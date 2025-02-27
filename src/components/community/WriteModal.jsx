@@ -8,12 +8,13 @@ import {
 import { postRequest } from "../../utils/requestMethods";
 import Swal from "sweetalert2";
 
-const CreatePostModal = ({ isOpen, onClose }) => {
+const CreatePostModal = ({ isOpen, onClose, communityType }) => {
   const dispatch = useDispatch();
+
   const [postData, setPostData] = useState({
     title: "",
     content: "",
-    category: "general",
+    category: communityType, // 커뮤니티 타입을 카테고리로 사용
   });
 
   const handleSubmit = async (e) => {
@@ -24,9 +25,8 @@ const CreatePostModal = ({ isOpen, onClose }) => {
         title: postData.title,
         content: postData.content,
         category: postData.category,
+        community_type: communityType,
       };
-
-      console.log("게시글 작성 요청:", formData);
 
       dispatch(createPostStart());
 
@@ -38,25 +38,20 @@ const CreatePostModal = ({ isOpen, onClose }) => {
 
       if (response.success || response.status === 201) {
         dispatch(createPostSuccess(response.data));
-
-        await Swal.fire({
+        Swal.fire({
           icon: "success",
-          title: "성공",
-          text: "게시글이 작성되었습니다.",
+          title: "게시글이 작성되었습니다.",
+          showConfirmButton: false,
+          timer: 1500,
         });
-        onClose();
-        window.location.href = "/Community";
-      } else {
-        throw new Error(response.message || "게시글 작성에 실패했습니다.");
+        onClose(); // 모달 닫기만 하면 부모 컴포넌트에서 자동으로 게시글을 다시 불러옵니다
       }
     } catch (error) {
-      console.error("게시글 작성 오류:", error);
       dispatch(createPostFailure(error.message));
-
       Swal.fire({
         icon: "error",
-        title: "오류",
-        text: error.message || "게시글 작성에 실패했습니다.",
+        title: "게시글 작성 실패",
+        text: error.message,
       });
     }
   };
@@ -67,6 +62,34 @@ const CreatePostModal = ({ isOpen, onClose }) => {
       postData.content.trim() !== "" &&
       postData.category !== ""
     );
+  };
+
+  const getCategoryOptions = () => {
+    switch (communityType) {
+      case "gardening":
+        return (
+          <>
+            <option value="food">식물 재배</option>
+            <option value="indoor">실내 식물</option>
+            <option value="pests">병충해 관리</option>
+            <option value="hydroponic">수경 재배</option>
+          </>
+        );
+      case "marketplace":
+        return (
+          <>
+            <option value="marketplace">판매/구매</option>
+          </>
+        );
+      case "freeboard":
+        return (
+          <>
+            <option value="freeboard">자유게시판</option>
+          </>
+        );
+      default:
+        return null;
+    }
   };
 
   if (!isOpen) return null;
@@ -94,11 +117,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
               }
               className="w-full p-2 border border-gray-300 rounded-lg"
             >
-              <option value="general">일반 토론</option>
-              <option value="food">식물 재배</option>
-              <option value="indoor">실내 식물</option>
-              <option value="pests">병충해 관리</option>
-              <option value="hydroponic">수경 재배</option>
+              {getCategoryOptions()}
             </select>
           </div>
 
