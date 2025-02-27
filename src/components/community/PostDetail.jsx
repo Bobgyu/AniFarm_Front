@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchComments,
@@ -17,6 +17,7 @@ import { jwtDecode } from "jwt-decode";
 
 const PostDetail = () => {
   const { postId } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -88,30 +89,30 @@ const PostDetail = () => {
   };
 
   const handleDelete = async () => {
-    const result = await Swal.fire({
-      title: "정말 삭제하시겠습니까?",
-      text: "이 작업은 되돌릴 수 없습니다!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "삭제",
-      cancelButtonText: "취소",
-    });
+    try {
+      const response = await deleteRequest(`write/${postId}`);
+      if (response.success) {
+        Swal.fire({
+          icon: "success",
+          title: "게시글이 삭제되었습니다.",
+          showConfirmButton: false,
+          timer: 1500,
+        });
 
-    if (result.isConfirmed) {
-      try {
-        await deleteRequest(`write/${postId}`);
-        Swal.fire(
-          "삭제 완료!",
-          "게시글이 성공적으로 삭제되었습니다.",
-          "success"
-        );
-        navigate("/community");
-      } catch (error) {
-        console.error("삭제 실패:", error);
-        Swal.fire("오류", "게시글 삭제에 실패했습니다.", "error");
+        // 게시글의 community_type을 사용
+        if (post && post.community_type) {
+          navigate(`/community/${post.community_type}`);
+        } else {
+          // 기본값으로 gardening 사용
+          navigate("/community/gardening");
+        }
       }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "게시글 삭제 실패",
+        text: error.message,
+      });
     }
   };
 

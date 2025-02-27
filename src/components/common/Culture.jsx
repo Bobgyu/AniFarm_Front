@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import culture from "../../assets/images/culture.jpg";
 import train from "../../assets/images/train.jpg";
@@ -75,8 +75,12 @@ const Culture = () => {
               >
                 <div className="p-6">
                   <div className="text-3xl mb-4">🌱</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">육성법</h3>
-                
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    육성법
+                  </h3>
+                  <p className="text-gray-600">
+                    최적화된 작물 육성 방법을 확인하고 관리하세요
+                  </p>
                 </div>
               </motion.div>
             </Link>
@@ -91,8 +95,12 @@ const Culture = () => {
               >
                 <div className="p-6">
                   <div className="text-3xl mb-4">🔍</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">병충해</h3>
-                
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    병충해
+                  </h3>
+                  <p className="text-gray-600">
+                    AI가 분석하는 병충해 진단 및 해결책을 확인하세요
+                  </p>
                 </div>
               </motion.div>
             </Link>
@@ -107,14 +115,18 @@ const Culture = () => {
               >
                 <div className="p-6">
                   <div className="text-3xl mb-4">🌤️</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">날씨</h3>
-                 
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    날씨
+                  </h3>
+                  <p className="text-gray-600">
+                    실시간 날씨 정보와 예측 정보를 확인하세요
+                  </p>
                 </div>
               </motion.div>
             </Link>
 
             {/* 커뮤니티 카드 */}
-            <Link to="/Community">
+            <Link to="/community/gardening">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => handleMouseEnter('community')}
@@ -123,8 +135,12 @@ const Culture = () => {
               >
                 <div className="p-6">
                   <div className="text-3xl mb-4">👥</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">커뮤니티</h3>
-              
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    커뮤니티
+                  </h3>
+                  <p className="text-gray-600">
+                    다른 농부들과 정보를 공유하고 소통하세요
+                  </p>
                 </div>
               </motion.div>
             </Link>

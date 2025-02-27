@@ -1,9 +1,14 @@
 import "./App.css";
 import React, { useEffect, useCallback } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import Home from "./components/common/Home";
 import Culture from "./components/common/Culture";
-import Sale from "./components/common/Sale";  
+import Sale from "./components/common/Sale";
 import Header1 from "./components/common/Header1";
 import Header2 from "./components/common/Header2";
 import Footer from "./components/common/Footer";
@@ -27,7 +32,9 @@ import { useDispatch } from "react-redux";
 import { logout } from "./redux/slices/authslice";
 import AccordionItem from "./components/common/AccordionItem";
 import TrainingDetail from "./components/trainingMethod/TrainingDetail";
-
+import GardeningCommunity from "./components/community/GardeningCommunity";
+import MarketplaceCommunity from "./components/community/MarketplaceCommunity";
+import GeneralCommunity from "./components/community/GeneralCommunity";
 
 function App() {
   return (
@@ -114,7 +121,7 @@ function AppContent() {
   }, [handleUserActivity]);
 
   // 특정 페이지에서 Header2를 사용할 경로 목록
-  const header2Routes = ['/trainingMethod', '/pests', '/Community'];
+  const header2Routes = ["/trainingMethod", "/pests", "/Community"];
   const shouldUseHeader2 = header2Routes.includes(location.pathname);
 
   return (
@@ -125,8 +132,10 @@ function AppContent() {
         <Route path="/culture" element={<Culture />} />
         <Route path="/sale" element={<Sale />} />
         <Route path="/pricingInformation" element={<PricingInformation />} />
-        <Route path="/Community" element={<Community />} />
-        <Route path="/Community/:postId" element={<PostDetail />} />
+        <Route path="/community/gardening" element={<Community />} />
+        <Route path="/community/marketplace" element={<Community />} />
+        <Route path="/community/freeboard" element={<Community />} />
+        <Route path="/community/:postId" element={<PostDetail />} />
         <Route path="/Community/write" element={<Write />} />
         <Route path="/register" element={<Register />} />
         <Route path="/sellInformation" element={<SalsesInformation />} />
