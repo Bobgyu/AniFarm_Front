@@ -95,20 +95,9 @@ const Test3 = () => {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Typography
-            variant="h5"
-            component="span"
-            sx={{
-              color: '#4B4BF7',
-              mr: 2,
-              borderBottom: '2px solid #4B4BF7',
-              pb: 0.5
-            }}
-          >
-            오늘
-          </Typography>
-          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>
-            관심있는 품목 소비자 가격은?
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <span role="img" aria-label="money bag">💰</span>
+            오늘의 채소 소비자 가격은?
           </Typography>
         </Box>
         <Typography variant="body2" align="right" sx={{ color: '#666' }}>
