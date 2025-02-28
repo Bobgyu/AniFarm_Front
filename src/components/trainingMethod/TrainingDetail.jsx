@@ -9,7 +9,16 @@ import 'swiper/css/navigation';
 const TrainingDetail = () => {
   const location = useLocation();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [swiper, setSwiper] = useState(null);
   const cropKeys = Object.keys(cropData);
+
+  // 작물 선택 시 해당 위치로 슬라이드 이동
+  const handleCropSelect = (index) => {
+    setCurrentIndex(index);
+    if (swiper) {
+      swiper.slideTo(index);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -36,11 +45,13 @@ const TrainingDetail = () => {
                   prevEl: '.swiper-button-prev-custom',
                   nextEl: '.swiper-button-next-custom',
                 }}
-                slidesPerView={4}
+                slidesPerView={3}
                 spaceBetween={16}
                 slidesPerGroup={1}
                 className="crop-swiper"
+                onSwiper={setSwiper}
                 onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+                initialSlide={currentIndex}
               >
                 {cropKeys.map((cropKey, index) => (
                   <SwiperSlide key={cropKey}>
@@ -50,7 +61,7 @@ const TrainingDetail = () => {
                           ? 'bg-green-600 text-white' 
                           : 'bg-white text-green-600 border border-green-200'} 
                         cursor-pointer hover:bg-green-700 hover:text-white transition-colors duration-200 shadow-md`}
-                      onClick={() => setCurrentIndex(index)}
+                      onClick={() => handleCropSelect(index)}
                     >
                       {cropData[cropKey].name}
                     </div>
