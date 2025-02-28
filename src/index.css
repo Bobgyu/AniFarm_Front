@@ -106,16 +106,42 @@ body {
 /* Crop Swiper Styles */
 .crop-swiper .swiper-button-next,
 .crop-swiper .swiper-button-prev {
-  display: none; /* 기본 네비게이션 버튼 숨김 */
+  display: none;
 }
 
 .crop-swiper .swiper-slide {
   height: auto;
 }
 
-/* 커스텀 네비게이션 버튼 비활성화 스타일 */
+/* 스와이퍼 버튼 비활성화 스타일 */
 .swiper-button-disabled {
-  opacity: 0.35 !important;
+  background-color: rgb(243 244 246) !important;  /* bg-gray-100 */
+  color: rgb(156 163 175) !important;  /* text-gray-400 */
+  border-color: rgb(229 231 235) !important;  /* border-gray-200 */
   cursor: not-allowed !important;
-  pointer-events: none !important;
+}
+
+/* Crop Swiper Styles */
+.crop-swiper .swiper-button-next,
+.crop-swiper .swiper-button-prev {
+  color: #059669;
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.crop-swiper .swiper-button-next:after,
+.crop-swiper .swiper-button-prev:after {
+  font-size: 20px;
+}
+
+.crop-swiper .swiper-button-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.crop-swiper .swiper-slide {
+  height: auto;
 }
