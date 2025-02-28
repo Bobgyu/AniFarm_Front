@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { cropData } from './TrainData';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 const TrainingDetail = () => {
   const location = useLocation();
-  const [selectedCrop, setSelectedCrop] = useState(location.state?.selectedCrop || 'crop1');
-  const [currentPage, setCurrentPage] = useState(1); // 페이지 상태 추가
-  const itemsPerPage = 10; // 한 페이지당 보여줄 작물 수
-
-  // 현재 페이지에 따른 시작과 끝 인덱스 계산
-  const startIndex = (currentPage - 1) * itemsPerPage + 1;
-  const endIndex = currentPage * itemsPerPage;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const cropKeys = Object.keys(cropData);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -19,69 +18,64 @@ const TrainingDetail = () => {
           작물 육성 가이드
         </h1>
         
-        {/* 작물 선택 버튼 영역 */}
-        <div className="flex items-center justify-center space-x-4 mb-8">
-          {/* 이전 페이지 화살표 */}
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 
-              ${currentPage === 1 
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                : 'bg-white text-green-600 hover:bg-green-50 hover:text-green-700 hover:shadow-md border border-green-200'
-              }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
+        {/* 작물 선택 영역 */}
+        <div className="relative mb-8">
+          <div className="flex items-center justify-center gap-4">
+            {/* 이전 버튼 */}
+            <button className="swiper-button-prev-custom w-10 h-10 flex items-center justify-center rounded-full bg-white text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors duration-200 shadow-md border border-green-200">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
 
-          {/* 작물 버튼들 */}
-          <div className="flex space-x-4">
-            {Object.keys(cropData)
-              .filter(key => {
-                const cropNumber = parseInt(key.replace('crop', ''));
-                return cropNumber >= startIndex && cropNumber <= endIndex;
-              })
-              .map((cropKey) => (
-                <button
-                  key={cropKey}
-                  onClick={() => setSelectedCrop(cropKey)}
-                  className={`px-6 py-2 rounded-full text-lg font-semibold transition-all duration-200
-                    ${selectedCrop === cropKey
-                      ? 'bg-green-600 text-white shadow-lg transform scale-105'
-                      : 'bg-white text-gray-600 hover:bg-green-50 border border-green-200'
-                    }`}
-                >
-                  {cropData[cropKey].name}
-                </button>
-              ))}
+            {/* 스와이퍼 컨테이너 */}
+            <div className="w-[500px]">
+              <Swiper
+                modules={[Navigation]}
+                navigation={{
+                  prevEl: '.swiper-button-prev-custom',
+                  nextEl: '.swiper-button-next-custom',
+                }}
+                slidesPerView={4}
+                spaceBetween={16}
+                slidesPerGroup={1}
+                className="crop-swiper"
+                onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+              >
+                {cropKeys.map((cropKey, index) => (
+                  <SwiperSlide key={cropKey}>
+                    <div
+                      className={`px-6 py-2 rounded-full text-lg font-semibold text-center 
+                        ${index === currentIndex 
+                          ? 'bg-green-600 text-white' 
+                          : 'bg-white text-green-600 border border-green-200'} 
+                        cursor-pointer hover:bg-green-700 hover:text-white transition-colors duration-200 shadow-md`}
+                      onClick={() => setCurrentIndex(index)}
+                    >
+                      {cropData[cropKey].name}
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+
+            {/* 다음 버튼 */}
+            <button className="swiper-button-next-custom w-10 h-10 flex items-center justify-center rounded-full bg-white text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors duration-200 shadow-md border border-green-200">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
-
-          {/* 다음 페이지 화살표 */}
-          <button
-            onClick={() => setCurrentPage(prev => prev + 1)}
-            disabled={endIndex >= Object.keys(cropData).length}
-            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200
-              ${endIndex >= Object.keys(cropData).length
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-green-600 hover:bg-green-50 hover:text-green-700 hover:shadow-md border border-green-200'
-              }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
         </div>
 
         {/* 선택된 작물 정보 */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-2xl font-bold text-green-800 mb-6">
-            {cropData[selectedCrop].name} 재배법
+            {cropData[cropKeys[currentIndex]].name} 재배법
           </h2>
           
           <div className="space-y-8">
-            {cropData[selectedCrop].content.map((section, index) => (
+            {cropData[cropKeys[currentIndex]].content.map((section, index) => (
               <div
                 key={index}
                 className="border-l-4 border-green-500 pl-6 py-2"

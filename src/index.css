@@ -102,3 +102,20 @@ body {
   border-color: #2196f3 !important;
   color: #2196f3 !important;
 }
+
+/* Crop Swiper Styles */
+.crop-swiper .swiper-button-next,
+.crop-swiper .swiper-button-prev {
+  display: none; /* 기본 네비게이션 버튼 숨김 */
+}
+
+.crop-swiper .swiper-slide {
+  height: auto;
+}
+
+/* 커스텀 네비게이션 버튼 비활성화 스타일 */
+.swiper-button-disabled {
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
