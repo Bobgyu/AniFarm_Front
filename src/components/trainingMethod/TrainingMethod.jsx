@@ -90,9 +90,9 @@ const TrainingMethod = () => {
   const visibleImages = allImages.slice(startIndex, startIndex + 4);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+    <div className="min-h-screen ">
       {/* 히어로 섹션 */}
-      <div className="relative min-h-[90vh] bg-cover bg-center flex flex-col items-center justify-start">
+      <div className="relative min-h-[80vh] bg-cover bg-center flex flex-col items-center justify-start">
         <div className="absolute inset-0 opacity-40"></div>
         <div className="relative z-10 text-center text-black px-4 pt-16">
           <motion.h1 
@@ -158,9 +158,6 @@ const TrainingMethod = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="w-full max-w-[1280px] mx-auto mt-16"
           >
-            <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-              주요 육성 방법
-            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4">
               {methods.map((method, index) => (
                 <motion.div
@@ -168,7 +165,7 @@ const TrainingMethod = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white p-6 rounded-lg shadow-lg transition-shadow duration-300"
+                  className="bg-white p-6 rounded-lg  duration-300"
                 >
                   <div className="flex flex-col items-center text-center">
                     <div className="mb-4">{method.icon}</div>
