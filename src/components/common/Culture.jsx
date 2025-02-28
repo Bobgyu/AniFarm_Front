@@ -159,7 +159,7 @@ const Culture = () => {
                 <img 
                   src={contentMap[hoveredContent].image}
                   alt={hoveredContent}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover blur-[3px]"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-30" />
                 <div className="absolute w-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
@@ -176,7 +176,7 @@ const Culture = () => {
                 <img 
                   src={culture}
                   alt="기본 이미지"                 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover blur-[2px]"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-20" />
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
