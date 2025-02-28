@@ -1,168 +1,171 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { gsap } from "gsap";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Paper,
+  CircularProgress,
+} from '@mui/material';
 
 const Test3 = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const navigate = useNavigate();
-  const images = useMemo(
-    () => [
-      {
-        src: "https://cdn.pixabay.com/photo/2016/09/21/04/46/barley-field-1684052_1280.jpg",
-        link: "/",
-        title: "테스트 화면입니다",
-        content: (
-          <div className="absolute inset-0 flex flex-col items-center justify-center drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)] text-white overflow-hidden">
-            <h1 className="text-4xl font-bold mb-4 text-shadow-lg z-10">
-              AnI Farm
-            </h1>
-            <p className="text-xl mb-4 text-shadow-lg z-10">
-              AI로 심고, 데이터로 키우는 당신을 위한 smart한 농사의 시작
-            </p>
-            <p className="text-l text-shadow-lg z-10">
-              지혜가 모이고 소통하는 공간, 함께 키워가는 AI 농업 커뮤니티
-            </p>
-          </div>
-        ),
-      },
-      {
-        src: "http://www.cimon.co.kr/wp-content/uploads/2017/02/farm_02-e1486360904274.jpg",
-        link: "/pricingInformation",
-        title: "매인 화면은",
-      },
-      {
-        src: "https://cdn.hankyung.com/photo/202311/01.32189912.1.jpg",
-        link: "/sellInformation",
-        title: "Accordion 아이템",
-      },
-      {
-        src: "https://img.etnews.com/photonews/2208/1564644_20220824165655_096_0003.jpg",
-        link: "/pests",
-        title: "jsx 파일로",
-      },
-      {
-        src: "https://cdn.knupresscenter.com/news/photo/202203/20689_7427_3041.jpg",
-        link: "/trainingMethod",
-        title: "이동했습니다",
-      },
-      {
-        src: "https://www.industrynews.co.kr/news/photo/201807/24889_15849_5548.jpg",
-        link: "/Community",
-        title: "감사합니다",
-      },
-    ],
-    []
-  );
+  const [priceData, setPriceData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // 이미지 미리 로드
-    images.forEach((image) => {
-      const img = new Image();
-      img.src = image.src;
-    });
+    const fetchPriceData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:8000/api/price');
+        console.log('API Response:', JSON.stringify(response.data, null, 2));
+        if (response.data.success) {
+          // 데이터를 가공하여 상품 등급만 필터링하고 1일전 가격(dpr2) 사용
+          const processedData = response.data.data.data.item
+            .filter(item => item.rank === '상품')
+            .reduce((acc, item) => {
+              // 가격이 '-'인 경우 제외
+              if (item.dpr2 === '-') return acc;
+              
+              // 이미 해당 품목이 있고 현재 처리중인 품목의 가격이 더 낮은 경우 건너뛰기
+              if (acc[item.item_name] && Number(acc[item.item_name].price.replace(/,/g, '')) <= Number(item.dpr2.replace(/,/g, ''))) {
+                return acc;
+              }
+              
+              acc[item.item_name] = {
+                price: item.dpr2,
+                unit: item.unit,
+                date: item.day2.replace(/[()]/g, '')
+              };
+              return acc;
+            }, {});
+          setPriceData(processedData);
+        } else {
+          setError(response.data.message);
+        }
+      } catch (err) {
+        setError('가격 데이터를 불러오는데 실패했습니다.');
+        console.error('Error fetching price data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // 컴포넌트 마운트 시 첫 번째 이미지에 대한 애니메이션 실행
-    const items = document.querySelectorAll(".accordion-item");
-    const timeline = gsap.timeline();
+    fetchPriceData();
+  }, []);
 
-    items.forEach((item, i) => {
-      timeline.to(
-        item,
-        {
-          width: i === 0 ? "42vw" : "8vw",
-          duration: 1.5,
-          ease: "power4.out",
-        },
-        0
-      );
-    });
-
-    timeline.to(
-      items[0],
-      {
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        duration: 0.5,
-        ease: "power2.out",
-      },
-      0
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress />
+      </Box>
     );
-  }, [images]);
+  }
 
-  const handleClick = (index) => {
-    setActiveIndex(activeIndex === index ? null : index);
-  };
+  if (error) {
+    return (
+      <Container>
+        <Typography color="error" variant="h6" align="center">
+          {error}
+        </Typography>
+      </Container>
+    );
+  }
 
-  const handleMoreClick = (index) => {
-    navigate(images[index].link);
-  };
-
-  useEffect(() => {
-    const items = document.querySelectorAll(".accordion-item");
-    const timeline = gsap.timeline();
-
-    items.forEach((item, i) => {
-      timeline.to(
-        item,
-        {
-          width:
-            activeIndex === i ? "42vw" : activeIndex === null ? "15vw" : "8vw",
-          duration: 1.5,
-          ease: "power4.out",
-        },
-        0
-      );
-    });
-
-    if (activeIndex !== null) {
-      timeline.to(
-        items[activeIndex],
-        {
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          duration: 0.5,
-          ease: "power2.out",
-        },
-        0
-      );
-    }
-  }, [activeIndex, images]);
+  // 데이터가 없거나 올바르지 않은 형식일 경우 처리
+  if (!priceData || typeof priceData !== 'object') {
+    console.log('Invalid data format:', priceData);
+    return (
+      <Container>
+        <Typography color="error" variant="h6" align="center">
+          데이터 형식이 올바르지 않습니다.
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center whitespace-nowrap overflow-hidden h-[95vh]">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`accordion-item relative inline-block cursor-pointer rounded-[10px] h-[60vh] mx-[1vw] bg-center bg-cover transition-transform duration-300 ease-out
-              ${activeIndex === index ? "z-10" : "z-0"}`}
-            style={{
-              backgroundImage: `url(${image.src})`,
-              width: index === 0 ? "42vw" : "8vw",
-              backgroundSize: "cover",
-              transform: `translateZ(0)`,
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Typography
+            variant="h5"
+            component="span"
+            sx={{
+              color: '#4B4BF7',
+              mr: 2,
+              borderBottom: '2px solid #4B4BF7',
+              pb: 0.5
             }}
-            onClick={() => handleClick(index)}
           >
-            {image.content && activeIndex === index && image.content}
-            <h3 className="absolute top-4 left-1/2 transform -translate-x-1/2 text-white text-xl font-bold z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
-              {image.title}
-            </h3>
-            {activeIndex === index && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleMoreClick(index);
-                }}
-                className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-black px-4 py-2 rounded"
-              >
-                더보기
-              </button>
-            )}
-          </div>
+            오늘
+          </Typography>
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>
+            관심있는 품목 소비자 가격은?
+          </Typography>
+        </Box>
+        <Typography variant="body2" align="right" sx={{ color: '#666' }}>
+          가격단위: 원    기준일 {Object.values(priceData)[0]?.date || ''}
+        </Typography>
+      </Box>
+
+      <Grid container spacing={2}>
+        {Object.entries(priceData).map(([key, item]) => (
+          <Grid item xs={12} sm={6} md={3} key={key}>
+            <Paper
+              sx={{
+                p: 3,
+                borderRadius: 4,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)'
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                {key}
+              </Typography>
+              <Box>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#666',
+                    textAlign: 'right',
+                    mb: 1
+                  }}
+                >
+                  {item.unit}
+                </Typography>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 'bold',
+                    textAlign: 'right',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end'
+                  }}
+                >
+                  {parseInt(item.price.replace(/,/g, '')).toLocaleString()}
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontSize: '1rem',
+                      ml: 0.5,
+                      color: '#666'
+                    }}
+                  >
+                    원
+                  </Typography>
+                </Typography>
+              </Box>
+            </Paper>
+          </Grid>
         ))}
-      </div>
-    </div>
+      </Grid>
+    </Container>
   );
 };
 
