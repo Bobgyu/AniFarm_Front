@@ -208,13 +208,13 @@ const Register = () => {
 
   /* - 회원가입 처리: 폼 제출 시 호출되며, 입력값의 유효성을 검사하고, 이메일 인증이 완료되었는지 확인합니다. 모든 조건이 충족되면 서버에 회원가입 요청을 보냅니다. */
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-green-100 via-white to-white">
-      <div className="max-w-md w-full m-4 space-y-8 p-10 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full m-4 space-y-8 p-10 bg-white rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
         <div>
-          <h2 className="mt-4 text-center text-3xl font-bold bg-gradient-to-r from-green-900 via-green-600 to-green-400 bg-clip-text text-transparent">
+          <h2 className="mt-4 text-center text-3xl font-bold text-gray-800">
             회원가입
           </h2>
-          <p className="mt-2 text-center text-base text-gray-900 font-medium">
+          <p className="mt-2 text-center text-base text-gray-600">
             계정을 생성하세요
           </p>
         </div>
@@ -232,14 +232,14 @@ const Register = () => {
                 <input
                   type="email"
                   placeholder="Email"
-                  className="flex-1 appearance-none relative block px-4 py-3 border border-gray-100 placeholder-gray-500 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent transition-all duration-200 ease-in-out hover:border-green-200"
+                  className="flex-1 appearance-none relative block px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
                   name="email"
                   onChange={handleChange}
                 />
                 <button
                   onClick={handleSendVerification}
                   type="button"
-                  className="px-4 py-3 bg-gradient-to-r from-green-600 to-green-400 text-white rounded-xl hover:from-green-700 hover:to-green-500 transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  className="px-4 py-3 bg-white text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                 >
                   인증코드 발송
                 </button>
@@ -255,14 +255,14 @@ const Register = () => {
                   <input
                     type="text"
                     placeholder="인증코드 입력"
-                    className="flex-1 appearance-none relative block px-4 py-3 border border-gray-100 placeholder-gray-500 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent transition-all duration-200 ease-in-out hover:border-green-200"
+                    className="flex-1 appearance-none relative block px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
                     value={userInputCode}
                     onChange={(e) => setUserInputCode(e.target.value)}
                   />
                   <button
                     onClick={handleVerifyCode}
                     type="button"
-                    className="px-6 py-3 bg-gradient-to-r from-green-700 to-green-500 text-white rounded-xl hover:from-green-800 hover:to-green-600 transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    className="px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                   >
                     확인
                   </button>
@@ -280,7 +280,7 @@ const Register = () => {
               <input
                 type="password"
                 placeholder="Password"
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-100 placeholder-gray-500 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent transition-all duration-200 ease-in-out hover:border-green-200"
+                className="appearance-none relative block w-full px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
                 name="password"
                 onChange={handleChange}
               />
@@ -296,7 +296,7 @@ const Register = () => {
               <input
                 type="password"
                 placeholder="Confirm Password"
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-100 placeholder-gray-500 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent transition-all duration-200 ease-in-out hover:border-green-200"
+                className="appearance-none relative block w-full px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
                 name="confirm_password"
                 onChange={handleChange}
               />
@@ -317,7 +317,7 @@ const Register = () => {
                       : "text"
                     : "date"
                 }`}
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-100 placeholder-gray-500 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent transition-all duration-200 ease-in-out hover:border-green-200"
+                className="appearance-none relative block w-full px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
                 name="birth_date"
                 onChange={handleChange}
                 max={getTodayDate()}
@@ -332,14 +332,14 @@ const Register = () => {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="flex-1 py-3 bg-gradient-to-r from-green-900 via-green-600 to-green-400 text-white rounded-xl hover:from-green-800 hover:via-green-500 hover:to-green-300 transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              className="flex-1 py-3 bg-[#8bd05c] text-white rounded-xl hover:bg-[#7dbb52] transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8bd05c] shadow-sm hover:shadow-md"
             >
               가입하기
             </button>
             <Link to="/" className="flex-1">
               <button
                 type="button"
-                className="w-full py-3 border border-gray-300 text-gray-700 rounded-xl hover:border-green-500 hover:text-green-500 transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="w-full py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
                 취소
               </button>
