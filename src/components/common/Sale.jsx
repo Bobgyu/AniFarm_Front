@@ -137,7 +137,7 @@ const Sale = () => {
                     {hoveredContent === "prediction" &&
                       "AI 기반 농산물 가격 예측으로 최적의 판매 시기를 찾아보세요"}
                     {hoveredContent === "community" &&
-                      "농산물 거래 커뮤니티에서 직거래를 시작해보세요"}
+                      "농산물 판매 커뮤니티에서 직거래를 시작해보세요"}
                   </h3>
                 </div>
               </>
