@@ -10,7 +10,6 @@ import Home from "./components/common/Home";
 import Culture from "./components/common/Culture";
 import Sale from "./components/common/Sale";
 import Header1 from "./components/common/Header1";
-import Header2 from "./components/common/Header2";
 import Footer from "./components/common/Footer";
 import Register from "./components/login/Register";
 import Login from "./components/login/details/Login";
@@ -47,13 +46,9 @@ function AppContent() {
   const dispatch = useDispatch();
   useAutoLogout(); // 커스텀 훅 사용
 
-  // 특정 페이지에서 Header2를 사용할 경로 목록
-  const header2Routes = ["/trainingMethod", "/pests", "/Community"];
-  const shouldUseHeader2 = header2Routes.includes(location.pathname);
-
   return (
     <div className="App">
-      {shouldUseHeader2 ? <Header2 /> : <Header1 />}
+      <Header1 />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/culture" element={<Culture />} />
