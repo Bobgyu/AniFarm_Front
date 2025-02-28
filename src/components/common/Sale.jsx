@@ -52,7 +52,7 @@ const Sale = () => {
           {/* 왼쪽 네비게이션 메뉴 */}
           <div className="flex flex-col gap-8 w-64">
             {/* 소비트렌드 카드 */}
-            <Link to="/pricing-information">
+            <Link to="/pricingInformation">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => handleMouseEnter('trend')}
@@ -69,7 +69,7 @@ const Sale = () => {
             </Link>
 
             {/* 가격예측 카드 */}
-            <Link to="/sales-information">
+            <Link to="/sellInformation">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => handleMouseEnter('prediction')}
