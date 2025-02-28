@@ -13,6 +13,10 @@ import spinach from '../../assets/images/spinach.jpg';
 import onion from '../../assets/images/onion.jpg';
 import potato from '../../assets/images/potato.jpg';
 import radish from '../../assets/images/radish.jpg';
+import strawberry from '../../assets/images/strawberry.jpg';
+import kiwi from '../../assets/images/kiwi.jpg';
+import chamoe from '../../assets/images/chamoe.jpg';
+import rice from '../../assets/images/rice2.jpg';
 
 import axios from 'axios';
 
@@ -68,30 +72,34 @@ const TrainingMethod = () => {
     { src: spinach, alt: '시금치', cropId: 'crop8' },
     { src: onion, alt: '양파', cropId: 'crop9' },
     { src: potato, alt: '감자', cropId: 'crop10' },
-    { src: radish, alt: '무', cropId: 'crop11' }
+    { src: radish, alt: '무', cropId: 'crop11' },
+    { src: strawberry, alt: '딸기', cropId: 'crop12' },
+    { src: kiwi, alt: '키위', cropId: 'crop13' },
+    { src: chamoe, alt: '참외', cropId: 'crop14' },
+    { src: rice, alt: '벼', cropId: 'crop15' }
   ];
 
   const handlePrevious = () => {
-    setStartIndex((prev) => (prev === 0 ? allImages.length - 3 : prev - 1));
+    setStartIndex((prev) => (prev === 0 ? allImages.length - 4 : prev - 1));
   };
 
   const handleNext = () => {
-    setStartIndex((prev) => (prev === allImages.length - 3 ? 0 : prev + 1));
+    setStartIndex((prev) => (prev === allImages.length - 4 ? 0 : prev + 1));
   };
 
-  const visibleImages = allImages.slice(startIndex, startIndex + 3);
+  const visibleImages = allImages.slice(startIndex, startIndex + 4);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       {/* 히어로 섹션 */}
-      <div className="relative h-[60vh] bg-cover bg-center flex items-center justify-center">
-        <div className="absolute inset-0 bg-black opacity-40"></div>
-        <div className="relative z-10 text-center text-white px-4">
+      <div className="relative min-h-[90vh] bg-cover bg-center flex flex-col items-center justify-start">
+        <div className="absolute inset-0 opacity-40"></div>
+        <div className="relative z-10 text-center text-black px-4 pt-16">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-4xl md:text-5xl font-bold mb-4"
+            className="text-4xl md:text-5xl text-black font-bold mb-4"
           >
             작물 육성법
           </motion.h1>
@@ -99,12 +107,12 @@ const TrainingMethod = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl mb-8"
+            className="text-xl md:text-2xl text-black mb-8"
           >
             재배 가이드
           </motion.p>
           <motion.div 
-            className="relative w-full max-w-[1280px] mx-auto"
+            className="relative w-full max-w-[1280px] mx-auto"  
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -125,9 +133,9 @@ const TrainingMethod = () => {
                     <img 
                       src={image.src}
                       alt={image.alt}
-                      className="w-96 h-64 object-cover rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity mb-2"
+                      className="w-72 h-48 object-cover rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity mb-2"
                     />
-                    <h3 className="text-white text-lg font-semibold mt-2">
+                    <h3 className="text-black text-lg font-semibold mt-2">
                       {image.alt}
                     </h3>
                   </div>
@@ -142,36 +150,35 @@ const TrainingMethod = () => {
               </button>
             </motion.div>
           </motion.div>
+
+          {/* 주요 육성 방법 섹션 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
+            className="w-full max-w-[1280px] mx-auto mt-16"
           >
+            <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
+              주요 육성 방법
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4">
+              {methods.map((method, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-white p-6 rounded-lg shadow-lg transition-shadow duration-300"
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-4">{method.icon}</div>
+                    <h3 className="text-xl font-semibold mb-2">{method.title}</h3>
+                    <p className="text-gray-600">{method.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
-        </div>
-      </div>
-
-      {/* 주요 육성 방법 섹션 */}
-      <div className="w-full max-w-[1280px] px-4 mx-auto pb-12 pt-12">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-          주요 육성 방법
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {methods.map((method, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white p-6 rounded-lg shadow-lg transition-shadow duration-300"
-            >
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4">{method.icon}</div>
-                <h3 className="text-xl font-semibold mb-2">{method.title}</h3>
-                <p className="text-gray-600">{method.description}</p>
-              </div>
-            </motion.div>
-          ))}
         </div>
       </div>
 
@@ -213,7 +220,7 @@ const TrainingMethod = () => {
       </div>
 
       {/* CTA 섹션 */}
-      <div className="bg-green-600 text-white py-16">
+      <div className=" text-black py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">
             지금 바로 시작하세요
@@ -222,7 +229,7 @@ const TrainingMethod = () => {
             전문가의 도움을 받아 더 나은 농작물을 기르세요
           </p>
           <Link to="/trainingDetail?cropId=crop1">
-            <button className="bg-white text-green-600 px-8 py-3 rounded-full hover:bg-gray-100 transition-colors duration-300">
+            <button className="bg-green-200 text-green-600 px-8 py-3 rounded-full hover:bg-gray-100 transition-colors duration-300">
               육성 가이드 보기
             </button>
           </Link>
