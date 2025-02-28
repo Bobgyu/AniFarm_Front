@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import sales from "../../assets/images/sales.jpg"; // 기본 이미지 필요
 import trend from "../../assets/images/trend.jpg"; // 소비트렌드 이미지
 import prediction from "../../assets/images/prediction.jpg"; // 가격예측 이미지
+import community from "../../assets/images/community.png"; // 커뮤니티 이미지
 
 const Sale = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
@@ -15,6 +16,9 @@ const Sale = () => {
     },
     prediction: {
       image: prediction,
+    },
+    community: {
+      image: community,
     },
   };
 
@@ -84,6 +88,22 @@ const Sale = () => {
                 </div>
               </motion.div>
             </Link>
+            {/* 커뮤니티 카드 */}
+            <Link to="/community/marketplace">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                onMouseEnter={() => handleMouseEnter("community")}
+                onMouseLeave={handleMouseLeave}
+                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="p-6">
+                  <div className="text-3xl mb-4">👥</div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    커뮤니티
+                  </h3>
+                </div>
+              </motion.div>
+            </Link>
           </div>
 
           {/* 오른쪽 콘텐츠 영역 */}
@@ -116,6 +136,8 @@ const Sale = () => {
                       "실시간 소비자 트렌드와 선호도를 분석해보세요"}
                     {hoveredContent === "prediction" &&
                       "AI 기반 농산물 가격 예측으로 최적의 판매 시기를 찾아보세요"}
+                    {hoveredContent === "community" &&
+                      "농산물 거래 커뮤니티에서 직거래를 시작해보세요"}
                   </h3>
                 </div>
               </>

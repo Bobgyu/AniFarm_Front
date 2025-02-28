@@ -53,6 +53,9 @@ const Header = () => {
         case "날씨":
           path = "/Test1";
           break;
+        case "커뮤니티":
+          path = "/community/gardening";
+          break;
         default:
           path = "/culture";
       }
@@ -63,6 +66,9 @@ const Header = () => {
           break;
         case "가격 예측":
           path = "/sellinformation";
+          break;
+        case "커뮤니티":
+          path = "/community/marketplace";
           break;
         default:
           path = "/sale";
@@ -81,8 +87,8 @@ const Header = () => {
   };
 
   const menuStructure = {
-    "재배 하기": ["육성법", "병충해", "날씨"],
-    "판매 하기": ["소비 트렌드", "가격 예측"],
+    "재배 하기": ["육성법", "병충해", "날씨", "커뮤니티"],
+    "판매 하기": ["소비 트렌드", "가격 예측", "커뮤니티"],
   };
 
   return (
