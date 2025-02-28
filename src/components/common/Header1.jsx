@@ -39,10 +39,10 @@ const Header = () => {
   };
 
   const handleMenuItemClick = (category, item) => {
-    let path = '';
-    
+    let path = "";
+
     // 상세 경로 매핑
-    if (category === "재배 분야") {
+    if (category === "재배 하기") {
       switch (item) {
         case "육성법":
           path = "/TrainingMethod";
@@ -56,7 +56,7 @@ const Header = () => {
         default:
           path = "/culture";
       }
-    } else if (category === "판매 분야") {
+    } else if (category === "판매 하기") {
       switch (item) {
         case "소비 트렌드":
           path = "/pricinginformation";
@@ -72,7 +72,7 @@ const Header = () => {
     // 카테고리와 아이템 모두 파라미터로 전달
     const queryParams = new URLSearchParams({
       category: category,
-      type: item
+      type: item,
     });
 
     // 경로 이동
@@ -81,8 +81,8 @@ const Header = () => {
   };
 
   const menuStructure = {
-    "재배 분야": ["육성법", "병충해", "날씨" ],
-    "판매 분야": ["소비 트렌드", "가격 예측"]
+    "재배 하기": ["육성법", "병충해", "날씨"],
+    "판매 하기": ["소비 트렌드", "가격 예측"],
   };
 
   return (
@@ -93,16 +93,16 @@ const Header = () => {
             <img src={AnifarmLogo} alt="로고" className="w-[50px] y-[100px]" />
           </Link>
         </div>
-        
+
         <div className="main-menu flex gap-8 justify-center items-center h-full mt-8">
-          <Link 
-            to="/culture" 
+          <Link
+            to="/culture"
             className="text-lg font-semibold text-neutral-500 hover:text-black transition-all duration-100 px-6 py-2 hover:bg-gray-100 rounded-lg"
           >
             재배하기
           </Link>
-          <Link 
-            to="/sale" 
+          <Link
+            to="/sale"
             className="text-lg font-semibold text-neutral-500 hover:text-black transition-all duration-100 px-6 py-2 hover:bg-gray-100 rounded-lg"
           >
             판매하기
@@ -132,7 +132,7 @@ const Header = () => {
                 </>
               )}
               <li>
-                <button 
+                <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
                 >
@@ -145,22 +145,35 @@ const Header = () => {
               </li>
             </ul>
           </div>
-          
+
           {isMenuOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setIsMenuOpen(false)}>
-              <div 
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <div
                 className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-screen overflow-y-auto"
-                onClick={e => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
               >
                 <div className="p-4">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold">메뉴</h2>
-                    <button 
+                    <button
                       onClick={() => setIsMenuOpen(false)}
                       className="p-2 hover:bg-gray-100 rounded-full"
                     >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -174,10 +187,12 @@ const Header = () => {
                         <div className="p-3">
                           <div className="pl-4 space-y-2">
                             {items.map((item, index) => (
-                              <div 
-                                key={index} 
+                              <div
+                                key={index}
                                 className="text-gray-600 hover:text-black cursor-pointer"
-                                onClick={() => handleMenuItemClick(category, item)}
+                                onClick={() =>
+                                  handleMenuItemClick(category, item)
+                                }
                               >
                                 {item}
                               </div>
