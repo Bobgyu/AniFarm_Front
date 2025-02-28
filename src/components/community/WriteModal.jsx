@@ -50,7 +50,7 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
       dispatch(createPostFailure(error.message));
       Swal.fire({
         icon: "error",
-        title: "게시글 작성 실패",
+        title: "로그인 후 이용해주세요.",
         text: error.message,
       });
     }
