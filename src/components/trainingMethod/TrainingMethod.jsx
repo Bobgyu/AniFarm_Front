@@ -194,13 +194,12 @@ const TrainingMethod = () => {
               className="bg-white rounded-lg shadow-lg overflow-hidden"
             >
               <div className="aspect-w-16 aspect-h-9">
-                <iframe
-                  className="w-full h-[300px]"
-                  src={`https://www.youtube.com/embed/${video.id.videoId}`}
-                  title={video.snippet.title}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
+                <img
+                  src={video.snippet.thumbnails.high.url}
+                  alt={video.snippet.title}
+                  className="w-full h-[300px] object-cover"
+                  onClick={() => window.open(`https://www.youtube.com/watch?v=${video.id.videoId}`, '_blank')}
+                  style={{ cursor: 'pointer' }}
                 />
               </div>
               <div className="p-4">
