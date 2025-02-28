@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { cropData } from './TrainData';
 
 const TrainingDetail = () => {
   const location = useLocation();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  
+  // URL에서 cropId 파라미터 추출
+  const searchParams = new URLSearchParams(location.search);
+  const cropId = searchParams.get('cropId');
+
   // 작물 데이터를 가나다순으로 정렬
   const sortedCropEntries = Object.entries(cropData).sort((a, b) => 
     a[1].name.localeCompare(b[1].name, 'ko')
   );
+
+  // cropId에 해당하는 인덱스 찾기
+  const initialIndex = sortedCropEntries.findIndex(([key]) => key === cropId);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex !== -1 ? initialIndex : 0);
+
+  // URL이 변경될 때마다 currentIndex 업데이트
+  useEffect(() => {
+    const newIndex = sortedCropEntries.findIndex(([key]) => key === cropId);
+    setCurrentIndex(newIndex !== -1 ? newIndex : 0);
+  }, [location.search]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
