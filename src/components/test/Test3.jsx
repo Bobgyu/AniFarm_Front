@@ -145,13 +145,30 @@ const Test3 = () => {
                   {item.unit}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                  {item.priceChange > 0 ? (
-                    <BsArrowUpCircleFill style={{ color: '#ff4d4d', marginRight: '8px' }} />
-                  ) : item.priceChange < 0 ? (
-                    <BsArrowDownCircleFill style={{ color: '#4d79ff', marginRight: '8px' }} />
-                  ) : (
-                    <BsDashCircleFill style={{ color: '#666666', marginRight: '8px' }} />
-                  )}
+                  <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                    {item.priceChange > 0 ? (
+                      <>
+                        <BsArrowUpCircleFill style={{ color: '#ff4d4d', marginRight: '4px' }} />
+                        <Typography sx={{ color: '#ff4d4d', fontSize: '0.9rem' }}>
+                          +{item.priceChange.toLocaleString()}
+                        </Typography>
+                      </>
+                    ) : item.priceChange < 0 ? (
+                      <>
+                        <BsArrowDownCircleFill style={{ color: '#4d79ff', marginRight: '4px' }} />
+                        <Typography sx={{ color: '#4d79ff', fontSize: '0.9rem' }}>
+                          {item.priceChange.toLocaleString()}
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <BsDashCircleFill style={{ color: '#666666', marginRight: '4px' }} />
+                        <Typography sx={{ color: '#666666', fontSize: '0.9rem' }}>
+                          0
+                        </Typography>
+                      </>
+                    )}
+                  </Box>
                   <Typography
                     variant="h4"
                     sx={{
