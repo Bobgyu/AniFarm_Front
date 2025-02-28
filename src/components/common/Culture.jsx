@@ -78,9 +78,7 @@ const Culture = () => {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     육성법
                   </h3>
-                  <p className="text-gray-600">
-                    최적화된 작물 육성 방법을 확인하고 관리하세요
-                  </p>
+                  
                 </div>
               </motion.div>
             </Link>
@@ -98,9 +96,7 @@ const Culture = () => {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     병충해
                   </h3>
-                  <p className="text-gray-600">
-                    AI가 분석하는 병충해 진단 및 해결책을 확인하세요
-                  </p>
+                 
                 </div>
               </motion.div>
             </Link>
@@ -118,9 +114,7 @@ const Culture = () => {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     날씨
                   </h3>
-                  <p className="text-gray-600">
-                    실시간 날씨 정보와 예측 정보를 확인하세요
-                  </p>
+                 
                 </div>
               </motion.div>
             </Link>
@@ -138,9 +132,7 @@ const Culture = () => {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     커뮤니티
                   </h3>
-                  <p className="text-gray-600">
-                    다른 농부들과 정보를 공유하고 소통하세요
-                  </p>
+                  
                 </div>
               </motion.div>
             </Link>
@@ -172,10 +164,10 @@ const Culture = () => {
                 <div className="absolute inset-0 bg-black bg-opacity-30" />
                 <div className="absolute w-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
                   <h3 className="text-4xl font-bold text-white tracking-wider">
-                    {hoveredContent === 'training' && '육성법에 관한 내용'}
-                    {hoveredContent === 'pests' && '병충해에 관한 내용'}
-                    {hoveredContent === 'weather' && '날씨 정보에 관한 내용'}
-                    {hoveredContent === 'community' && '커뮤니티 소개에 관한 내용'}
+                    {hoveredContent === 'training' && '작물의 성장 단계별 관리'}
+                    {hoveredContent === 'pests' && '작물을 위협하는 병해충 진단'}
+                    {hoveredContent === 'weather' && '실시간 날씨 정보'}
+                    {hoveredContent === 'community' && '다른 농부들과 경험을 나누세요'}
                   </h3>
                 </div>
               </>
