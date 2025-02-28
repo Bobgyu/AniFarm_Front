@@ -8,6 +8,7 @@ import {
   Paper,
   CircularProgress,
 } from '@mui/material';
+import { BsArrowUpCircleFill, BsArrowDownCircleFill, BsDashCircleFill } from 'react-icons/bs';
 
 const Test3 = () => {
   const [priceData, setPriceData] = useState(null);
@@ -21,22 +22,27 @@ const Test3 = () => {
         const response = await axios.get('http://localhost:8000/api/price');
         console.log('API Response:', JSON.stringify(response.data, null, 2));
         if (response.data.success) {
-          // 데이터를 가공하여 상품 등급만 필터링하고 1일전 가격(dpr2) 사용
           const processedData = response.data.data.data.item
             .filter(item => item.rank === '상품')
             .reduce((acc, item) => {
               // 가격이 '-'인 경우 제외
-              if (item.dpr2 === '-') return acc;
+              if (item.dpr1 === '-') return acc;
               
               // 이미 해당 품목이 있고 현재 처리중인 품목의 가격이 더 낮은 경우 건너뛰기
-              if (acc[item.item_name] && Number(acc[item.item_name].price.replace(/,/g, '')) <= Number(item.dpr2.replace(/,/g, ''))) {
+              if (acc[item.item_name] && Number(acc[item.item_name].price.replace(/,/g, '')) <= Number(item.dpr1.replace(/,/g, ''))) {
                 return acc;
               }
               
+              // 가격 변동 계산 수정 (당일 가격과 전일 가격 비교)
+              const todayPrice = Number(item.dpr1.replace(/,/g, '')); // 당일 가격
+              const yesterdayPrice = Number(item.dpr2.replace(/,/g, '')); // 1일전 가격
+              const priceChange = todayPrice - yesterdayPrice;
+              
               acc[item.item_name] = {
-                price: item.dpr2,
+                price: item.dpr1, // 당일 가격 사용
                 unit: item.unit,
-                date: item.day2.replace(/[()]/g, '')
+                date: item.day1.replace(/[()]/g, ''), // 당일 날짜 사용
+                priceChange: priceChange
               };
               return acc;
             }, {});
@@ -138,28 +144,37 @@ const Test3 = () => {
                 >
                   {item.unit}
                 </Typography>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontWeight: 'bold',
-                    textAlign: 'right',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end'
-                  }}
-                >
-                  {parseInt(item.price.replace(/,/g, '')).toLocaleString()}
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                  {item.priceChange > 0 ? (
+                    <BsArrowUpCircleFill style={{ color: '#ff4d4d', marginRight: '8px' }} />
+                  ) : item.priceChange < 0 ? (
+                    <BsArrowDownCircleFill style={{ color: '#4d79ff', marginRight: '8px' }} />
+                  ) : (
+                    <BsDashCircleFill style={{ color: '#666666', marginRight: '8px' }} />
+                  )}
                   <Typography
-                    component="span"
+                    variant="h4"
                     sx={{
-                      fontSize: '1rem',
-                      ml: 0.5,
-                      color: '#666'
+                      fontWeight: 'bold',
+                      textAlign: 'right',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'flex-end'
                     }}
                   >
-                    원
+                    {parseInt(item.price.replace(/,/g, '')).toLocaleString()}
+                    <Typography
+                      component="span"
+                      sx={{
+                        fontSize: '1rem',
+                        ml: 0.5,
+                        color: '#666'
+                      }}
+                    >
+                      원
+                    </Typography>
                   </Typography>
-                </Typography>
+                </Box>
               </Box>
             </Paper>
           </Grid>
