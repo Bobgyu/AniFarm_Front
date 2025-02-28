@@ -86,7 +86,7 @@ const Header = () => {
   };
 
   return (
-    <div className="w-full flex justify-center shadow-custom sticky top-0 z-50">
+    <div className="w-full flex justify-center shadow-custom sticky top-0 z-50 border-b-2">
       <div className="w-full p-1 pb-7 flex flex-col items-center relative overflow-hidden bg-white h-24">
         <div className="logo absolute left-4">
           <Link to="/">
@@ -97,13 +97,13 @@ const Header = () => {
         <div className="main-menu flex gap-8 justify-center items-center h-full mt-8">
           <Link
             to="/culture"
-            className="text-lg font-semibold text-neutral-500 hover:text-black transition-all duration-100 px-6 py-2 hover:bg-gray-100 rounded-lg"
+            className="text-lg font-semibold text-black bg-gray-200 hover:text-neutral-800 transition-all duration-100 px-6 py-2 hover:bg-gray-300 rounded-lg"
           >
             재배하기
           </Link>
           <Link
             to="/sale"
-            className="text-lg font-semibold text-neutral-500 hover:text-black transition-all duration-100 px-6 py-2 hover:bg-gray-100 rounded-lg"
+            className="text-lg font-semibold text-black bg-gray-200 hover:text-neutral-800 transition-all duration-100 px-6 py-2 hover:bg-gray-300 rounded-lg"
           >
             판매하기
           </Link>
