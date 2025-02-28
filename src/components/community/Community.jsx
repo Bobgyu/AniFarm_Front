@@ -37,6 +37,7 @@ const Community = () => {
       case "gardening":
         return [
           { id: "all", name: "전체" },
+          { id: "general", name: "일반 토론" },
           { id: "food", name: "식물 재배" },
           { id: "indoor", name: "실내 식물" },
           { id: "pests", name: "병충해 관리" },
@@ -47,10 +48,10 @@ const Community = () => {
           { id: "all", name: "전체" },
           { id: "marketplace", name: "판매/구매" },
         ];
-      case "general":
+      case "freeboard":
         return [
           { id: "all", name: "전체" },
-          { id: "general", name: "자유게시판" },
+          { id: "general", name: "일반 토론" },
         ];
       default:
         return [{ id: "all", name: "전체" }];
@@ -91,6 +92,12 @@ const Community = () => {
     return matchesSearch && matchesCategory && matchesCommunityType;
   });
 
+  // 카테고리 이름 변환 함수 추가
+  const getCategoryName = (categoryId) => {
+    const category = categories.find((cat) => cat.id === categoryId);
+    return category ? category.name : categoryId;
+  };
+
   return (
     <div className="container mx-auto p-4">
       <CommunityNavigation />
@@ -101,7 +108,7 @@ const Community = () => {
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="text-gray-600 cursor-pointer hover:text-gray-800 border border-gray-300 rounded-lg px-4 py-2 flex items-center"
           >
-            {selectedCategory === "all" ? "전체" : selectedCategory}
+            {getCategoryName(selectedCategory)}
           </button>
 
           {isDropdownOpen && (

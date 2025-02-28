@@ -11,10 +11,23 @@ import Swal from "sweetalert2";
 const CreatePostModal = ({ isOpen, onClose, communityType }) => {
   const dispatch = useDispatch();
 
+  const getInitialCategory = () => {
+    switch (communityType) {
+      case "gardening":
+        return "general";
+      case "marketplace":
+        return "marketplace";
+      case "freeboard":
+        return "general";
+      default:
+        return "general";
+    }
+  };
+
   const [postData, setPostData] = useState({
     title: "",
     content: "",
-    category: communityType, // 커뮤니티 타입을 카테고리로 사용
+    category: getInitialCategory(), // communityType 대신 적절한 초기 카테고리 설정
   });
 
   const handleSubmit = async (e) => {
@@ -69,6 +82,7 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
       case "gardening":
         return (
           <>
+            <option value="general">일반 토론</option>
             <option value="food">식물 재배</option>
             <option value="indoor">실내 식물</option>
             <option value="pests">병충해 관리</option>
@@ -84,7 +98,7 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
       case "freeboard":
         return (
           <>
-            <option value="freeboard">자유게시판</option>
+            <option value="general">일반 토론</option>
           </>
         );
       default:

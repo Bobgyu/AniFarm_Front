@@ -20,6 +20,21 @@ const TrainingDetail = () => {
     }
   };
 
+  // 맨 앞으로 이동
+  const handleMoveToFirst = () => {
+    handleCropSelect(0);
+  };
+
+  // 맨 뒤로 이동
+  const handleMoveToLast = () => {
+    handleCropSelect(cropKeys.length - 1);
+  };
+
+  // 버튼 스타일을 위한 공통 클래스
+  const buttonBaseClass = "w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 shadow-md border";
+  const buttonActiveClass = "bg-white text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200";
+  const buttonDisabledClass = "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200";
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -30,8 +45,23 @@ const TrainingDetail = () => {
         {/* 작물 선택 영역 */}
         <div className="relative mb-8">
           <div className="flex items-center justify-center gap-4">
+            {/* 맨 앞으로 이동 버튼 */}
+            <button 
+              onClick={handleMoveToFirst}
+              disabled={currentIndex === 0}
+              className={`${buttonBaseClass} ${
+                currentIndex === 0 ? buttonDisabledClass : buttonActiveClass
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+              </svg>
+            </button>
+
             {/* 이전 버튼 */}
-            <button className="swiper-button-prev-custom w-10 h-10 flex items-center justify-center rounded-full bg-white text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors duration-200 shadow-md border border-green-200">
+            <button 
+              className={`swiper-button-prev-custom ${buttonBaseClass} ${buttonActiveClass}`}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
@@ -71,9 +101,24 @@ const TrainingDetail = () => {
             </div>
 
             {/* 다음 버튼 */}
-            <button className="swiper-button-next-custom w-10 h-10 flex items-center justify-center rounded-full bg-white text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors duration-200 shadow-md border border-green-200">
+            <button 
+              className={`swiper-button-next-custom ${buttonBaseClass} ${buttonActiveClass}`}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            {/* 맨 뒤로 이동 버튼 */}
+            <button 
+              onClick={handleMoveToLast}
+              disabled={currentIndex === cropKeys.length - 1}
+              className={`${buttonBaseClass} ${
+                currentIndex === cropKeys.length - 1 ? buttonDisabledClass : buttonActiveClass
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7m-8-14l7 7-7 7" />
               </svg>
             </button>
           </div>

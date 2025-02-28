@@ -7,7 +7,6 @@ import pests from "../../assets/images/pests.jpg";
 import weather from "../../assets/images/weather.jpg";
 import community from "../../assets/images/community.png";
 
-
 const Culture = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
   const [showDefaultContent, setShowDefaultContent] = useState(false);
@@ -24,7 +23,7 @@ const Culture = () => {
     },
     community: {
       image: community,
-    }
+    },
   };
 
   const handleMouseEnter = (content) => {
@@ -49,16 +48,14 @@ const Culture = () => {
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h1 
+          <h1
             className="text-4xl font-bold text-gray-900 mb-8 cursor-pointer"
             onMouseEnter={handleTitleHover}
             onMouseLeave={handleTitleLeave}
           >
             재배하기
           </h1>
-          <p className="text-xl text-gray-600 mb-12">
-
-          </p>
+          <p className="text-xl text-gray-600 mb-12"></p>
         </div>
 
         {/* 전체 컨테이너를 flex로 변경 */}
@@ -69,7 +66,7 @@ const Culture = () => {
             <Link to="/trainingMethod">
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                onMouseEnter={() => handleMouseEnter('training')}
+                onMouseEnter={() => handleMouseEnter("training")}
                 onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
@@ -78,7 +75,6 @@ const Culture = () => {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     육성법
                   </h3>
-                  
                 </div>
               </motion.div>
             </Link>
@@ -87,7 +83,7 @@ const Culture = () => {
             <Link to="/pests">
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                onMouseEnter={() => handleMouseEnter('pests')}
+                onMouseEnter={() => handleMouseEnter("pests")}
                 onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
@@ -96,7 +92,6 @@ const Culture = () => {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     병충해
                   </h3>
-                 
                 </div>
               </motion.div>
             </Link>
@@ -105,7 +100,7 @@ const Culture = () => {
             <Link to="/test1">
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                onMouseEnter={() => handleMouseEnter('weather')}
+                onMouseEnter={() => handleMouseEnter("weather")}
                 onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
@@ -114,7 +109,6 @@ const Culture = () => {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     날씨
                   </h3>
-                 
                 </div>
               </motion.div>
             </Link>
@@ -123,7 +117,7 @@ const Culture = () => {
             <Link to="/community/gardening">
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                onMouseEnter={() => handleMouseEnter('community')}
+                onMouseEnter={() => handleMouseEnter("community")}
                 onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
@@ -132,19 +126,18 @@ const Culture = () => {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     커뮤니티
                   </h3>
-                  
                 </div>
               </motion.div>
             </Link>
           </div>
 
           {/* 오른쪽 콘텐츠 영역 */}
-          <div className="relative overflow-hidden w-full h-[600px]">
+          <div className="relative overflow-hidden w-full h-[600px] rounded-lg">
             {showDefaultContent ? (
               <div className="relative h-full">
-                <img 
+                <img
                   src={culture}
-                  alt="기본 이미지"                 
+                  alt="기본 이미지"
                   className="w-full h-[600px] object-cover blur-[2px]"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-20" />
@@ -156,7 +149,7 @@ const Culture = () => {
               </div>
             ) : hoveredContent ? (
               <>
-                <img 
+                <img
                   src={contentMap[hoveredContent].image}
                   alt={hoveredContent}
                   className="w-full h-[600px] object-cover blur-[2px]"
@@ -164,18 +157,20 @@ const Culture = () => {
                 <div className="absolute inset-0 bg-black bg-opacity-30" />
                 <div className="absolute w-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
                   <h3 className="text-4xl font-bold text-white tracking-wider">
-                    {hoveredContent === 'training' && '작물의 성장 단계별 관리'}
-                    {hoveredContent === 'pests' && '작물을 위협하는 병해충 진단'}
-                    {hoveredContent === 'weather' && '실시간 날씨 정보'}
-                    {hoveredContent === 'community' && '다른 농부들과 경험을 나누세요'}
+                    {hoveredContent === "training" && "작물의 성장 단계별 관리"}
+                    {hoveredContent === "pests" &&
+                      "작물을 위협하는 병해충 진단"}
+                    {hoveredContent === "weather" && "실시간 날씨 정보"}
+                    {hoveredContent === "community" &&
+                      "다른 농부들과 경험을 나누세요"}
                   </h3>
                 </div>
               </>
             ) : (
               <div className="relative overflow-hidden h-full">
-                <img 
+                <img
                   src={culture}
-                  alt="기본 이미지"                 
+                  alt="기본 이미지"
                   className="w-full h-[600px] object-cover blur-[2px]"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-20" />
