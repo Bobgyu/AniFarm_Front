@@ -96,7 +96,7 @@ const TrainingMethod = () => {
     { src: kiwi, alt: '키위', cropId: 'crop13' },
     { src: chamoe, alt: '참외', cropId: 'crop14' },
     { src: rice, alt: '벼', cropId: 'crop15' }
-  ];
+  ].sort((a, b) => a.alt.localeCompare(b.alt, 'ko'));
 
   const handlePrevious = () => {
     setPage([page - 1, -1]);

@@ -21,8 +21,8 @@ const Home = () => {
         }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-40">
-          <div className="max-w-7xl mx-auto px-4 h-full flex items-center">
-            <div className="text-white">
+          <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-center">
+            <div className="text-white text-center">
               <h1 className="text-4xl font-bold mb-4">AnI Farm</h1>
               <p className="text-xl mb-4">
                 AI로 심고, 데이터로 키우는 당신을 위한 smart한 농사의 시작
