@@ -25,23 +25,36 @@ const Test3 = () => {
           const processedData = response.data.data.data.item
             .filter(item => item.rank === '상품')
             .reduce((acc, item) => {
-              // 가격이 '-'인 경우 제외
-              if (item.dpr1 === '-') return acc;
+              // 현재 시간 기준으로 사용할 가격 결정
+              const now = new Date();
+              const updateTime = new Date(now);
+              updateTime.setHours(14, 0, 0, 0);
+              const isBeforeUpdate = now < updateTime;
+
+              // 당일 데이터가 없거나 오후 2시 이전이면 전날 데이터 사용
+              const currentPrice = (item.dpr1 === '-' || isBeforeUpdate) ? item.dpr2 : item.dpr1;
+              const comparisonPrice = (item.dpr1 === '-' || isBeforeUpdate) ? item.dpr3 : item.dpr2;
+              
+              // 가격이 없는 경우 제외
+              if (currentPrice === '-' || comparisonPrice === '-') return acc;
               
               // 이미 해당 품목이 있고 현재 처리중인 품목의 가격이 더 낮은 경우 건너뛰기
-              if (acc[item.item_name] && Number(acc[item.item_name].price.replace(/,/g, '')) <= Number(item.dpr1.replace(/,/g, ''))) {
+              if (acc[item.item_name] && Number(acc[item.item_name].price.replace(/,/g, '')) <= Number(currentPrice.replace(/,/g, ''))) {
                 return acc;
               }
               
-              // 가격 변동 계산 수정 (당일 가격과 전일 가격 비교)
-              const todayPrice = Number(item.dpr1.replace(/,/g, '')); // 당일 가격
-              const yesterdayPrice = Number(item.dpr2.replace(/,/g, '')); // 1일전 가격
+              // 가격 변동 계산
+              const todayPrice = Number(currentPrice.replace(/,/g, '')); // 현재 표시할 가격
+              const yesterdayPrice = Number(comparisonPrice.replace(/,/g, '')); // 비교할 가격
               const priceChange = todayPrice - yesterdayPrice;
               
+              // 날짜 결정
+              const displayDate = (item.dpr1 === '-' || isBeforeUpdate) ? item.day2.replace(/[()]/g, '') : item.day1.replace(/[()]/g, '');
+              
               acc[item.item_name] = {
-                price: item.dpr1, // 당일 가격 사용
+                price: currentPrice,
                 unit: item.unit,
-                date: item.day1.replace(/[()]/g, ''), // 당일 날짜 사용
+                date: displayDate,
                 priceChange: priceChange
               };
               return acc;
@@ -59,6 +72,25 @@ const Test3 = () => {
     };
 
     fetchPriceData();
+
+    // 오후 2시가 되면 자동으로 데이터 갱신
+    const now = new Date();
+    const updateTime = new Date(now);
+    updateTime.setHours(14, 0, 0, 0);
+
+    let timeUntilUpdate;
+    if (now > updateTime) {
+      // 이미 오후 2시가 지났다면 다음날 오후 2시로 설정
+      updateTime.setDate(updateTime.getDate() + 1);
+    }
+    timeUntilUpdate = updateTime.getTime() - now.getTime();
+
+    const updateTimer = setTimeout(() => {
+      fetchPriceData();
+    }, timeUntilUpdate);
+
+    // 컴포넌트가 언마운트될 때 타이머 정리
+    return () => clearTimeout(updateTimer);
   }, []);
 
   if (loading) {
