@@ -1,93 +1,97 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { GET_TOP10_API_URL, GET_MARKET_API_URL } from "../../utils/apiurl";
-import { getMarketRequest, getTop10Request } from "../../utils/requestMethods";
+import { getRequest } from "../../utils/requestMethods";
 
-//update item data
-const getMarketFetchThunk = (actionType, apiURL) => {
-  return createAsyncThunk(actionType, async () => {
-    return await getMarketRequest(apiURL);
-  });
-};
-
-export const fetchGetMarketData = getMarketFetchThunk(
-  "fetchGetMarketData",
-  GET_MARKET_API_URL
-);
-
-const getTop10FetchThunk = (actionType, apiURL) => {
-  return createAsyncThunk(actionType, async () => {
-    return await getTop10Request(apiURL);
-  });
-};
-
-export const fetchGetTop10Data = getTop10FetchThunk(
-  "fetchGetTop10Data",
-  GET_TOP10_API_URL
-);
-
-export const fetchGetTop5Data = createAsyncThunk(
-  "fetchGetTop5Data",
-  async () => {
-    const response = await getTop10Request(GET_TOP10_API_URL);
-    // Top 10 데이터에서 상위 5개만 추출
-    return response.slice(0, 5);
+// 시장 데이터 가져오기
+export const fetchMarketData = createAsyncThunk(
+  "api/fetchMarketData",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRequest("/api/market");
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
-// handleFulfilled 함수 정의 : 요청 성공 시 상태 업데이트 로직을 별도의 함수로 분리
-const handleFulfilled = (stateKey) => (state, action) => {
-  state[stateKey] = action.payload; // action.payload에 응답 데이터가 들어있음
-};
+// Top 10 데이터 가져오기
+export const fetchTop10Data = createAsyncThunk(
+  "api/fetchTop10Data",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRequest("/api/top10");
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
-// handleRejected 함수 정의 : 요청 실패 시 상태 업데이트 로직을 별도의 함수로 분리
-const handleRejected = (state, action) => {
-  console.log("Error", action.payload);
-  state.isError = true;
-};
+// 작물별 Top 10 데이터 가져오기
+export const fetchCropTop10Data = createAsyncThunk(
+  "api/fetchCropTop10Data",
+  async (cropName, { rejectWithValue }) => {
+    try {
+      const response = await getRequest(`/api/top10/${cropName}`);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
-// create slice
 const apiSlice = createSlice({
-  name: "apis", // slice 기능 이름
+  name: "api",
   initialState: {
-    // 초기 상태 지정
-    getMarketData: null,
-    getTop10Data: null,
-    getTop5Data: null, // Top5 데이터 상태 추가
+    marketData: null,
+    top10Data: null,
+    cropTop10Data: null,
     loading: false,
     error: null,
   },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchGetMarketData.pending, (state) => {
+      // 시장 데이터
+      .addCase(fetchMarketData.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchGetMarketData.fulfilled, (state, action) => {
+      .addCase(fetchMarketData.fulfilled, (state, action) => {
         state.loading = false;
-        state.getMarketData = action.payload;
+        state.marketData = action.payload;
       })
-      .addCase(fetchGetMarketData.rejected, (state, action) => {
+      .addCase(fetchMarketData.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "데이터 로딩 실패";
-        console.error("마켓 데이터 로딩 실패:", action.error);
+        state.error = action.payload;
       })
-
-      .addCase(fetchGetTop10Data.fulfilled, handleFulfilled("getTop10Data"))
-      .addCase(fetchGetTop10Data.rejected, handleRejected)
-
-      .addCase(fetchGetTop5Data.pending, (state) => {
+      // Top 10 데이터
+      .addCase(fetchTop10Data.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchGetTop5Data.fulfilled, (state, action) => {
+      .addCase(fetchTop10Data.fulfilled, (state, action) => {
         state.loading = false;
-        state.getTop5Data = action.payload;
+        state.top10Data = action.payload;
       })
-      .addCase(fetchGetTop5Data.rejected, (state, action) => {
+      .addCase(fetchTop10Data.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "데이터 로딩 실패";
+        state.error = action.payload;
+      })
+      // 작물별 Top 10 데이터
+      .addCase(fetchCropTop10Data.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCropTop10Data.fulfilled, (state, action) => {
+        state.loading = false;
+        state.cropTop10Data = action.payload;
+      })
+      .addCase(fetchCropTop10Data.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
-}); // slice 객체 저장
+});
 
 export default apiSlice.reducer;

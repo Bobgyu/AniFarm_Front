@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLoading, getPostsSuccess } from "../../redux/slices/writeSlice";
+import {
+  selectLoading,
+  selectPosts,
+  deletePost,
+} from "../../redux/slices/writeSlice";
 import WriteModal from "./WriteModal";
 import { useNavigate } from "react-router-dom";
 
@@ -17,9 +21,8 @@ const Write = ({ posts }) => {
   };
 
   const handlePostDeleted = (deletedPostId) => {
-    // 로컬 상태에서 삭제된 게시글 제거
-    const updatedPosts = posts.filter((post) => post.post_id !== deletedPostId);
-    dispatch(getPostsSuccess(updatedPosts));
+    // 삭제된 게시글은 deletePost thunk에서 자동으로 처리됨
+    dispatch(deletePost(deletedPostId));
   };
 
   // 카테고리 매핑 함수 추가

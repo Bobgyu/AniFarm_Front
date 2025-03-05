@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import {
@@ -6,6 +6,8 @@ import {
   getPostsSuccess,
   getPostsFailure,
   selectPosts,
+  fetchPosts,
+  selectLoading,
 } from "../../redux/slices/writeSlice";
 import Write from "./Write";
 import CommunityNavigation from "./CommunityNavigation";
@@ -15,7 +17,8 @@ import { getRequest } from "../../utils/requestMethods";
 const Community = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const posts = useSelector(selectPosts);
+  const postsData = useSelector(selectPosts);
+  const loading = useSelector(selectLoading);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -61,36 +64,37 @@ const Community = () => {
   const categories = getCategoriesByType();
 
   // 게시글 가져오기
-  const fetchPosts = async () => {
-    dispatch(getPostsStart());
-    try {
-      // 특정 커뮤니티 타입의 게시글만 가져오기
-      const response = await getRequest(`write/community/${communityType}`);
-      dispatch(getPostsSuccess(response.data));
-    } catch (err) {
-      dispatch(getPostsFailure(err.message));
-    }
-  };
-
   useEffect(() => {
-    fetchPosts();
-  }, [communityType]); // communityType이 변경될 때마다 게시글 다시 가져오기
+    console.log("[Community] 게시글 목록 조회 시작:", communityType);
+    dispatch(fetchPosts(communityType));
+  }, [dispatch, communityType]);
 
   // 게시글 필터링
-  const filteredPosts = (posts || []).filter((post) => {
-    if (!post) return false;
+  const filteredPosts = useMemo(() => {
+    console.log("[Community] 현재 postsData:", postsData);
+    if (!postsData?.data || !Array.isArray(postsData.data)) {
+      console.log("[Community] 유효한 게시글 데이터가 없음");
+      return [];
+    }
 
-    const matchesSearch =
-      searchTerm === "" ||
-      post.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.content?.toLowerCase().includes(searchTerm.toLowerCase());
+    const filtered = postsData.data.filter((post) => {
+      if (!post) return false;
 
-    const matchesCategory =
-      selectedCategory === "all" || post.category === selectedCategory;
-    const matchesCommunityType = post.community_type === communityType;
+      const matchesSearch =
+        searchTerm === "" ||
+        post.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.content?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesSearch && matchesCategory && matchesCommunityType;
-  });
+      const matchesCategory =
+        selectedCategory === "all" || post.category === selectedCategory;
+      const matchesCommunityType = post.community_type === communityType;
+
+      return matchesSearch && matchesCategory && matchesCommunityType;
+    });
+
+    console.log("[Community] 필터링된 게시글:", filtered);
+    return filtered;
+  }, [postsData, searchTerm, selectedCategory, communityType]);
 
   // 카테고리 이름 변환 함수 추가
   const getCategoryName = (categoryId) => {
@@ -152,7 +156,7 @@ const Community = () => {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          fetchPosts();
+          dispatch(fetchPosts(communityType));
         }}
         communityType={communityType}
       />

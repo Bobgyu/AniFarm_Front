@@ -23,7 +23,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log("로그인 시도:", value);
+    console.log("로그인 시도:", value);
 
     if (value.email === "" || value.password === "") {
       await Swal.fire({
@@ -35,13 +35,13 @@ const Login = () => {
     }
 
     try {
-      // console.log("loginUser 디스패치 전");
+      console.log("loginUser 디스패치 전");
       const response = await dispatch(loginUser(value)).unwrap();
-      // console.log("로그인 응답 데이터:", response);
+      console.log("로그인 응답 데이터:", response);
 
-      // response에 token이 있는지 확인
-      if (response && response.token) {
-        dispatch(setToken(response.token));
+      // response에 access_token이 있는지 확인
+      if (response && response.access_token) {
+        dispatch(setToken(response.access_token));
         await Swal.fire({
           icon: "success",
           text: "로그인에 성공했습니다.",
@@ -56,14 +56,14 @@ const Login = () => {
       await Swal.fire({
         icon: "error",
         title: "로그인에 실패했습니다.",
-        text: "이메일 또는 비밀번호를 확인해주세요.",
+        text: response?.message || "이메일 또는 비밀번호를 확인해주세요.",
       });
     } catch (error) {
       console.error("로그인 에러:", error);
       await Swal.fire({
         icon: "error",
         title: "오류 발생",
-        text: error || "로그인 처리 중 오류가 발생했습니다.",
+        text: error?.message || "로그인 처리 중 오류가 발생했습니다.",
       });
     }
   };

@@ -3,20 +3,24 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 // configureStore: 스토어를 생성하는 함수
 import authReducer from "./slices/authslice";
 import loginReducer from "./slices/loginslice";
-import apiReducer from "./slices/apiSlice";
 import writeReducer from "./slices/writeSlice";
 import commentReducer from "./slices/commentSlice";
 import imageModelReducer from "./slices/imageModelSlice";
 
+const rootReducer = combineReducers({
+  auth: authReducer,
+  login: loginReducer,
+  write: writeReducer,
+  comments: commentReducer,
+  imageModel: imageModelReducer,
+});
+
 const store = configureStore({
-  reducer: combineReducers({
-    auth: authReducer, // 값은 만드는 이름
-    login: loginReducer,
-    apis: apiReducer,
-    write: writeReducer,
-    comments: commentReducer,
-    imageModel: imageModelReducer,
-  }),
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // 비직렬화 가능한 값 허용
+    }),
 });
 
 export default store;

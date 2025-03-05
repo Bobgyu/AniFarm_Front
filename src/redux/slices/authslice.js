@@ -10,6 +10,7 @@ import {
   postRequest,
   putRequest,
   deleteRequest,
+  loginRequest,
 } from "../../utils/requestMethods.js";
 import axios from "axios";
 
@@ -33,8 +34,8 @@ const postAuthFetchThunk = (actionType, apiURL) => {
 };
 
 export const fetchPostAuthData = postAuthFetchThunk(
-  "fetchPostAuth", // action type
-  POST_AUTH_API_URL // 요청 url
+  "fetchPostAuth",
+  "/auth/register"
 );
 
 // 이메일 인증 요청
@@ -55,24 +56,20 @@ export const fetchPostEmailVerificationData = createAsyncThunk(
 // 로그인 요청
 export const loginUser = createAsyncThunk(
   "auth/login",
-  async (credentials, { rejectWithValue }) => {
+  async (userData, { rejectWithValue }) => {
     try {
-      // console.log("로그인 요청:", credentials);
-      const response = await postRequest("auth/login", {
-        body: JSON.stringify(credentials),
-      });
-      // console.log("로그인 응답:", response);
-
-      // response.data가 있고 status가 201인 경우 성공
-      if (response.status === 201 && response.data) {
-        localStorage.setItem("token", response.data.token);
+      console.log("로그인 시도:", userData);
+      const response = await loginRequest(userData);
+      console.log("로그인 응답:", response);
+      
+      if (response.success && response.data.access_token) {
+        localStorage.setItem("token", response.data.access_token);
         return response.data;
       }
-
-      return rejectWithValue("로그인 실패");
+      return rejectWithValue(response.data?.message || "로그인 실패");
     } catch (error) {
-      // console.error("로그인 에러:", error);
-      return rejectWithValue(error.message || "로그인 실패");
+      console.error("로그인 에러:", error);
+      return rejectWithValue(error.response?.data?.message || "로그인 실패");
     }
   }
 );
@@ -99,7 +96,7 @@ const updateAuthFetchThunk = (actionType, apiURL) => {
 
 export const fetchUpdateAuthData = updateAuthFetchThunk(
   "fetchUpdateAuth",
-  UPDATE_AUTH_API_URL
+  "/auth/update-password"
 );
 
 // 회원정보 삭제 요청
@@ -117,7 +114,7 @@ const deleteAuthFetchThunk = (actionType, apiURL) => {
 
 export const fetchDeleteAuthData = deleteAuthFetchThunk(
   "fetchDeleteAuth",
-  DELETE_AUTH_API_URL
+  "/auth/user"
 );
 
 // 마이페이지 데이터 조회 액션 추가
@@ -126,7 +123,7 @@ export const fetchUserInfo = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:9000/auth/mypage", {
+      const response = await axios.get("/auth/user", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

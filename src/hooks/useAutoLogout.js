@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { logout } from "../redux/slices/authslice";
+import { clearToken } from "../redux/slices/loginslice";
 
 const useAutoLogout = () => {
   const dispatch = useDispatch();
@@ -10,7 +10,7 @@ const useAutoLogout = () => {
   const INACTIVE_TIMEOUT = 2 * 60 * 60 * 1000; // 원래 설정 (2시간)
 
   const performLogout = useCallback(() => {
-    dispatch(logout());
+    dispatch(clearToken());
     localStorage.clear();
     alert("자동 로그아웃 되었습니다.");
     window.location.href = "/";

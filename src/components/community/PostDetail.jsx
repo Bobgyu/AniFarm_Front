@@ -6,14 +6,13 @@ import {
   createComment,
   editComment,
   deleteComment,
+  setLoading,
 } from "../../redux/slices/commentSlice";
-import {
-  getRequest,
-  putRequest,
-  deleteRequest,
-} from "../../utils/requestMethods";
+import axios from "axios";
 import Swal from "sweetalert2";
 import { jwtDecode } from "jwt-decode";
+
+const BASE_URL = "http://localhost:8000";
 
 const PostDetail = () => {
   const { postId } = useParams();
@@ -55,24 +54,15 @@ const PostDetail = () => {
 
   const fetchPostAndComments = async () => {
     try {
-      // console.log("게시물 ID:", postId);
       // 게시물 데이터 가져오기
-      const postResponse = await getRequest(`write/${postId}`);
-      // console.log("게시물 서버 응답:", postResponse);
+      const response = await axios.get(`${BASE_URL}/api/posts/${postId}`);
 
-      if (postResponse.success && postResponse.data) {
-        setPost(postResponse.data);
+      if (response.data.success && response.data.data) {
+        setPost(response.data.data);
         // Redux thunk를 통해 댓글 데이터 가져오기
         dispatch(fetchComments(postId));
       } else {
-        console.error("게시물 데이터가 없습니다:", postResponse);
-        Swal.fire({
-          icon: "error",
-          title: "데이터 로드 실패",
-          text: "게시물을 불러올 수 없습니다.",
-        }).then(() => {
-          navigate("/community");
-        });
+        throw new Error("게시물을 찾을 수 없습니다.");
       }
     } catch (error) {
       console.error("데이터 로딩 실패:", error);
@@ -90,22 +80,15 @@ const PostDetail = () => {
 
   const handleDelete = async () => {
     try {
-      const response = await deleteRequest(`write/${postId}`);
-      if (response.success) {
+      const response = await axios.delete(`${BASE_URL}/api/posts/${postId}`);
+      if (response.data.success) {
         Swal.fire({
           icon: "success",
           title: "게시글이 삭제되었습니다.",
           showConfirmButton: false,
           timer: 1500,
         });
-
-        // 게시글의 community_type을 사용
-        if (post && post.community_type) {
-          navigate(`/community/${post.community_type}`);
-        } else {
-          // 기본값으로 gardening 사용
-          navigate("/community/gardening");
-        }
+        navigate(`/community/${post.community_type || "gardening"}`);
       }
     } catch (error) {
       Swal.fire({
@@ -121,41 +104,57 @@ const PostDetail = () => {
     if (!newComment.trim()) return;
 
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        Swal.fire({
+          icon: "error",
+          title: "로그인 필요",
+          text: "댓글을 작성하려면 로그인이 필요합니다.",
+        });
+        return;
+      }
+
       // Redux thunk를 통해 댓글 작성
-      await dispatch(
+      const resultAction = await dispatch(
         createComment({
           post_id: parseInt(postId),
-          content: newComment,
+          content: newComment.trim(),
         })
       );
 
-      setNewComment("");
-      // 댓글 작성 후 댓글 목록 새로고침
-      dispatch(fetchComments(postId));
-      Swal.fire("성공", "댓글이 작성되었습니다.", "success");
+      if (createComment.fulfilled.match(resultAction)) {
+        setNewComment("");
+        // 댓글 작성 후 댓글 목록 새로고침
+        await dispatch(fetchComments(postId));
+        Swal.fire({
+          icon: "success",
+          title: "성공",
+          text: "댓글이 작성되었습니다.",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } else if (createComment.rejected.match(resultAction)) {
+        throw new Error(resultAction.payload || "댓글 작성에 실패했습니다.");
+      }
     } catch (error) {
       console.error("댓글 작성 실패:", error);
-      Swal.fire("오류", "로그인이 필요합니다.", "error");
+      
+      Swal.fire({
+        icon: "error",
+        title: "댓글 작성 실패",
+        text: error.message || "댓글 작성 중 오류가 발생했습니다.",
+      });
     }
   };
 
   const handleEditPost = async () => {
     try {
-      const requestData = {
+      const response = await axios.put(`${BASE_URL}/api/posts/${postId}`, {
         title: post.title,
         content: post.content,
-      };
-
-      // console.log("게시글 수정 요청:", requestData);
-      // console.log("요청 URL:", `write/${postId}`);
-
-      const response = await putRequest(`write/${postId}`, {
-        body: JSON.stringify(requestData),
       });
 
-      // console.log("게시글 수정 응답:", response);
-
-      if (response.success) {
+      if (response.data.success) {
         setIsEditing(false);
         await Swal.fire({
           icon: "success",
@@ -164,7 +163,7 @@ const PostDetail = () => {
         });
         await fetchPostAndComments();
       } else {
-        throw new Error(response.message || "게시글 수정에 실패했습니다.");
+        throw new Error(response.data.message || "게시글 수정에 실패했습니다.");
       }
     } catch (error) {
       console.error("게시글 수정 실패:", error);
@@ -178,15 +177,41 @@ const PostDetail = () => {
 
   const handleEditComment = async (commentId) => {
     try {
-      // Redux thunk를 통해 댓글 수정
-      await dispatch(editComment(commentId, editedContent, postId));
+      if (!editedContent.trim()) {
+        Swal.fire({
+          icon: "warning",
+          title: "경고",
+          text: "댓글 내용을 입력해주세요.",
+        });
+        return;
+      }
 
-      setEditingCommentId(null);
-      setEditedContent("");
-      Swal.fire("성공", "댓글이 수정되었습니다.", "success");
+      const result = await dispatch(editComment(commentId, editedContent, postId));
+      
+      if (result && result.success) {
+        setEditingCommentId(null);
+        setEditedContent("");
+        
+        // 댓글 목록 새로고침
+        await dispatch(fetchComments(postId));
+        
+        Swal.fire({
+          icon: "success",
+          title: "성공",
+          text: "댓글이 수정되었습니다.",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } else {
+        throw new Error(result?.message || "댓글 수정에 실패했습니다.");
+      }
     } catch (error) {
       console.error("댓글 수정 실패:", error);
-      Swal.fire("오류", "댓글 수정에 실패했습니다.", "error");
+      Swal.fire({
+        icon: "error",
+        title: "오류",
+        text: error.message || "댓글 수정에 실패했습니다.",
+      });
     }
   };
 
@@ -204,12 +229,21 @@ const PostDetail = () => {
 
     if (result.isConfirmed) {
       try {
-        // Redux thunk를 통해 댓글 삭제
         await dispatch(deleteComment(commentId));
-        Swal.fire("삭제 완료!", "댓글이 삭제되었습니다.", "success");
+        Swal.fire({
+          icon: "success",
+          title: "삭제 완료!",
+          text: "댓글이 삭제되었습니다.",
+          showConfirmButton: false,
+          timer: 1500
+        });
       } catch (error) {
         console.error("댓글 삭제 실패:", error);
-        Swal.fire("오류", "댓글 삭제에 실패했습니다.", "error");
+        Swal.fire({
+          icon: "error",
+          title: "오류",
+          text: error.message || "댓글 삭제에 실패했습니다.",
+        });
       }
     }
   };
@@ -226,11 +260,11 @@ const PostDetail = () => {
   };
 
   const isPostAuthor = () => {
-    return currentUser && post.user_id === currentUser.id;
+    return currentUser && post && post.email === currentUser.sub;
   };
 
   const isCommentAuthor = (comment) => {
-    return currentUser && comment.user_id === currentUser.id;
+    return currentUser && comment && comment.email === currentUser.sub;
   };
 
   if (loading || !post) {
