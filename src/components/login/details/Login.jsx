@@ -69,13 +69,13 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-green-100 via-white to-white">
-      <div className="max-w-md w-full m-4 space-y-8 p-10 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full m-4 space-y-8 p-10 bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
         <div>
-          <h2 className="mt-4 text-center text-3xl font-bold bg-gradient-to-r from-green-900 via-green-600 to-green-400 bg-clip-text text-transparent">
+          <h2 className="mt-4 text-center text-3xl font-bold text-gray-800">
             로그인
           </h2>
-          <p className="mt-2 text-center text-base text-gray-900 font-medium">
+          <p className="mt-2 text-center text-base text-gray-600">
             계정에 로그인하세요
           </p>
         </div>
@@ -85,14 +85,14 @@ const Login = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-bold text-gray-700 mb-1"
+                className="block text-sm font-semibold text-emerald-700 mb-1"
               >
                 이메일
               </label>
               <input
                 type="email"
                 placeholder="Email"
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-100 placeholder-gray-500 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent transition-all duration-200 ease-in-out hover:border-green-200"
+                className="appearance-none relative block w-full px-5 py-3.5 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#8bd05c]/30 focus:border-[#8bd05c]/30 transition-all duration-300 hover:border-[#8bd05c]/20"
                 name="email"
                 onChange={handleChange}
                 id="emailInput"
@@ -101,14 +101,14 @@ const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-bold text-gray-700 mb-1"
+                className="block text-sm font-semibold text-emerald-700 mb-1"
               >
                 비밀번호
               </label>
               <input
                 type="password"
                 placeholder="••••••••"
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-100 placeholder-gray-500 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-transparent transition-all duration-200 ease-in-out hover:border-green-200"
+                className="appearance-none relative block w-full px-5 py-3.5 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#8bd05c]/30 focus:border-[#8bd05c]/30 transition-all duration-300 hover:border-[#8bd05c]/20"
                 name="password"
                 onChange={handleChange}
               />
@@ -118,32 +118,29 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-green-900 via-green-600 to-green-400 hover:from-green-800 hover:via-green-500 hover:to-green-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5"
+              className="w-full flex justify-center py-3.5 px-4 bg-[#8bd05c] text-white rounded-2xl hover:bg-[#7dbb52] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8bd05c] transition-all duration-300 shadow-sm hover:shadow-md"
             >
               로그인 하기
             </button>
             <Link to="/register">
-              <button
-                className="mt-3 w-full flex justify-center py-3 px-4 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 ease-in-out"
-                to="/register"
-              >
+              <button className="mt-3 w-full flex justify-center py-3.5 px-4 border border-gray-200 text-sm font-medium rounded-2xl text-gray-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-all duration-300">
                 이메일 회원가입
               </button>
             </Link>
           </div>
         </form>
 
-        <div className="text-center text-sm text-gray-600">
+        <div className="text-center text-sm text-emerald-600">
           <Link
             to="/findpwd"
-            className="hover:text-green-500 transition-colors duration-200"
+            className="hover:text-emerald-800 transition-colors duration-200"
           >
             비밀번호 찾기
           </Link>
           <span className="mx-2">|</span>
           <Link
             to="/register"
-            className="hover:text-green-500 transition-colors duration-200"
+            className="hover:text-emerald-800 transition-colors duration-200"
           >
             회원가입 하기
           </Link>

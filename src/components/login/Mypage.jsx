@@ -39,9 +39,9 @@ const Mypage = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] w-full bg-gradient-to-tr from-green-100 via-white to-white mt-16">
+    <div className="min-h-[calc(100vh-64px)] w-full bg-gray-50 mt-16">
       <div className="flex w-full p-4 gap-4">
-        <div className="w-80 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 p-8">
+        <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           {userInfo && (
             <div className="space-y-4">
               <div className="text-center mb-8">

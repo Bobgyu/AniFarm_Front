@@ -38,49 +38,47 @@ const Weather = () => {
     fetchCities();
   }, []);
 
-  // 날씨 데이터 가져오기
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const weatherResponse = await axios.get(
-          "http://localhost:8000/weather",
-          {
-            params: { city: selectedCity },
-            headers: {
-              'Accept': 'application/json',
-            }
+  // 로딩 상태를 개별적으로 관리
+  const [loadingCity, setLoadingCity] = useState(null);
+
+  // 날씨 데이터 가져오기 함수 수정
+  const fetchWeatherData = async (city) => {
+    try {
+      setLoadingCity(city);
+      const weatherResponse = await axios.get(
+        "http://localhost:8000/weather",
+        {
+          params: { city },
+          headers: {
+            'Accept': 'application/json',
           }
-        );
-
-        console.log("날씨 데이터 응답:", weatherResponse);
-
-        if (weatherResponse.data.success && weatherResponse.data.data.raw && weatherResponse.data.data.raw.list) {
-          const dailyData = processWeatherData(weatherResponse.data.data.raw.list);
-          setWeatherData(dailyData);
-        } else {
-          throw new Error("날씨 데이터 형식이 올바르지 않습니다");
         }
-      } catch (err) {
-        console.error("데이터 가져오기 오류:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+      );
 
-    fetchData();
-  }, [selectedCity]);  // selectedCity가 변경될 때마다 실행
+      if (weatherResponse.data.success && weatherResponse.data.data.raw && weatherResponse.data.data.raw.list) {
+        const dailyData = processWeatherData(weatherResponse.data.data.raw.list);
+        setWeatherData(dailyData);
+        setSelectedCity(city);
+      } else {
+        throw new Error("날씨 데이터 형식이 올바르지 않습니다");
+      }
+    } catch (err) {
+      console.error("데이터 가져오기 오류:", err);
+      setError(err.message);
+    } finally {
+      setLoadingCity(null);
+    }
+  };
 
   // 위성 이미지 데이터 가져오기
   useEffect(() => {
     const fetchSatelliteData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/satellite");
-        console.log("Satellite API Response:", response.data);  // 로그 추가
+        const response = await axios.get("http://localhost:8000/api/satellite");
+        console.log("Satellite API Response:", response.data);
         
         if (response.data.success && response.data.data) {
-          setSatelliteData(response.data);
+          setSatelliteData(response.data.data);
         } else {
           console.error("위성 데이터 형식이 올바르지 않습니다:", response.data);
         }
@@ -90,6 +88,10 @@ const Weather = () => {
     };
 
     fetchSatelliteData();
+    
+    // 10분마다 데이터 갱신
+    const interval = setInterval(fetchSatelliteData, 600000);
+    return () => clearInterval(interval);
   }, []);
 
   const processWeatherData = (list) => {
@@ -167,16 +169,22 @@ const Weather = () => {
     return new Intl.NumberFormat('ko-KR').format(Math.round(price));
   };
 
-  // 탭 스타일을 위한 함수 추가
+  // 탭 스타일을 위한 함수 수정
   const getTabStyle = (city) => {
-    return `px-4 py-2 rounded-lg transition-all duration-200 ${
+    return `px-2 py-2 rounded-lg transition-all duration-200 text-sm ${
       selectedCity === city
         ? "bg-blue-500 text-white shadow-md"
         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
     }`;
   };
 
-  if (loading) return <div>로딩중...</div>;
+  // 기존 useEffect 수정
+  useEffect(() => {
+    fetchWeatherData(selectedCity);
+  }, []); // 최초 로딩시에만 실행
+
+  // 전체 로딩 상태 체크 수정
+  if (loading && !weatherData) return <div>로딩중...</div>;
   if (error) return <div>에러: {error}</div>;
   if (!weatherData) return <div>날씨 데이터가 없습니다.</div>;
 
@@ -187,14 +195,50 @@ const Weather = () => {
         <div className="grid grid-cols-2 gap-2 mb-2">
           <h2 className="text-xl font-medium col-span-2">지역별 날씨</h2>
         </div>
-        <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-xl shadow-sm">
+        {/* 한 줄 레이아웃 (lg 화면 이상) */}
+        <div className="hidden lg:grid grid-cols-8 gap-1 p-2 bg-gray-50 rounded-xl shadow-sm">
           {cities.map((city) => (
             <button
-              key={city}
-              onClick={() => setSelectedCity(city)}
+              key={`lg-${city}`}
+              onClick={() => fetchWeatherData(city)}
+              disabled={loadingCity === city}
               className={getTabStyle(city)}
             >
-              {city}
+              {loadingCity === city ? (
+                <span className="inline-flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-1 h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {city}
+                </span>
+              ) : (
+                <span className="text-center">{city}</span>
+              )}
+            </button>
+          ))}
+        </div>
+        
+        {/* 두 줄 레이아웃 (lg 화면 미만) */}
+        <div className="lg:hidden grid grid-cols-4 gap-2 p-2 bg-gray-50 rounded-xl shadow-sm">
+          {cities.map((city) => (
+            <button
+              key={`sm-${city}`}
+              onClick={() => fetchWeatherData(city)}
+              disabled={loadingCity === city}
+              className={`${getTabStyle(city)} text-center`}
+            >
+              {loadingCity === city ? (
+                <span className="inline-flex items-center justify-center w-full">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {city}
+                </span>
+              ) : (
+                <span className="text-center w-full">{city}</span>
+              )}
             </button>
           ))}
         </div>
@@ -309,41 +353,32 @@ const Weather = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-medium">한반도 위성 영상</h2>
-          <span className="text-sm text-gray-500">
-            {satelliteData?.data?.timestamp ? 
-              new Date(satelliteData.data.timestamp).toLocaleString() : 
-              '10분마다 업데이트'
-            }
-          </span>
+          <span className="text-sm text-gray-500">10분마다 업데이트</span>
         </div>
         <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-100">
           <div className="flex flex-col h-full">
             <div className="flex-1 relative">
-              {satelliteData?.data?.imageUrl && (
+              {satelliteData?.response?.body?.items?.item?.[0]?.['satImgC-file'] && (
                 <div className="w-full h-full">
-                  <iframe
-                    src={satelliteData.data.imageUrl}
-                    title="한반도 위성 영상"
-                    className="w-full h-full border-0"
-                    style={{ 
-                      minHeight: '700px',  // 높이 증가
-                      width: '100%'
+                  <img
+                    src={satelliteData.response.body.items.item[0]['satImgC-file'].split(',')[0].replace('[', '')}
+                    alt="한반도 위성 영상"
+                    className="w-full h-[600px] object-cover"
+                    style={{
+                      maxWidth: '100%',
+                      objectFit: 'contain',
+                      backgroundColor: '#000'
                     }}
-                    sandbox="allow-same-origin allow-scripts"
-                    loading="lazy"
                     onError={(e) => {
-                      console.log("iframe 로딩 실패:", satelliteData.data.imageUrl);
-                      const container = e.target.parentElement;
-                      if (container) {
-                        container.innerHTML = `
-                          <div class="flex items-center justify-center h-full text-gray-500">
-                            <div class="text-center">
-                              <p>위성 영상을 불러올 수 없습니다</p>
-                              <p class="text-sm mt-2">잠시 후 다시 시도해주세요</p>
-                            </div>
+                      console.log("이미지 로딩 실패");
+                      e.target.parentElement.innerHTML = `
+                        <div class="flex items-center justify-center h-full text-gray-500">
+                          <div class="text-center">
+                            <p>위성 영상을 불러올 수 없습니다</p>
+                            <p class="text-sm mt-2">잠시 후 다시 시도해주세요</p>
                           </div>
-                        `;
-                      }
+                        </div>
+                      `;
                     }}
                   />
                 </div>
