@@ -80,22 +80,47 @@ const PostDetail = () => {
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`${BASE_URL}/api/posts/${postId}`);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        Swal.fire({
+          icon: "error",
+          title: "로그인이 필요합니다.",
+          text: "다시 로그인해주세요.",
+        });
+        return;
+      }
+
+      const response = await axios.delete(`${BASE_URL}/api/write/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
       if (response.data.success) {
         Swal.fire({
           icon: "success",
           title: "게시글이 삭제되었습니다.",
           showConfirmButton: false,
           timer: 1500,
+        }).then(() => {
+          navigate(-1);
         });
-        navigate(`/community/${post.community_type || "gardening"}`);
       }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "게시글 삭제 실패",
-        text: error.message,
-      });
+      console.error("게시글 삭제 중 오류 발생:", error);
+      if (error.response?.status === 401) {
+        Swal.fire({
+          icon: "error",
+          title: "인증 오류",
+          text: "로그인이 필요하거나 인증이 만료되었습니다. 다시 로그인해주세요.",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "오류 발생",
+          text: "게시글 삭제 중 오류가 발생했습니다.",
+        });
+      }
     }
   };
 
