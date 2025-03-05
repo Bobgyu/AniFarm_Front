@@ -24,6 +24,25 @@ const TrainingMethod = () => {
   const [videos, setVideos] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
 
+  const [[page, direction], setPage] = useState([0, 0]);
+
+  const slideVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
+  };
+
   useEffect(() => {
     const fetchYoutubeVideos = async () => {
       try {
@@ -80,11 +99,19 @@ const TrainingMethod = () => {
   ];
 
   const handlePrevious = () => {
-    setStartIndex((prev) => (prev === 0 ? allImages.length - 4 : prev - 1));
+    setPage([page - 1, -1]);
+    setStartIndex((prev) => {
+      const newIndex = prev - 4;
+      return newIndex < 0 ? allImages.length - 4 : newIndex;
+    });
   };
 
   const handleNext = () => {
-    setStartIndex((prev) => (prev === allImages.length - 4 ? 0 : prev + 1));
+    setPage([page + 1, 1]);
+    setStartIndex((prev) => {
+      const newIndex = prev + 4;
+      return newIndex >= allImages.length ? 0 : newIndex;
+    });
   };
 
   const visibleImages = allImages.slice(startIndex, startIndex + 4);
@@ -119,6 +146,15 @@ const TrainingMethod = () => {
           >
             <motion.div 
               className="flex items-center justify-center gap-4 mb-8 px-12"
+              animate="center"
+              initial="enter"
+              exit="exit"
+              variants={slideVariants}
+              custom={direction}
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 }
+              }}
             >
               <button
                 onClick={handlePrevious}
@@ -129,7 +165,12 @@ const TrainingMethod = () => {
 
               {visibleImages.map((image, index) => (
                 <Link key={image.cropId} to={`/trainingDetail?cropId=${image.cropId}`}>
-                  <div className="flex flex-col items-center">
+                  <motion.div 
+                    className="flex flex-col items-center"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
                     <img 
                       src={image.src}
                       alt={image.alt}
@@ -138,7 +179,7 @@ const TrainingMethod = () => {
                     <h3 className="text-black text-lg font-semibold mt-2">
                       {image.alt}
                     </h3>
-                  </div>
+                  </motion.div>
                 </Link>
               ))}
 

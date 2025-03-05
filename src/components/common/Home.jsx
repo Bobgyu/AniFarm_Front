@@ -1,13 +1,23 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-green-50">
+    <div className="w-full h-[700px]">
       {/* Hero Section with Background Image */}
-      <div 
-        className="relative h-[500px] bg-cover bg-center"
+      <motion.div 
+        className="relative h-[700px] bg-cover bg-center"
+        initial={{ opacity: 0, scale: 1.1 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ 
+          duration: 1.5, 
+          ease: "easeOut",
+          scale: {
+            duration: 1.8
+          }
+        }}
         style={{
-          backgroundImage: `url('https://cdn.pixabay.com/photo/2016/09/21/04/46/barley-field-1684052_1280.jpg')`
+          backgroundImage: `url('https://cdn.pixabay.com/photo/2016/09/21/04/46/barley-field-1684052_1280.jpg')`,
         }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-40">
@@ -23,8 +33,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>
-
+      </motion.div>
     </div>
   );
 };
