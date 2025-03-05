@@ -51,10 +51,23 @@ export const createPost = createAsyncThunk(
 export const deletePost = createAsyncThunk(
   "write/deletePost",
   async (postId) => {
-    console.log("[writeSlice] 게시글 삭제 시작:", postId);
-    await axiosInstance.delete(`/api/posts/${postId}`);
-    console.log("[writeSlice] 게시글 삭제 완료");
-    return postId;
+    try {
+      console.log("[writeSlice] 게시글 삭제 시작:", postId);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("인증 토큰이 없습니다. 다시 로그인해주세요.");
+      }
+      
+      const response = await axiosInstance.delete(`/api/write/${postId}`);
+      console.log("[writeSlice] 게시글 삭제 응답:", response.data);
+      return postId;
+    } catch (error) {
+      console.error("[writeSlice] 게시글 삭제 중 오류 발생:", error);
+      if (error.response?.status === 401) {
+        throw new Error("로그인이 필요하거나 인증이 만료되었습니다. 다시 로그인해주세요.");
+      }
+      throw error;
+    }
   }
 );
 

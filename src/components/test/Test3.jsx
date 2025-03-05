@@ -20,35 +20,52 @@ const Test3 = () => {
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:8000/api/price');
-        console.log('API Response:', JSON.stringify(response.data, null, 2));
-        if (response.data.success) {
-          const processedData = response.data.data.data.item
+       
+        if (response.data && response.data.data && response.data.data.item) {
+          const processedData = response.data.data.item
             .filter(item => item.rank === '상품')
             .reduce((acc, item) => {
-              // 가격이 '-'인 경우 제외
-              if (item.dpr1 === '-') return acc;
+              // 현재 시간 기준으로 사용할 가격 결정
+              const now = new Date();
+              const updateTime = new Date(now);
+              updateTime.setHours(14, 0, 0, 0);
+              const isBeforeUpdate = now < updateTime;
+
+              // 당일 데이터가 없거나 오후 2시 이전이면 전날 데이터 사용
+              const currentPrice = (item.dpr1 === '-' || isBeforeUpdate) ? item.dpr2 : item.dpr1;
+              const comparisonPrice = (item.dpr1 === '-' || isBeforeUpdate) ? item.dpr3 : item.dpr2;
+              
+              // 가격이 없는 경우 제외
+              if (currentPrice === '-' || comparisonPrice === '-') return acc;
               
               // 이미 해당 품목이 있고 현재 처리중인 품목의 가격이 더 낮은 경우 건너뛰기
-              if (acc[item.item_name] && Number(acc[item.item_name].price.replace(/,/g, '')) <= Number(item.dpr1.replace(/,/g, ''))) {
+              if (acc[item.item_name] && Number(acc[item.item_name].price.replace(/,/g, '')) <= Number(currentPrice.replace(/,/g, ''))) {
                 return acc;
               }
               
-              // 가격 변동 계산 수정 (당일 가격과 전일 가격 비교)
-              const todayPrice = Number(item.dpr1.replace(/,/g, '')); // 당일 가격
-              const yesterdayPrice = Number(item.dpr2.replace(/,/g, '')); // 1일전 가격
+              // 가격 변동 계산 (전일 대비)
+              const todayPrice = Number(currentPrice.replace(/,/g, '')); // 현재 표시할 가격
+              const yesterdayPrice = Number(comparisonPrice.replace(/,/g, '')); // 전일 가격
               const priceChange = todayPrice - yesterdayPrice;
               
+              // 날짜 결정
+              const displayDate = (item.dpr1 === '-' || isBeforeUpdate) ? item.day2.replace(/[()]/g, '') : item.day1.replace(/[()]/g, '');
+              
               acc[item.item_name] = {
-                price: item.dpr1, // 당일 가격 사용
+                price: currentPrice,
                 unit: item.unit,
-                date: item.day1.replace(/[()]/g, ''), // 당일 날짜 사용
-                priceChange: priceChange
+                date: displayDate,
+                priceChange: priceChange,
+                yesterdayPrice: yesterdayPrice // 전일 가격 추가
               };
               return acc;
             }, {});
+          
+          console.log('Processed Data:', processedData); // 디버깅용 로그 추가
           setPriceData(processedData);
         } else {
-          setError(response.data.message);
+          console.error('Invalid API response structure:', response.data); // 디버깅용 로그 추가
+          setError('데이터 형식이 올바르지 않습니다.');
         }
       } catch (err) {
         setError('가격 데이터를 불러오는데 실패했습니다.');
@@ -59,6 +76,25 @@ const Test3 = () => {
     };
 
     fetchPriceData();
+
+    // 오후 2시가 되면 자동으로 데이터 갱신
+    const now = new Date();
+    const updateTime = new Date(now);
+    updateTime.setHours(14, 0, 0, 0);
+
+    let timeUntilUpdate;
+    if (now > updateTime) {
+      // 이미 오후 2시가 지났다면 다음날 오후 2시로 설정
+      updateTime.setDate(updateTime.getDate() + 1);
+    }
+    timeUntilUpdate = updateTime.getTime() - now.getTime();
+
+    const updateTimer = setTimeout(() => {
+      fetchPriceData();
+    }, timeUntilUpdate);
+
+    // 컴포넌트가 언마운트될 때 타이머 정리
+    return () => clearTimeout(updateTimer);
   }, []);
 
   if (loading) {
@@ -139,21 +175,21 @@ const Test3 = () => {
                       <>
                         <BsArrowUpCircleFill style={{ color: '#ff4d4d', marginRight: '4px' }} />
                         <Typography sx={{ color: '#ff4d4d', fontSize: '0.9rem' }}>
-                          +{item.priceChange.toLocaleString()}
+                          +{item.priceChange.toLocaleString()} ({((item.priceChange / item.yesterdayPrice) * 100).toFixed(1)}%)
                         </Typography>
                       </>
                     ) : item.priceChange < 0 ? (
                       <>
                         <BsArrowDownCircleFill style={{ color: '#4d79ff', marginRight: '4px' }} />
                         <Typography sx={{ color: '#4d79ff', fontSize: '0.9rem' }}>
-                          {item.priceChange.toLocaleString()}
+                          {item.priceChange.toLocaleString()} ({((item.priceChange / item.yesterdayPrice) * 100).toFixed(1)}%)
                         </Typography>
                       </>
                     ) : (
                       <>
                         <BsDashCircleFill style={{ color: '#666666', marginRight: '4px' }} />
                         <Typography sx={{ color: '#666666', fontSize: '0.9rem' }}>
-                          0
+                          0 (0.0%)
                         </Typography>
                       </>
                     )}
