@@ -21,8 +21,8 @@ const Test3 = () => {
         setLoading(true);
         const response = await axios.get('http://localhost:8000/api/price');
         console.log('API Response:', JSON.stringify(response.data, null, 2));
-        if (response.data.success) {
-          const processedData = response.data.data.data.item
+        if (response.data && response.data.data && response.data.data.item) {
+          const processedData = response.data.data.item
             .filter(item => item.rank === '상품')
             .reduce((acc, item) => {
               // 현재 시간 기준으로 사용할 가격 결정
@@ -43,9 +43,9 @@ const Test3 = () => {
                 return acc;
               }
               
-              // 가격 변동 계산
+              // 가격 변동 계산 (전일 대비)
               const todayPrice = Number(currentPrice.replace(/,/g, '')); // 현재 표시할 가격
-              const yesterdayPrice = Number(comparisonPrice.replace(/,/g, '')); // 비교할 가격
+              const yesterdayPrice = Number(comparisonPrice.replace(/,/g, '')); // 전일 가격
               const priceChange = todayPrice - yesterdayPrice;
               
               // 날짜 결정
@@ -55,13 +55,17 @@ const Test3 = () => {
                 price: currentPrice,
                 unit: item.unit,
                 date: displayDate,
-                priceChange: priceChange
+                priceChange: priceChange,
+                yesterdayPrice: yesterdayPrice // 전일 가격 추가
               };
               return acc;
             }, {});
+          
+          console.log('Processed Data:', processedData); // 디버깅용 로그 추가
           setPriceData(processedData);
         } else {
-          setError(response.data.message);
+          console.error('Invalid API response structure:', response.data); // 디버깅용 로그 추가
+          setError('데이터 형식이 올바르지 않습니다.');
         }
       } catch (err) {
         setError('가격 데이터를 불러오는데 실패했습니다.');
@@ -171,21 +175,21 @@ const Test3 = () => {
                       <>
                         <BsArrowUpCircleFill style={{ color: '#ff4d4d', marginRight: '4px' }} />
                         <Typography sx={{ color: '#ff4d4d', fontSize: '0.9rem' }}>
-                          +{item.priceChange.toLocaleString()}
+                          +{item.priceChange.toLocaleString()} ({((item.priceChange / item.yesterdayPrice) * 100).toFixed(1)}%)
                         </Typography>
                       </>
                     ) : item.priceChange < 0 ? (
                       <>
                         <BsArrowDownCircleFill style={{ color: '#4d79ff', marginRight: '4px' }} />
                         <Typography sx={{ color: '#4d79ff', fontSize: '0.9rem' }}>
-                          {item.priceChange.toLocaleString()}
+                          {item.priceChange.toLocaleString()} ({((item.priceChange / item.yesterdayPrice) * 100).toFixed(1)}%)
                         </Typography>
                       </>
                     ) : (
                       <>
                         <BsDashCircleFill style={{ color: '#666666', marginRight: '4px' }} />
                         <Typography sx={{ color: '#666666', fontSize: '0.9rem' }}>
-                          0
+                          0 (0.0%)
                         </Typography>
                       </>
                     )}
