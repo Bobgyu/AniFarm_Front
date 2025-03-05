@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import sales from "../../assets/images/sales.jpg"; // 기본 이미지 필요
@@ -22,6 +22,18 @@ const Sale = () => {
     },
   };
 
+  // 이미지 프리로딩
+  useEffect(() => {
+    const preloadImages = () => {
+      Object.values(contentMap).forEach((content) => {
+        const img = new Image();
+        img.src = content.image;
+      });
+    };
+
+    preloadImages();
+  }, []);
+
   const handleMouseEnter = (content) => {
     setHoveredContent(content);
   };
@@ -40,7 +52,7 @@ const Sale = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-green-50 py-12">
+    <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1
@@ -107,13 +119,14 @@ const Sale = () => {
           </div>
 
           {/* 오른쪽 콘텐츠 영역 */}
-          <div className="relative overflow-hidden w-full h-[600px] rounded-lg">
+          <div className="relative overflow-hidden w-full h-[650px] rounded-lg">
             {showDefaultContent ? (
               <div className="relative h-full">
                 <img
                   src={sales}
                   alt="기본 이미지"
-                  className="w-full h-[600px] object-cover blur-[2px]"
+                  className="w-full h-[650px] object-cover blur-[2px]"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-20" />
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
@@ -127,7 +140,8 @@ const Sale = () => {
                 <img
                   src={contentMap[hoveredContent].image}
                   alt={hoveredContent}
-                  className="w-full h-[600px] object-cover blur-[2px]"
+                  className="w-full h-[650px] object-cover blur-[2px]"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-30" />
                 <div className="absolute w-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
@@ -146,7 +160,8 @@ const Sale = () => {
                 <img
                   src={sales}
                   alt="기본 이미지"
-                  className="w-full h-[600px] object-cover blur-[2px]"
+                  className="w-full h-[650px] object-cover blur-[2px]"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-20" />
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
