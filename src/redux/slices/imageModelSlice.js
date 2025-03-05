@@ -18,7 +18,7 @@ export const analyzeImage = createAsyncThunk(
   "imageModel/analyzeImage",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:8000/predict", {
+      const response = await fetch("/predict", {
         method: "POST",
         body: formData,
       });

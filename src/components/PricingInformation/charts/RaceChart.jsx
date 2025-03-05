@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchGetMarketData } from "../../../redux/slices/apiSlice";
+import { fetchMarketData } from "../../../redux/slices/apiSlice";
 import { createMarketChart } from "../../../data/marketChart";
 
 const RaceChart = () => {
@@ -67,7 +67,7 @@ const RaceChart = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchGetMarketData());
+    dispatch(fetchMarketData());
   }, [dispatch]);
 
   useEffect(() => {

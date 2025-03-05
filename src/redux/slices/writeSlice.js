@@ -1,110 +1,163 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const initialState = {
-  posts: [],
-  currentPost: null,
-  loading: false,
-  error: null,
-};
+const BASE_URL = "http://localhost:8000";
 
-const writeSlice = createSlice({
-  name: "write",
-  initialState,
-  reducers: {
-    // 게시글 작성 시작
-    createPostStart: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    // 게시글 작성 성공
-    createPostSuccess: (state, action) => {
-      state.loading = false;
-      state.posts = [action.payload, ...state.posts];
-      state.error = null;
-    },
-    // 게시글 작성 실패
-    createPostFailure: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-
-    // 게시글 목록 조회 시작
-    getPostsStart: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    // 게시글 목록 조회 성공
-    getPostsSuccess: (state, action) => {
-      state.loading = false;
-      state.posts = action.payload;
-      state.error = null;
-    },
-    // 게시글 목록 조회 실패
-    getPostsFailure: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-
-    // 단일 게시글 조회 시작
-    getPostStart: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    // 단일 게시글 조회 성공
-    getPostSuccess: (state, action) => {
-      state.loading = false;
-      state.currentPost = action.payload;
-      state.error = null;
-    },
-    // 단일 게시글 조회 실패
-    getPostFailure: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-
-    // 게시글 삭제 시작
-    deletePostStart: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    // 게시글 삭제 성공
-    deletePostSuccess: (state, action) => {
-      state.loading = false;
-      // 삭제된 게시글의 ID로 posts 배열에서 해당 게시글 제거
-      state.posts = state.posts.filter(
-        (post) => post.post_id !== action.payload
-      );
-      state.error = null;
-    },
-    // 게시글 삭제 실패
-    deletePostFailure: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
+// axios 인스턴스 생성
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
   },
 });
 
-// 액션 생성자들을 내보냅니다
-export const {
-  getPostsStart,
-  getPostsSuccess,
-  getPostsFailure,
-  createPostStart,
-  createPostSuccess,
-  createPostFailure,
-  getPostStart,
-  getPostSuccess,
-  getPostFailure,
-  deletePostStart,
-  deletePostSuccess,
-  deletePostFailure,
-} = writeSlice.actions;
+// 요청 인터셉터 추가
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-// 선택자(selector) 함수들
+// Async Thunks
+export const fetchPosts = createAsyncThunk(
+  "write/fetchPosts",
+  async (communityType) => {
+    console.log("[writeSlice] 게시글 목록 조회 시작:", communityType);
+    const response = await axiosInstance.get(
+      `/api/write/community/${communityType}`
+    );
+    console.log("[writeSlice] 게시글 목록 조회 응답:", response.data);
+    return response.data;
+  }
+);
+
+export const createPost = createAsyncThunk(
+  "write/createPost",
+  async (postData) => {
+    console.log("[writeSlice] 게시글 작성 시작:", postData);
+    const response = await axiosInstance.post(`/api/write/create`, postData);
+    console.log("[writeSlice] 게시글 작성 응답:", response.data);
+    return response.data;
+  }
+);
+
+export const deletePost = createAsyncThunk(
+  "write/deletePost",
+  async (postId) => {
+    console.log("[writeSlice] 게시글 삭제 시작:", postId);
+    await axiosInstance.delete(`/api/posts/${postId}`);
+    console.log("[writeSlice] 게시글 삭제 완료");
+    return postId;
+  }
+);
+
+const writeSlice = createSlice({
+  name: "write",
+  initialState: {
+    posts: {
+      data: [],
+      success: false,
+      message: null,
+    },
+    currentPost: null,
+    loading: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      // 게시글 목록 조회
+      .addCase(fetchPosts.pending, (state) => {
+        console.log("[writeSlice] 게시글 목록 조회 중...");
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPosts.fulfilled, (state, action) => {
+        console.log("[writeSlice] 게시글 목록 조회 성공:", action.payload);
+        state.loading = false;
+        if (action.payload.success) {
+          state.posts = {
+            data: action.payload.data || [],
+            success: true,
+            message: null
+          };
+          console.log("[writeSlice] 상태 업데이트 완료:", state.posts);
+        } else {
+          state.posts = {
+            data: [],
+            success: false,
+            message: action.payload.message || "게시글 목록 조회에 실패했습니다."
+          };
+        }
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        console.error("[writeSlice] 게시글 목록 조회 실패:", action.payload);
+        state.loading = false;
+        state.error = action.payload;
+        state.posts = {
+          data: [],
+          success: false,
+          message: action.payload?.message || "게시글 목록 조회에 실패했습니다."
+        };
+      })
+      // 게시글 작성
+      .addCase(createPost.pending, (state) => {
+        console.log("[writeSlice] 게시글 작성 중...");
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createPost.fulfilled, (state, action) => {
+        console.log("[writeSlice] 게시글 작성 성공:", action.payload);
+        state.loading = false;
+        if (action.payload.success && action.payload.data) {
+          state.posts.data = [action.payload.data, ...(state.posts.data || [])];
+          state.posts.success = true;
+          state.posts.message = null;
+        } else {
+          state.posts.success = false;
+          state.posts.message = action.payload.message || "게시글 작성에 실패했습니다.";
+        }
+      })
+      .addCase(createPost.rejected, (state, action) => {
+        console.error("[writeSlice] 게시글 작성 실패:", action.payload);
+        state.loading = false;
+        state.error = action.payload;
+        state.posts.success = false;
+        state.posts.message = action.payload?.message || "게시글 작성에 실패했습니다.";
+      })
+      // 게시글 삭제
+      .addCase(deletePost.pending, (state) => {
+        console.log("[writeSlice] 게시글 삭제 중...");
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        console.log("[writeSlice] 게시글 삭제 성공:", action.payload);
+        state.loading = false;
+        if (Array.isArray(state.posts.data)) {
+          state.posts.data = state.posts.data.filter(
+            (post) => post.post_id !== action.payload
+          );
+        }
+      })
+      .addCase(deletePost.rejected, (state, action) => {
+        console.error("[writeSlice] 게시글 삭제 실패:", action.payload);
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
+});
+
 export const selectPosts = (state) => state.write.posts;
 export const selectCurrentPost = (state) => state.write.currentPost;
 export const selectLoading = (state) => state.write.loading;
 export const selectError = (state) => state.write.error;
 
-// 리듀서를 내보냅니다
 export default writeSlice.reducer;

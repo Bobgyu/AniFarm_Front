@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import createTop10Chart from "../../../data/createTop10Chart";
-import { fetchGetTop10Data } from "../../../redux/slices/apiSlice";
+import { fetchTop10Data } from "../../../redux/slices/apiSlice";
 
 const Top10Chart = () => {
   const chartRef = useRef(null);
@@ -10,7 +10,7 @@ const Top10Chart = () => {
   const loading = useSelector((state) => state.apis.loading);
 
   useEffect(() => {
-    dispatch(fetchGetTop10Data());
+    dispatch(fetchTop10Data());
   }, [dispatch]);
 
   useEffect(() => {

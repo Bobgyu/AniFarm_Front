@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import {
-  createPostStart,
-  createPostSuccess,
-  createPostFailure,
-} from "../../redux/slices/writeSlice";
-import { postRequest } from "../../utils/requestMethods";
+import { createPost } from "../../redux/slices/writeSlice";
 import Swal from "sweetalert2";
 
 const CreatePostModal = ({ isOpen, onClose, communityType }) => {
@@ -32,6 +27,7 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("[WriteModal] 게시글 작성 시작:", postData);
 
     try {
       const formData = {
@@ -40,27 +36,20 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
         category: postData.category,
         community_type: communityType,
       };
+      console.log("[WriteModal] 전송할 데이터:", formData);
 
-      dispatch(createPostStart());
+      const result = await dispatch(createPost(formData)).unwrap();
+      console.log("[WriteModal] 게시글 작성 성공:", result);
 
-      const response = await postRequest("write/create", {
-        body: JSON.stringify(formData),
+      Swal.fire({
+        icon: "success",
+        title: "게시글이 작성되었습니다.",
+        showConfirmButton: false,
+        timer: 1500,
       });
-
-      console.log("게시글 작성 응답:", response);
-
-      if (response.success || response.status === 201) {
-        dispatch(createPostSuccess(response.data));
-        Swal.fire({
-          icon: "success",
-          title: "게시글이 작성되었습니다.",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        onClose(); // 모달 닫기만 하면 부모 컴포넌트에서 자동으로 게시글을 다시 불러옵니다
-      }
+      onClose();
     } catch (error) {
-      dispatch(createPostFailure(error.message));
+      console.error("[WriteModal] 게시글 작성 실패:", error);
       Swal.fire({
         icon: "error",
         title: "로그인 후 이용해주세요.",
