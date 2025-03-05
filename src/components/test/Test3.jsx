@@ -20,7 +20,7 @@ const Test3 = () => {
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:8000/api/price');
-        console.log('API Response:', JSON.stringify(response.data, null, 2));
+       
         if (response.data && response.data.data && response.data.data.item) {
           const processedData = response.data.data.item
             .filter(item => item.rank === '상품')
