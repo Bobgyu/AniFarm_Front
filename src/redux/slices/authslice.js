@@ -14,6 +14,8 @@ import {
 } from "../../utils/requestMethods.js";
 import axios from "axios";
 
+const BASE_URL = "http://localhost:8000";
+
 // 회원가입 요청
 const postAuthFetchThunk = (actionType, apiURL) => {
   return createAsyncThunk(actionType, async (postData, { rejectWithValue }) => {
@@ -123,14 +125,24 @@ export const fetchUserInfo = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("/auth/user", {
+      if (!token) {
+        throw new Error("인증 토큰이 없습니다.");
+      }
+
+      const response = await axios.get(`${BASE_URL}/auth/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      console.error("사용자 정보 조회 실패:", error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        return rejectWithValue("인증이 만료되었습니다. 다시 로그인해주세요.");
+      }
+      return rejectWithValue(error.response?.data?.message || "사용자 정보를 가져오는데 실패했습니다.");
     }
   }
 );

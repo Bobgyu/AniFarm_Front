@@ -56,7 +56,7 @@ const Mypage = () => {
                   <FaEnvelope className="text-green-500" />
                   <p className="text-gray-600">이메일</p>
                 </div>
-                <p className="text-gray-900 font-medium">{userInfo.email}</p>
+                <p className="text-gray-900 font-medium">{userInfo.data?.email}</p>
               </div>
 
               <div className="bg-white/50 p-4 rounded-xl">
@@ -65,7 +65,7 @@ const Mypage = () => {
                   <p className="text-gray-600">생년월일</p>
                 </div>
                 <p className="text-gray-900 font-medium">
-                  {new Date(userInfo.birth_date).toLocaleDateString()}
+                  {userInfo.data?.birth_date || '정보 없음'}
                 </p>
               </div>
 
@@ -75,7 +75,7 @@ const Mypage = () => {
                   <p className="text-gray-600">가입일</p>
                 </div>
                 <p className="text-gray-900 font-medium">
-                  {new Date(userInfo.created_at).toLocaleDateString()}
+                  {userInfo.data?.created_at ? userInfo.data.created_at.split(' ')[0] : '정보 없음'}
                 </p>
               </div>
             </div>
