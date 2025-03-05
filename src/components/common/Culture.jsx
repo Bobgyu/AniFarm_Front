@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { gsap } from "gsap";
 import culture from "../../assets/images/culture.jpg";
 import train from "../../assets/images/train.jpg";
 import pests from "../../assets/images/pests.jpg";
@@ -8,10 +9,11 @@ import weather from "../../assets/images/weather.jpg";
 import community from "../../assets/images/community.png";
 
 const Culture = () => {
+    // 호버 기능
   const [hoveredContent, setHoveredContent] = useState(null);
-  const [showDefaultContent, setShowDefaultContent] = useState(false);
+  const imageRef = useRef(null);
 
-  const contentMap = {
+  const contentMap = useMemo(() => ({
     training: {
       image: train,
     },
@@ -24,38 +26,49 @@ const Culture = () => {
     community: {
       image: community,
     },
-  };
+  }), []); // Empty dependency array means it only runs once
 
   const handleMouseEnter = (content) => {
     setHoveredContent(content);
   };
 
-  const handleMouseLeave = () => {
-    // 빈 함수로 수정 (마우스가 떠나도 상태 유지)
-  };
-
   const handleTitleHover = () => {
     setHoveredContent(null);
-    setShowDefaultContent(true);
   };
 
-  const handleTitleLeave = () => {
-    setShowDefaultContent(false);
-  };
+  // 이미지 프리로딩
+  useEffect(() => {
+    const preloadImages = () => {
+      Object.values(contentMap).forEach((content) => {
+        const img = new Image();
+        img.src = content.image;
+      });
+    };
+
+    preloadImages();
+  }, [contentMap]);
+
+  useEffect(() => {
+    if (imageRef.current) {
+      gsap.fromTo(
+        imageRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5 }
+      );
+    }
+  }, [hoveredContent]);
 
   return (
-    <div className="min-h-screen py-12 ">
+    <div className="min-h-screen py-12">
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1
             className="text-4xl font-bold text-gray-900 mb-8 cursor-pointer"
             onMouseEnter={handleTitleHover}
-            onMouseLeave={handleTitleLeave}
           >
             재배하기
           </h1>
-          <p className="text-xl text-gray-600 mb-12"></p>
         </div>
 
         {/* 전체 컨테이너를 flex로 변경 */}
@@ -67,7 +80,6 @@ const Culture = () => {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => handleMouseEnter("training")}
-                onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="p-6">
@@ -84,7 +96,6 @@ const Culture = () => {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => handleMouseEnter("pests")}
-                onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="p-6">
@@ -101,7 +112,6 @@ const Culture = () => {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => handleMouseEnter("weather")}
-                onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="p-6">
@@ -118,7 +128,6 @@ const Culture = () => {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => handleMouseEnter("community")}
-                onMouseLeave={handleMouseLeave}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="p-6">
@@ -132,55 +141,34 @@ const Culture = () => {
           </div>
 
           {/* 오른쪽 콘텐츠 영역 */}
-          <div className="relative overflow-hidden w-full h-[600px] rounded-lg">
-            {showDefaultContent ? (
-              <div className="relative h-full">
-                <img
-                  src={culture}
-                  alt="기본 이미지"
-                  className="w-full h-[600px] object-cover blur-[2px]"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-20" />
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                  <h2 className="text-4xl font-bold text-white tracking-wider">
-                    재배하기에 관한 내용
-                  </h2>
-                </div>
-              </div>
-            ) : hoveredContent ? (
-              <>
-                <img
-                  src={contentMap[hoveredContent].image}
-                  alt={hoveredContent}
-                  className="w-full h-[600px] object-cover blur-[2px]"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-30" />
-                <div className="absolute w-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                  <h3 className="text-4xl font-bold text-white tracking-wider">
-                    {hoveredContent === "training" && "작물의 성장 단계별 관리"}
-                    {hoveredContent === "pests" &&
-                      "작물을 위협하는 병해충 진단"}
-                    {hoveredContent === "weather" && "실시간 날씨 정보"}
-                    {hoveredContent === "community" &&
-                      "다른 농부들과 경험을 나누세요"}
-                  </h3>
-                </div>
-              </>
-            ) : (
-              <div className="relative overflow-hidden h-full">
-                <img
-                  src={culture}
-                  alt="기본 이미지"
-                  className="w-full h-[600px] object-cover blur-[2px]"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-20" />
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                  <h2 className="text-4xl font-bold text-white tracking-wider">
-                    재배하기에 관한 내용
-                  </h2>
-                </div>
-              </div>
-            )}
+          <div className="relative overflow-hidden w-full h-[650px] rounded-lg">
+            <img
+              ref={imageRef}
+              src={
+                hoveredContent
+                  ? contentMap[hoveredContent].image
+                  : culture
+              }
+              alt={hoveredContent || "기본 이미지"}
+              className="w-full h-[650px] object-cover blur-[2px]"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-20" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+              <h2 className="text-4xl font-bold text-white tracking-wider">
+                {!hoveredContent
+                  ? "재배하기에 관한 내용"
+                  : hoveredContent === "training"
+                  ? "작물의 성장 단계별 관리"
+                  : hoveredContent === "pests"
+                  ? "작물을 위협하는 병해충 진단"
+                  : hoveredContent === "weather"
+                  ? "실시간 날씨 정보"
+                  : hoveredContent === "community"
+                  ? "다른 농부들과 경험을 나누세요"
+                  : "재배하기에 관한 내용"}
+              </h2>
+            </div>
           </div>
         </div>
       </div>
