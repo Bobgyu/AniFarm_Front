@@ -10,15 +10,20 @@ const Mypage = () => {
   const { userInfo, userInfoLoading, userInfoError } = useSelector(
     (state) => state.auth
   );
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    const token = localStorage.getItem("token");
+    if (!token) {
       navigate("/login");
       return;
     }
     dispatch(fetchUserInfo());
-  }, [dispatch, isAuthenticated, navigate]);
+  }, [dispatch, navigate]);
+
+  // 디버깅을 위한 로그 추가
+  useEffect(() => {
+    console.log("User Info:", userInfo);
+  }, [userInfo]);
 
   if (userInfoLoading) {
     return (
@@ -29,10 +34,17 @@ const Mypage = () => {
   }
 
   if (userInfoError) {
+    // 토큰이 만료되었거나 유효하지 않은 경우
+    if (userInfoError.includes("인증이 만료되었습니다") || userInfoError.includes("401")) {
+      localStorage.removeItem("token");
+      navigate("/login");
+      return null;
+    }
+
     return (
       <div className="flex justify-center items-center min-h-screen pt-16">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          <span className="block sm:inline">{userInfoError.message}</span>
+          <span className="block sm:inline">{userInfoError}</span>
         </div>
       </div>
     );
