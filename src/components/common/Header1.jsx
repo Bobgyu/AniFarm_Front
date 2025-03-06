@@ -195,7 +195,7 @@ const Header = () => {
                           {category}
                         </div>
                         <div className="p-3">
-                          <div className="pl-4 space-y-2">
+                          <div className="space-y-2">
                             {items.map((item, index) => (
                               <div
                                 key={index}
