@@ -61,11 +61,14 @@ const Header = () => {
       }
     } else if (category === "판매 하기") {
       switch (item) {
+        case "오늘의 가격":
+          path = "/Today";
+          break;
         case "소비 트렌드":
           path = "/pricinginformation";
           break;
         case "가격 예측":
-          path = "/sellinformation";
+          path = "/SalsesInformation";
           break;
         case "판매 커뮤니티":
           path = "/community/marketplace";
@@ -88,7 +91,7 @@ const Header = () => {
 
   const menuStructure = {
     "재배 하기": ["육성법", "병충해", "날씨", "재배 커뮤니티"],
-    "판매 하기": ["소비 트렌드", "가격 예측", "판매 커뮤니티"],
+    "판매 하기": ["오늘의 가격", "소비 트렌드", "가격 예측", "판매 커뮤니티"],
   };
 
   return (

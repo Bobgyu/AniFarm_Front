@@ -21,7 +21,8 @@ const Sale = () => {
     community: {
       image: community,
     },
-    market: {  // 오늘의 가격 콘텐츠 추가
+    market: {
+      // 오늘의 가격 콘텐츠 추가
       image: market,
     },
   };
@@ -72,7 +73,7 @@ const Sale = () => {
           {/* 왼쪽 네비게이션 메뉴 */}
           <div className="flex flex-col gap-8 w-64">
             {/* 오늘의 가격 카드 추가 */}
-            <Link to="/test3">
+            <Link to="/Today">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => handleMouseEnter("market")}
@@ -106,7 +107,7 @@ const Sale = () => {
             </Link>
 
             {/* 가격예측 카드 */}
-            <Link to="/test2">
+            <Link to="/SalsesInformation">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => handleMouseEnter("prediction")}

@@ -31,6 +31,7 @@ import Write from "./components/community/Write";
 import { useDispatch } from "react-redux";
 import AccordionItem from "./components/common/AccordionItem";
 import TrainingDetail from "./components/trainingMethod/TrainingDetail";
+import Today from "./Today/Today";
 import useAutoLogout from "./hooks/useAutoLogout";
 
 function App() {
@@ -61,20 +62,25 @@ function AppContent() {
         <Route path="/community/:postId" element={<PostDetail />} />
         <Route path="/Community/write" element={<Write />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/sellInformation" element={<SalsesInformation />} />
+        <Route path="/SalsesInformation" element={<SalsesInformation />} />
         <Route path="/pests" element={<Pests />} />
         <Route path="/login" element={<Login />} />
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/trainingMethod" element={<TrainingMethod />} />
+        <Route path="/Today" element={<Today />} />
         <Route path="/trainingDetail" element={<TrainingDetail />} />
+        <Route path="/accordionitem" element={<AccordionItem />} />
         <Route path="/test1" element={<Test1 />} />
         <Route path="/test2" element={<Test2 />} />
         <Route path="/test3" element={<Test3 />} />
         <Route path="/test4" element={<Test4 />} />
         <Route path="/test5" element={<Test5 />} />
+<<<<<<< HEAD
         <Route path="/test6" element={<Test6 />} />
         <Route path="/test7" element={<Test7 />} />
         <Route path="/accordionitem" element={<AccordionItem />} />
+=======
+>>>>>>> a7744452716057c170ed8030514a06958797df92
       </Routes>
       <Footer />
     </div>
