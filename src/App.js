@@ -29,6 +29,7 @@ import Write from "./components/community/Write";
 import { useDispatch } from "react-redux";
 import AccordionItem from "./components/common/AccordionItem";
 import TrainingDetail from "./components/trainingMethod/TrainingDetail";
+import Today from "./Today/Today";
 import useAutoLogout from "./hooks/useAutoLogout";
 
 function App() {
@@ -59,7 +60,7 @@ function AppContent() {
         <Route path="/community/:postId" element={<PostDetail />} />
         <Route path="/Community/write" element={<Write />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/sellInformation" element={<SalsesInformation />} />
+        <Route path="/SalsesInformation" element={<SalsesInformation />} />
         <Route path="/pests" element={<Pests />} />
         <Route path="/login" element={<Login />} />
         <Route path="/mypage" element={<Mypage />} />
@@ -69,6 +70,7 @@ function AppContent() {
         <Route path="/test2" element={<Test2 />} />
         <Route path="/test3" element={<Test3 />} />
         <Route path="/test4" element={<Test4 />} />
+        <Route path="/Today" element={<Today />} />
 
         <Route path="/accordionitem" element={<AccordionItem />} />
       </Routes>
