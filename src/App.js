@@ -19,7 +19,7 @@ import Test1 from "./components/test/Test1";
 import Test2 from "./components/test/Test2";
 import Test3 from "./components/test/Test3";
 import Test4 from "./components/test/Test4";
-
+import Test5 from "./components/test/Test5";
 import Community from "./components/community/Community";
 import SalsesInformation from "./components/SalsesInformation/SalsesInformation";
 import Pests from "./components/pests/Pests";
@@ -70,7 +70,11 @@ function AppContent() {
         <Route path="/test2" element={<Test2 />} />
         <Route path="/test3" element={<Test3 />} />
         <Route path="/test4" element={<Test4 />} />
+<<<<<<< HEAD
         <Route path="/Today" element={<Today />} />
+=======
+        <Route path="/test5" element={<Test5 />} />
+>>>>>>> 93cd8fc5877dad264db90c480e32d534755951c8
 
         <Route path="/accordionitem" element={<AccordionItem />} />
       </Routes>

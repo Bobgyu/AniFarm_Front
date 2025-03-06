@@ -200,9 +200,7 @@ const Pests = () => {
                     : "진단 결과"}
                   : {result.disease}
                 </Typography>
-                <Typography className="mb-2">
-                  신뢰도: {result.confidence}%
-                </Typography>
+
                 <Typography className="whitespace-pre-line">
                   상세 정보: {result.details}
                 </Typography>

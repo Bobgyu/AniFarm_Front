@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { cropData } from './TrainData';
 
@@ -8,10 +8,12 @@ const TrainingDetail = () => {
   const searchParams = new URLSearchParams(location.search);
   const cropId = searchParams.get('cropId');
 
-  // 작물 데이터를 가나다순으로 정렬
-  const sortedCropEntries = Object.entries(cropData).sort((a, b) => 
-    a[1].name.localeCompare(b[1].name, 'ko')
-  );
+  // Memoize the sorted crop entries to ensure stable reference
+  const sortedCropEntries = useMemo(() => {
+    return Object.entries(cropData).sort((a, b) => 
+      a[1].name.localeCompare(b[1].name, 'ko')
+    );
+  }, [cropData]);
 
   // cropId에 해당하는 인덱스 찾기
   const initialIndex = sortedCropEntries.findIndex(([key]) => key === cropId);
@@ -20,16 +22,19 @@ const TrainingDetail = () => {
 
   // URL이 변경될 때마다 currentIndex 업데이트
   useEffect(() => {
+    console.log('Current cropId:', cropId);
     const newIndex = sortedCropEntries.findIndex(([key]) => key === cropId);
+    console.log('New index:', newIndex);
     setCurrentIndex(newIndex !== -1 ? newIndex : 0);
-  }, [location.search, cropId, sortedCropEntries]);
+  }, [cropId, sortedCropEntries]);
 
   const handleCropChange = (index) => {
-    setIsVisible(false); // 먼저 컨텐츠를 페이드 아웃
+    console.log('Clicked index:', index);
+    setIsVisible(false);
     setTimeout(() => {
-      setCurrentIndex(index); // 컨텐츠 변경
-      setIsVisible(true); // 새 컨텐츠를 페이드 인
-    }, 300); // transition 시간과 동일하게 설정
+      setCurrentIndex(index);
+      setIsVisible(true);
+    }, 300);
   };
 
   return (
