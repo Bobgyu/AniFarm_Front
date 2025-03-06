@@ -8,10 +8,11 @@ const Top10Chart = () => {
   const top10Data = useSelector((state) => state.api.top10Data);
   const loading = useSelector((state) => state.api.loading);
   const chartRef = useRef(null);
+  const dataFetchedRef = useRef(false); // 데이터 fetch 여부를 추적하는 ref 추가
 
   // 차트 정리 함수
   const cleanupChart = () => {
-    if (chartRef.current && typeof chartRef.current.destroy === 'function') {
+    if (chartRef.current && typeof chartRef.current.destroy === "function") {
       try {
         chartRef.current.destroy();
         chartRef.current = null;
@@ -22,12 +23,10 @@ const Top10Chart = () => {
   };
 
   useEffect(() => {
-    const initializeChart = async () => {
-      // 데이터 가져오기
-      await dispatch(fetchTop10Data());
-    };
-
-    initializeChart();
+    if (!dataFetchedRef.current) {
+      dispatch(fetchTop10Data());
+      dataFetchedRef.current = true;
+    }
 
     // 컴포넌트 언마운트 시 정리
     return cleanupChart;
@@ -35,7 +34,7 @@ const Top10Chart = () => {
 
   // 데이터가 있을 때만 차트 생성
   useEffect(() => {
-    if (top10Data && top10Data.length > 0) {
+    if (!loading && top10Data && top10Data.length > 0) {
       // 이전 차트 정리
       cleanupChart();
 
@@ -52,7 +51,7 @@ const Top10Chart = () => {
         console.error("차트 생성 중 오류 발생:", error);
       }
     }
-  }, [top10Data]);
+  }, [top10Data, loading]);
 
   if (loading) return <div>로딩 중...</div>;
   if (!top10Data || top10Data.length === 0) {
