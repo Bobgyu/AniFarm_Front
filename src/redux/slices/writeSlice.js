@@ -40,11 +40,24 @@ export const fetchPosts = createAsyncThunk(
 
 export const createPost = createAsyncThunk(
   "write/createPost",
-  async (postData) => {
-    console.log("[writeSlice] 게시글 작성 시작:", postData);
-    const response = await axiosInstance.post(`/api/write/create`, postData);
-    console.log("[writeSlice] 게시글 작성 응답:", response.data);
-    return response.data;
+  async (postData, { rejectWithValue }) => {
+    try {
+      console.log("[writeSlice] 게시글 작성 시작:", postData);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return rejectWithValue({ message: "로그인이 필요합니다." });
+      }
+
+      const response = await axiosInstance.post(`/api/write/create`, postData);
+      console.log("[writeSlice] 게시글 작성 응답:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("[writeSlice] 게시글 작성 실패:", error);
+      if (error.response?.status === 401) {
+        return rejectWithValue({ message: "로그인이 필요합니다." });
+      }
+      return rejectWithValue(error.response?.data || { message: "게시글 작성 중 오류가 발생했습니다." });
+    }
   }
 );
 
