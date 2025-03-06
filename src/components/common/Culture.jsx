@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import culture from "../../assets/images/culture.jpg";
 import train from "../../assets/images/train.jpg";
@@ -26,7 +25,7 @@ const Culture = () => {
     community: {
       image: community,
     },
-  }), []); // Empty dependency array means it only runs once
+  }), []);
 
   const handleMouseEnter = (content) => {
     setHoveredContent(content);
@@ -77,8 +76,7 @@ const Culture = () => {
           <div className="flex flex-col gap-8 w-64">
             {/* 육성법 카드 */}
             <Link to="/trainingMethod">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
+              <div
                 onMouseEnter={() => handleMouseEnter("training")}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
@@ -88,13 +86,12 @@ const Culture = () => {
                     육성법
                   </h3>
                 </div>
-              </motion.div>
+              </div>
             </Link>
 
             {/* 병충해 카드 */}
             <Link to="/pests">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
+              <div
                 onMouseEnter={() => handleMouseEnter("pests")}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
@@ -104,13 +101,12 @@ const Culture = () => {
                     병충해
                   </h3>
                 </div>
-              </motion.div>
+              </div>
             </Link>
 
             {/* 날씨 카드 */}
             <Link to="/test1">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
+              <div
                 onMouseEnter={() => handleMouseEnter("weather")}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
@@ -120,13 +116,12 @@ const Culture = () => {
                     날씨
                   </h3>
                 </div>
-              </motion.div>
+              </div>
             </Link>
 
             {/* 커뮤니티 카드 */}
             <Link to="/community/gardening">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
+              <div
                 onMouseEnter={() => handleMouseEnter("community")}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
@@ -136,7 +131,7 @@ const Culture = () => {
                     커뮤니티
                   </h3>
                 </div>
-              </motion.div>
+              </div>
             </Link>
           </div>
 
