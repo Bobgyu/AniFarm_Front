@@ -75,12 +75,9 @@ function AppContent() {
         <Route path="/test3" element={<Test3 />} />
         <Route path="/test4" element={<Test4 />} />
         <Route path="/test5" element={<Test5 />} />
-<<<<<<< HEAD
         <Route path="/test6" element={<Test6 />} />
         <Route path="/test7" element={<Test7 />} />
         <Route path="/accordionitem" element={<AccordionItem />} />
-=======
->>>>>>> a7744452716057c170ed8030514a06958797df92
       </Routes>
       <Footer />
     </div>
