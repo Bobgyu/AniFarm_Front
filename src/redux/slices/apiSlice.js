@@ -1,15 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getRequest } from "../../utils/requestMethods";
+import axios from "axios";
+
+const BASE_URL = "http://localhost:8000";
 
 // 시장 데이터 가져오기
 export const fetchMarketData = createAsyncThunk(
   "api/fetchMarketData",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await getRequest("/api/market");
-      return response;
+      const response = await axios.get(`${BASE_URL}/api/sales`);
+      return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.detail || error.message);
     }
   }
 );
@@ -19,10 +21,10 @@ export const fetchTop10Data = createAsyncThunk(
   "api/fetchTop10Data",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await getRequest("/api/top10");
-      return response;
+      const response = await axios.get(`${BASE_URL}/api/top10`);
+      return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.detail || error.message);
     }
   }
 );
@@ -32,10 +34,10 @@ export const fetchCropTop10Data = createAsyncThunk(
   "api/fetchCropTop10Data",
   async (cropName, { rejectWithValue }) => {
     try {
-      const response = await getRequest(`/api/top10/${cropName}`);
-      return response;
+      const response = await axios.get(`${BASE_URL}/api/top10/${cropName}`);
+      return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.detail || error.message);
     }
   }
 );

@@ -1,48 +1,75 @@
 import React, { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import createTop10Chart from "../../../data/createTop10Chart";
+import { useSelector, useDispatch } from "react-redux";
 import { fetchTop10Data } from "../../../redux/slices/apiSlice";
+import createTop5Chart from "../../../data/createTop10Chart";
 
 const Top10Chart = () => {
-  const chartRef = useRef(null);
   const dispatch = useDispatch();
-  const top10Data = useSelector((state) => state.apis.getTop10Data);
-  const loading = useSelector((state) => state.apis.loading);
+  const top10Data = useSelector((state) => state.api.top10Data);
+  const loading = useSelector((state) => state.api.loading);
+  const chartRef = useRef(null);
 
-  useEffect(() => {
-    dispatch(fetchTop10Data());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (top10Data) {
-      // console.log("받은 데이터:", top10Data); // 데이터 확인용 로그
+  // 차트 정리 함수
+  const cleanupChart = () => {
+    if (chartRef.current && typeof chartRef.current.destroy === 'function') {
       try {
-        const chart = createTop10Chart("top10container", top10Data);
-        chartRef.current = chart;
+        chartRef.current.destroy();
+        chartRef.current = null;
       } catch (error) {
-        console.error("차트 생성 중 오류:", error);
+        console.error("차트 정리 중 오류 발생:", error);
       }
     }
+  };
 
-    return () => {
-      if (chartRef.current) {
-        try {
-          chartRef.current.destroy(); // Highcharts의 경우 destroy() 메서드 사용
-        } catch (error) {
-          console.error("차트 정리 중 오류:", error);
-        }
-        chartRef.current = null;
-      }
+  useEffect(() => {
+    const initializeChart = async () => {
+      // 데이터 가져오기
+      await dispatch(fetchTop10Data());
     };
+
+    initializeChart();
+
+    // 컴포넌트 언마운트 시 정리
+    return cleanupChart;
+  }, [dispatch]);
+
+  // 데이터가 있을 때만 차트 생성
+  useEffect(() => {
+    if (top10Data && top10Data.length > 0) {
+      // 이전 차트 정리
+      cleanupChart();
+
+      // 컨테이너가 존재하는지 확인
+      const container = document.getElementById("top10Chart");
+      if (!container) {
+        console.error("차트 컨테이너를 찾을 수 없습니다.");
+        return;
+      }
+
+      try {
+        chartRef.current = createTop5Chart("top10Chart", top10Data);
+      } catch (error) {
+        console.error("차트 생성 중 오류 발생:", error);
+      }
+    }
   }, [top10Data]);
 
   if (loading) return <div>로딩 중...</div>;
-  if (!top10Data) return <div>데이터를 불러오는 중...</div>;
+  if (!top10Data || top10Data.length === 0) {
+    return (
+      <div
+        id="top10Chart"
+        className="w-full h-[500px] mt-5 mb-10 border-2 border-gray-300 rounded-lg flex items-center justify-center"
+      >
+        데이터를 불러오는 중...
+      </div>
+    );
+  }
 
   return (
     <div
-      id="top10container"
-      className="w-full h-[500px] mt-5 mb-10 border-2 border-gray-300 rounded-lg"
+      id="top10Chart"
+      className="w-full h-[600px] mt-5 mb-10 border-2 border-gray-300 rounded-lg"
     ></div>
   );
 };

@@ -5,7 +5,8 @@ import { createMarketChart } from "../../../data/marketChart";
 
 const RaceChart = () => {
   const dispatch = useDispatch();
-  const marketData = useSelector((state) => state.apis.getMarketData);
+  const marketData = useSelector((state) => state.api.marketData);
+  const loading = useSelector((state) => state.api.loading);
   const chartRef = useRef(null);
 
   // 영문 키를 한글로 매핑하는 객체
@@ -71,6 +72,8 @@ const RaceChart = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (loading) return;
+
     // 이전 차트 정리
     if (chartRef.current) {
       chartRef.current.dispose();
@@ -93,14 +96,17 @@ const RaceChart = () => {
         chartRef.current = null;
       }
     };
-  }, [marketData]);
+  }, [marketData, loading]);
 
+  if (loading) return <div>로딩 중...</div>;
   if (!marketData || marketData.length === 0) {
     return (
       <div
         id="chartdiv"
         className="w-full h-[500px] mt-5 mb-10 border-2 border-gray-300 rounded-lg flex items-center justify-center"
-      ></div>
+      >
+        데이터를 불러오는 중...
+      </div>
     );
   }
 
