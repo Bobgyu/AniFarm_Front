@@ -8,6 +8,7 @@ const RaceChart = () => {
   const marketData = useSelector((state) => state.api.marketData);
   const loading = useSelector((state) => state.api.loading);
   const chartRef = useRef(null);
+  const dataFetchedRef = useRef(false); // 데이터 fetch 여부를 추적하는 ref 추가
 
   // 영문 키를 한글로 매핑하는 객체
   const keyMapping = {
@@ -68,7 +69,10 @@ const RaceChart = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchMarketData());
+    if (!dataFetchedRef.current) {
+      dispatch(fetchMarketData());
+      dataFetchedRef.current = true;
+    }
   }, [dispatch]);
 
   useEffect(() => {

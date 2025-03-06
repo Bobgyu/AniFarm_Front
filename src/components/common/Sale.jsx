@@ -5,6 +5,7 @@ import sales from "../../assets/images/sales.jpg"; // 기본 이미지 필요
 import trend from "../../assets/images/trend.jpg"; // 소비트렌드 이미지
 import prediction from "../../assets/images/prediction.jpg"; // 가격예측 이미지
 import community from "../../assets/images/community.png"; // 커뮤니티 이미지
+import market from "../../assets/images/market.jpg"; // 오늘의 가격 이미지 추가
 
 const Sale = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
@@ -19,6 +20,9 @@ const Sale = () => {
     },
     community: {
       image: community,
+    },
+    market: {  // 오늘의 가격 콘텐츠 추가
+      image: market,
     },
   };
 
@@ -67,6 +71,23 @@ const Sale = () => {
         <div className="flex gap-8">
           {/* 왼쪽 네비게이션 메뉴 */}
           <div className="flex flex-col gap-8 w-64">
+            {/* 오늘의 가격 카드 추가 */}
+            <Link to="/test3">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                onMouseEnter={() => handleMouseEnter("market")}
+                onMouseLeave={handleMouseLeave}
+                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="p-6">
+                  <div className="text-3xl mb-4">💹</div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    오늘의 가격
+                  </h3>
+                </div>
+              </motion.div>
+            </Link>
+
             {/* 소비트렌드 카드 */}
             <Link to="/pricingInformation">
               <motion.div
@@ -85,7 +106,7 @@ const Sale = () => {
             </Link>
 
             {/* 가격예측 카드 */}
-            <Link to="/sellInformation">
+            <Link to="/test2">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => handleMouseEnter("prediction")}
@@ -152,6 +173,8 @@ const Sale = () => {
                       "AI 기반 농산물 가격 예측으로 최적의 판매 시기를 찾아보세요"}
                     {hoveredContent === "community" &&
                       "농산물 판매 커뮤니티에서 직거래를 시작해보세요"}
+                    {hoveredContent === "market" &&
+                      "실시간으로 업데이트되는 오늘의 농산물 가격을 확인하세요"}
                   </h3>
                 </div>
               </>

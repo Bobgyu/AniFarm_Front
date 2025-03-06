@@ -17,7 +17,7 @@ const createTop10Chart = (containerId, rawData) => {
       type: "column",
     },
     title: {
-      text: "[2024년 1월 1주차 ~ 2024년 12월 4주차] 매출 TOP 10입니다.",
+      text: "[2024년 1월 1주차 ~ 2024년 12월 4주차] 매출 TOP 10입니다.]",
       align: "center",
     },
     xAxis: {
