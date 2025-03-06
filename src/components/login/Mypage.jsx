@@ -72,7 +72,7 @@ const Mypage = () => {
   const handleDeleteAccount = async () => {
     const result = await Swal.fire({
       title: '회원 탈퇴',
-      text: '정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+      text: '탈퇴를 결정하시기 전에 다시 한 번 고민해 보시겠어요? 삭제 후에는 복구할 수 없어요.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -192,14 +192,14 @@ const Mypage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-96">
             <h3 className="text-xl font-bold mb-4">비밀번호 변경</h3>
-            <form onSubmit={handlePasswordChange} className="space-y-4">
+            <form onSubmit={handlePasswordChange} className="space-y-4 border border-gray-400 rounded-lg p-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">현재 비밀번호</label>
                 <input
                   type="password"
                   value={passwords.current}
                   onChange={(e) => setPasswords({...passwords, current: e.target.value})}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500"
                   required
                 />
               </div>
@@ -209,7 +209,7 @@ const Mypage = () => {
                   type="password"
                   value={passwords.new}
                   onChange={(e) => setPasswords({...passwords, new: e.target.value})}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500"
                   required
                 />
               </div>
@@ -219,7 +219,7 @@ const Mypage = () => {
                   type="password"
                   value={passwords.confirm}
                   onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500"
                   required
                 />
               </div>
