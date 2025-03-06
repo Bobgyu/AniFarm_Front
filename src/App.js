@@ -65,14 +65,14 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/trainingMethod" element={<TrainingMethod />} />
+        <Route path="/Today" element={<Today />} />
         <Route path="/trainingDetail" element={<TrainingDetail />} />
+        <Route path="/accordionitem" element={<AccordionItem />} />
         <Route path="/test1" element={<Test1 />} />
         <Route path="/test2" element={<Test2 />} />
         <Route path="/test3" element={<Test3 />} />
         <Route path="/test4" element={<Test4 />} />
-        <Route path="/Today" element={<Today />} />
         <Route path="/test5" element={<Test5 />} />
-        <Route path="/accordionitem" element={<AccordionItem />} />
       </Routes>
       <Footer />
     </div>
