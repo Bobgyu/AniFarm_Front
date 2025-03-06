@@ -22,6 +22,14 @@ const Footer = () => {
     window.location.href = "/test5";
   };
 
+  const navigateToTest6 = () => {
+    window.location.href = "/test6";
+  };
+
+  const navigateToTest7 = () => {
+    window.location.href = "/test7";
+  };
+
   return (
     <footer className="flex justify-center items-center pt-1 sm:pt-10 md:pt-8 border-t">
       <div className="flex justify-between flex-wrap container mx-auto px-4">
@@ -53,6 +61,8 @@ const Footer = () => {
           <button onClick={navigateToTest3}>Test3</button>
           <button onClick={navigateToTest4}>Test4</button>
           <button onClick={navigateToTest5}>Test5</button>
+          <button onClick={navigateToTest6}>Test6</button>
+          <button onClick={navigateToTest7}>Test7</button>
         </div>
 
         {/* 구분선 */}

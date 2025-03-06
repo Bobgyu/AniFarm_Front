@@ -50,11 +50,27 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
       onClose();
     } catch (error) {
       console.error("[WriteModal] 게시글 작성 실패:", error);
-      Swal.fire({
-        icon: "error",
-        title: "로그인 후 이용해주세요.",
-        text: error.message,
-      });
+      if (error.response?.status === 401) {
+        Swal.fire({
+          icon: "error",
+          title: "로그인이 필요합니다",
+          text: "게시글을 작성하려면 로그인이 필요합니다.",
+          confirmButtonText: "로그인하기",
+          showCancelButton: true,
+          cancelButtonText: "취소"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // 로그인 페이지로 이동하는 로직 추가 필요
+            window.location.href = "/login";
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "게시글 작성 실패",
+          text: error.message || "게시글 작성 중 오류가 발생했습니다.",
+        });
+      }
     }
   };
 
