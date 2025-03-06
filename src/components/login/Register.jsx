@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 import {
   fetchPostAuthData,
@@ -50,6 +51,7 @@ const Register = () => {
   });
 
   const [userInputCode, setUserInputCode] = useState("");
+  const [showVerificationInput, setShowVerificationInput] = useState(false);
 
   /* State 관리: 사용자 입력값과 인증 코드를 관리하기 위한 상태를 정의합니다. */
   const handleSendVerification = async () => {
@@ -61,22 +63,33 @@ const Register = () => {
       });
       return;
     }
+
+    // 이메일 형식 검증
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value.email)) {
+      await Swal.fire({
+        icon: "warning",
+        title: "입력 오류",
+        text: "올바른 이메일 형식이 아닙니다.",
+      });
+      return;
+    }
+
     try {
-      const result = await dispatch(
-        fetchPostEmailVerificationData(value.email)
-      ).unwrap();
-      if (result.message) {
+      const response = await dispatch(fetchPostEmailVerificationData(value.email)).unwrap();
+      if (response.success) {
+        setShowVerificationInput(true);
         await Swal.fire({
           icon: "success",
           title: "인증코드 발송",
-          text: result.message,
+          text: response.message,
         });
       }
     } catch (error) {
       await Swal.fire({
         icon: "error",
         title: "발송 실패",
-        text: "인증 코드 발송에 실패했습니다.",
+        text: error.message || "인증 코드 발송에 실패했습니다.",
       });
     }
   };
@@ -92,18 +105,22 @@ const Register = () => {
       return;
     }
 
-    if (userInputCode === verificationCode?.data?.verificationCode) {
-      dispatch(verifyEmail());
-      await Swal.fire({
-        icon: "success",
-        title: "인증 완료",
-        text: "이메일 인증이 완료되었습니다.",
-      });
-    } else {
+    try {
+      const response = await axios.post(`http://localhost:8000/auth/verify-code?email=${value.email}&code=${userInputCode}`);
+      
+      if (response.data.success) {
+        dispatch(verifyEmail(userInputCode));
+        await Swal.fire({
+          icon: "success",
+          title: "인증 완료",
+          text: "이메일 인증이 완료되었습니다.",
+        });
+      }
+    } catch (error) {
       await Swal.fire({
         icon: "error",
         title: "인증 실패",
-        text: "인증코드가 일치하지 않습니다.",
+        text: error.response?.data?.detail || "인증 코드가 일치하지 않습니다.",
       });
     }
   };
@@ -180,28 +197,25 @@ const Register = () => {
 
     try {
       const response = await dispatch(fetchPostAuthData(data)).unwrap();
-      if (response.status === 200) {
+      if (response.success) {
         await Swal.fire({
           icon: "success",
           title: "회원가입 성공",
-          text: response.data.msg,
+          text: response.message || "회원가입이 완료되었습니다.",
         });
         navigator("/login");
         return;
       }
-      if (response.data.success === false) {
-        await Swal.fire({
-          icon: "error",
-          title: "회원가입 실패",
-          text: response.data.msg,
-        });
-        return;
-      }
+      await Swal.fire({
+        icon: "error",
+        title: "회원가입 실패",
+        text: response.message || "회원가입에 실패했습니다.",
+      });
     } catch (error) {
       await Swal.fire({
         icon: "error",
         title: "오류 발생",
-        text: error.msg,
+        text: error.message || "회원가입 중 오류가 발생했습니다.",
       });
     }
   };
@@ -234,6 +248,7 @@ const Register = () => {
                   placeholder="Email"
                   className="flex-1 appearance-none relative block px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
                   name="email"
+                  value={value.email}
                   onChange={handleChange}
                 />
                 <button
@@ -246,7 +261,7 @@ const Register = () => {
               </div>
             </div>
 
-            {verificationCode && (
+            {showVerificationInput && (
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">
                   이메일 확인

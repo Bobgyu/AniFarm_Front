@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchUserInfo } from "../../redux/slices/authslice";
+import { fetchUserInfo, fetchDeleteAuthData, fetchUpdateAuthData } from "../../redux/slices/authslice";
 import { FaUser, FaEnvelope, FaCalendar } from "react-icons/fa";
+import Swal from 'sweetalert2';
 
 const Mypage = () => {
   const dispatch = useDispatch();
@@ -10,6 +11,12 @@ const Mypage = () => {
   const { userInfo, userInfoLoading, userInfoError } = useSelector(
     (state) => state.auth
   );
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwords, setPasswords] = useState({
+    current: "",
+    new: "",
+    confirm: ""
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -24,6 +31,75 @@ const Mypage = () => {
   useEffect(() => {
     console.log("User Info:", userInfo);
   }, [userInfo]);
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (passwords.new !== passwords.confirm) {
+      Swal.fire({
+        icon: 'error',
+        title: '오류',
+        text: '새 비밀번호가 일치하지 않습니다.'
+      });
+      return;
+    }
+
+    try {
+      const result = await dispatch(fetchUpdateAuthData({
+        current_password: passwords.current,
+        new_password: passwords.new
+      })).unwrap();
+
+      if (result.success) {
+        Swal.fire({
+          icon: 'success',
+          title: '성공',
+          text: '비밀번호가 성공적으로 변경되었습니다.'
+        });
+        setShowPasswordModal(false);
+        setPasswords({ current: "", new: "", confirm: "" });
+      } else {
+        throw new Error(result.message || '비밀번호 변경에 실패했습니다.');
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: '오류',
+        text: error.message || '비밀번호 변경에 실패했습니다.'
+      });
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const result = await Swal.fire({
+      title: '회원 탈퇴',
+      text: '정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: '탈퇴',
+      cancelButtonText: '취소'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await dispatch(fetchDeleteAuthData()).unwrap();
+        localStorage.removeItem('token');
+        navigate('/');
+        Swal.fire(
+          '탈퇴 완료',
+          '회원 탈퇴가 완료되었습니다.',
+          'success'
+        );
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: '오류',
+          text: error.message || '회원 탈퇴에 실패했습니다.'
+        });
+      }
+    }
+  };
 
   if (userInfoLoading) {
     return (
@@ -90,10 +166,82 @@ const Mypage = () => {
                   {userInfo.data?.created_at ? userInfo.data.created_at.split(' ')[0] : '정보 없음'}
                 </p>
               </div>
+
+              {/* 비밀번호 변경 및 회원 탈퇴 버튼 */}
+              <div className="space-y-3 pt-4 mt-4 border-t border-gray-200">
+                <button
+                  onClick={() => setShowPasswordModal(true)}
+                  className="w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  비밀번호 재설정
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  className="w-full py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  회원 탈퇴
+                </button>
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* 비밀번호 변경 모달 */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h3 className="text-xl font-bold mb-4">비밀번호 변경</h3>
+            <form onSubmit={handlePasswordChange} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">현재 비밀번호</label>
+                <input
+                  type="password"
+                  value={passwords.current}
+                  onChange={(e) => setPasswords({...passwords, current: e.target.value})}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">새 비밀번호</label>
+                <input
+                  type="password"
+                  value={passwords.new}
+                  onChange={(e) => setPasswords({...passwords, new: e.target.value})}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">새 비밀번호 확인</label>
+                <input
+                  type="password"
+                  value={passwords.confirm}
+                  onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordModal(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                >
+                  변경
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

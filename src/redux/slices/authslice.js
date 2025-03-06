@@ -17,20 +17,24 @@ import axios from "axios";
 const BASE_URL = "http://localhost:8000";
 
 // 회원가입 요청
-const postAuthFetchThunk = (actionType, apiURL) => {
-  return createAsyncThunk(actionType, async (postData, { rejectWithValue }) => {
-    // console.log(postData);
+export const postAuthFetchThunk = (type, url) => {
+  return createAsyncThunk(type, async (value, { rejectWithValue }) => {
     try {
-      const options = {
-        body: JSON.stringify(postData), // 표준 JSON 문자열로 변환 json 형식일 때
-        // method: "POST",
-        // body: postData, // json 형식이 아닐 때
-      };
-      const response = await postRequest(apiURL, options);
-      return response; // { status, data } 형태로 반환
-    } catch (error) {
-      // 에러 시 상태 코드와 메시지를 포함한 값을 rejectWithValue로 전달
-      return rejectWithValue(error);
+      const response = await axios.post(`${BASE_URL}${url}`, {
+        email: value.email,
+        password: value.password,
+        birth_date: value.birth_date || null
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (err) {
+      if (err.response) {
+        return rejectWithValue(err.response.data);
+      }
+      return rejectWithValue({ message: err.message });
     }
   });
 };
@@ -43,14 +47,35 @@ export const fetchPostAuthData = postAuthFetchThunk(
 // 이메일 인증 요청
 export const fetchPostEmailVerificationData = createAsyncThunk(
   "auth/fetchPostEmailVerificationData",
-  async (email) => {
+  async (email, { rejectWithValue }) => {
     try {
-      const response = await axios.post(POST_EMAIL_VERIFICATION_API_URL, {
-        email,
+      // 이메일 형식 검증
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return rejectWithValue("올바른 이메일 형식이 아닙니다.");
+      }
+
+      const response = await axios.post(`${BASE_URL}/auth/verify-email?email=${encodeURIComponent(email)}`, null, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+
+      if (!response.data.success) {
+        return rejectWithValue(response.data.message || "이메일 인증 요청에 실패했습니다.");
+      }
+
       return response.data;
     } catch (error) {
-      throw error.response.data;
+      console.error("이메일 인증 요청 실패:", error);
+      if (error.response?.status === 422) {
+        return rejectWithValue("올바른 이메일 형식이 아닙니다.");
+      }
+      return rejectWithValue(
+        error.response?.data?.message || 
+        error.message || 
+        "이메일 인증 요청에 실패했습니다."
+      );
     }
   }
 );
@@ -96,27 +121,49 @@ const updateAuthFetchThunk = (actionType, apiURL) => {
   );
 };
 
-export const fetchUpdateAuthData = updateAuthFetchThunk(
-  "fetchUpdateAuth",
-  "/auth/update-password"
+export const fetchUpdateAuthData = createAsyncThunk(
+  "auth/updatePassword",
+  async (updateData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/update-password`, updateData, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "비밀번호 변경에 실패했습니다.");
+    }
+  }
 );
 
 // 회원정보 삭제 요청
-const deleteAuthFetchThunk = (actionType, apiURL) => {
-  return createAsyncThunk(actionType, async (id) => {
-    console.log("삭제 요청 URL:", `${apiURL}/${id}`);
-    console.log("삭제할 ID:", id);
-    const options = {
-      method: "DELETE",
-    };
-    const fullPath = `${apiURL}/${id}`;
-    return await deleteRequest(fullPath, options);
-  });
-};
+export const fetchDeleteAuthData = createAsyncThunk(
+  "auth/deleteUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("인증 토큰이 없습니다.");
+      }
 
-export const fetchDeleteAuthData = deleteAuthFetchThunk(
-  "fetchDeleteAuth",
-  "/auth/user"
+      const response = await axios.delete(`${BASE_URL}/auth/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("회원 탈퇴 실패:", error);
+      return rejectWithValue(
+        error.response?.data?.message || 
+        error.message || 
+        "회원 탈퇴에 실패했습니다."
+      );
+    }
+  }
 );
 
 // 마이페이지 데이터 조회 액션 추가
@@ -180,9 +227,10 @@ const authSlice = createSlice({
   },
   reducers: {
     verifyEmail: (state, action) => {
-      // if (state.verificationCode === action.payload.data.verificationCode) {
-      state.isEmailVerified = true;
-      // }
+      if (action.payload) {
+        state.verificationCode = action.payload;
+        state.isEmailVerified = true;
+      }
     },
     resetAuthState: (state) => {
       state.verificationCode = null;
