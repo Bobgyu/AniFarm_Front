@@ -23,7 +23,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("로그인 시도:", value);
+    // console.log("로그인 시도:", value);
 
     if (value.email === "" || value.password === "") {
       await Swal.fire({
@@ -35,9 +35,9 @@ const Login = () => {
     }
 
     try {
-      console.log("loginUser 디스패치 전");
+      // console.log("loginUser 디스패치 전");
       const response = await dispatch(loginUser(value)).unwrap();
-      console.log("로그인 응답 데이터:", response);
+      // console.log("로그인 응답 데이터:", response);
 
       // response에 access_token이 있는지 확인
       if (response && response.access_token) {
