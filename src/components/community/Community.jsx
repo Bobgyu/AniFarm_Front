@@ -65,13 +65,13 @@ const Community = () => {
 
   // 게시글 가져오기
   useEffect(() => {
-    console.log("[Community] 게시글 목록 조회 시작:", communityType);
+    // console.log("[Community] 게시글 목록 조회 시작:", communityType);
     dispatch(fetchPosts(communityType));
   }, [dispatch, communityType]);
 
   // 게시글 필터링
   const filteredPosts = useMemo(() => {
-    console.log("[Community] 현재 postsData:", postsData);
+    // console.log("[Community] 현재 postsData:", postsData);
     if (!postsData?.data || !Array.isArray(postsData.data)) {
       console.log("[Community] 유효한 게시글 데이터가 없음");
       return [];
@@ -92,7 +92,7 @@ const Community = () => {
       return matchesSearch && matchesCategory && matchesCommunityType;
     });
 
-    console.log("[Community] 필터링된 게시글:", filtered);
+    // console.log("[Community] 필터링된 게시글:", filtered);
     return filtered;
   }, [postsData, searchTerm, selectedCategory, communityType]);
 

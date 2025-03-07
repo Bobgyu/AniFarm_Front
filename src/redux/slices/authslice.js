@@ -1,18 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  POST_AUTH_API_URL,
-  POST_LOGIN_API_URL,
-  POST_EMAIL_VERIFICATION_API_URL,
-  UPDATE_AUTH_API_URL,
-  DELETE_AUTH_API_URL,
-} from "../../utils/apiurl.js";
-import {
-  postRequest,
   putRequest,
-  deleteRequest,
   loginRequest,
 } from "../../utils/requestMethods.js";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const BASE_URL = "http://localhost:8000";
 
@@ -52,6 +44,12 @@ export const fetchPostEmailVerificationData = createAsyncThunk(
       // 이메일 형식 검증
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
+        Swal.fire({
+          icon: 'error',
+          title: '올바른 이메일 형식이 아닙니다.',
+          showConfirmButton: false,
+          timer: 1500
+        });
         return rejectWithValue("올바른 이메일 형식이 아닙니다.");
       }
 
@@ -62,13 +60,25 @@ export const fetchPostEmailVerificationData = createAsyncThunk(
       });
 
       if (!response.data.success) {
+        Swal.fire({
+          icon: 'error',
+          title: '이메일 인증 요청에 실패했습니다.',
+          showConfirmButton: false,
+          timer: 1500
+        });
         return rejectWithValue(response.data.message || "이메일 인증 요청에 실패했습니다.");
       }
 
       return response.data;
     } catch (error) {
-      console.error("이메일 인증 요청 실패:", error);
+      // console.error("이메일 인증 요청 실패:", error);
       if (error.response?.status === 422) {
+        Swal.fire({
+          icon: 'error',
+          title: '올바른 이메일 형식이 아닙니다.',
+          showConfirmButton: false,
+          timer: 1500
+        });
         return rejectWithValue("올바른 이메일 형식이 아닙니다.");
       }
       return rejectWithValue(
@@ -85,12 +95,15 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (userData, { rejectWithValue }) => {
     try {
-      console.log("로그인 시도:", userData);
+      // console.log("로그인 시도:", userData);
       const response = await loginRequest(userData);
-      console.log("로그인 응답:", response);
+      // console.log("로그인 응답:", response);
       
       if (response.success && response.data.access_token) {
+        // 토큰 저장 및 만료 시간 설정
         localStorage.setItem("token", response.data.access_token);
+        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000; // 24시간
+        localStorage.setItem("tokenExpiry", expiry.toString());
         return response.data;
       }
       return rejectWithValue(response.data?.message || "로그인 실패");
@@ -187,12 +200,78 @@ export const fetchUserInfo = createAsyncThunk(
       console.error("사용자 정보 조회 실패:", error);
       if (error.response?.status === 401) {
         localStorage.removeItem("token");
+        Swal.fire({
+          icon: 'error',
+          title: '인증이 만료되었습니다. 다시 로그인해주세요.',
+          showConfirmButton: false,
+          timer: 1500
+        });
         return rejectWithValue("인증이 만료되었습니다. 다시 로그인해주세요.");
       }
       return rejectWithValue(error.response?.data?.message || "사용자 정보를 가져오는데 실패했습니다.");
     }
   }
 );
+
+// 비동기 로그아웃 처리를 위한 thunk
+export const logoutWithAlert = createAsyncThunk(
+  'auth/logoutWithAlert',
+  async (message) => {
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: message.title || '자동 로그아웃',
+      text: message.text || '장시간 활동이 없어 자동 로그아웃됩니다.',
+      confirmButtonText: '확인',
+      allowOutsideClick: false
+    });
+
+    if (result.isConfirmed) {
+      performLogout();
+      window.location.href = '/login';
+    }
+    return result.isConfirmed;
+  }
+);
+
+// 로그인 상태 체크를 위한 thunk
+export const checkLoginStatusThunk = createAsyncThunk(
+  'auth/checkLoginStatusThunk',
+  async (_, { dispatch, getState }) => {
+    const state = getState().auth;
+    const token = localStorage.getItem("token");
+    const tokenExpiry = localStorage.getItem("tokenExpiry");
+    const now = new Date().getTime();
+
+    if (!token || !tokenExpiry) {
+      dispatch(logout());
+      return;
+    }
+
+    if (now > parseInt(tokenExpiry)) {
+      await dispatch(logoutWithAlert({
+        title: '토큰이 만료되었습니다',
+        text: '다시 로그인해주세요.'
+      }));
+      return;
+    }
+
+    const lastActivity = state.lastActivity || now;
+    // const inactivityLimit = 30 * 1000; // 30초
+    const inactivityLimit = 2 * 60 * 60 * 1000; // 2시간
+
+    if (now - lastActivity > inactivityLimit) {
+      await dispatch(logoutWithAlert({
+        title: '자동 로그아웃',
+        text: '장시간 활동이 없어 자동 로그아웃됩니다.'
+      }));
+    }
+  }
+);
+
+const performLogout = () => {
+  localStorage.clear();
+  sessionStorage.clear();
+};
 
 // handleFulfilled 함수 정의 : 요청 성공 시 상태 업데이트 로직을 별도의 함수로 분리
 const handleFulfilled = (stateKey) => (state, action) => {
@@ -224,6 +303,7 @@ const authSlice = createSlice({
     userInfo: null,
     userInfoLoading: false,
     userInfoError: null,
+    lastActivity: new Date().getTime(),
   },
   reducers: {
     verifyEmail: (state, action) => {
@@ -251,28 +331,16 @@ const authSlice = createSlice({
       state.updateAuthData = null;
       state.isError = false;
       state.errorMessage = null;
-
-      // localStorage 완전 정리
-      localStorage.clear(); // 모든 데이터 삭제
-
-      // 필요한 경우 sessionStorage도 정리
-      sessionStorage.clear();
+      state.lastActivity = null;
+      state.isAuthenticated = false;
+      state.user = null;
+      
+      performLogout();
     },
-    checkLoginStatus: (state) => {
-      const expireTime = localStorage.getItem("loginExpireTime");
-      if (expireTime && new Date().getTime() > parseInt(expireTime)) {
-        state.postLoginData = null;
-        state.loginExpireTime = null;
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("loginExpireTime");
-      }
-    },
-    setLoginExpireTime: (state) => {
-      const expireTime = new Date();
-      expireTime.setHours(expireTime.getHours() + 24);
-      state.loginExpireTime = expireTime.getTime();
-      localStorage.setItem("loginExpireTime", expireTime.getTime());
+    updateLastActivity: (state) => {
+      const now = new Date().getTime();
+      state.lastActivity = now;
+      // console.log('활동 시간 업데이트:', new Date(now).toLocaleTimeString());
     },
   },
 
@@ -290,10 +358,7 @@ const authSlice = createSlice({
         state.user = action.payload;
         state.isAuthenticated = true;
         state.postLoginData = action.payload;
-        const expireTime = new Date();
-        expireTime.setHours(expireTime.getHours() + 24);
-        state.loginExpireTime = expireTime.getTime();
-        localStorage.setItem("loginExpireTime", expireTime.getTime());
+        state.lastActivity = new Date().getTime();
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -327,6 +392,16 @@ const authSlice = createSlice({
       .addCase(fetchUserInfo.rejected, (state, action) => {
         state.userInfoLoading = false;
         state.userInfoError = action.payload;
+      })
+
+      .addCase(logoutWithAlert.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.isAuthenticated = false;
+        }
+      })
+      
+      .addCase(checkLoginStatusThunk.fulfilled, () => {
+        // 필요한 경우 여기에 추가 작업
       });
   },
 });
@@ -336,7 +411,7 @@ export const {
   resetAuthState,
   cancelMembership,
   logout,
-  checkLoginStatus,
-  setLoginExpireTime,
+  updateLastActivity,
 } = authSlice.actions;
+
 export default authSlice.reducer;
