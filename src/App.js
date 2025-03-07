@@ -17,7 +17,6 @@ import Mypage from "./components/login/Mypage";
 import PricingInformation from "./components/PricingInformation/PricingInformation";
 import Test1 from "./components/test/Test1";
 import Test2 from "./components/test/Test2";
-import Test3 from "./components/test/Test3";
 import Test4 from "./components/test/Test4";
 import Test5 from "./components/test/Test5";
 import Test6 from "./components/test/Test6";
@@ -72,7 +71,6 @@ function AppContent() {
         <Route path="/accordionitem" element={<AccordionItem />} />
         <Route path="/test1" element={<Test1 />} />
         <Route path="/test2" element={<Test2 />} />
-        <Route path="/test3" element={<Test3 />} />
         <Route path="/test4" element={<Test4 />} />
         <Route path="/test5" element={<Test5 />} />
         <Route path="/test6" element={<Test6 />} />
