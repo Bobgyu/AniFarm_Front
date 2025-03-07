@@ -18,8 +18,6 @@ import PricingInformation from "./components/PricingInformation/PricingInformati
 import Weather from "./components/weather/Weather.jsx";
 import Test4 from "./components/test/Test4";
 import Test5 from "./components/test/Test5";
-import Test6 from "./components/test/Test6";
-import Test7 from "./components/test/Test7";
 import Community from "./components/community/Community";
 import SalsesInformation from "./components/SalsesInformation/SalsesInformation";
 import Pests from "./components/pests/Pests";
@@ -63,6 +61,7 @@ function AppContent() {
         <Route path="/SalsesInformation" element={<SalsesInformation />} />
         <Route path="/pests" element={<Pests />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/mypage" element={<Mypage />} />
         <Route path="/trainingMethod" element={<TrainingMethod />} />
         <Route path="/Today" element={<Today />} />
@@ -70,8 +69,6 @@ function AppContent() {
         <Route path="/accordionitem" element={<AccordionItem />} />
         <Route path="/test4" element={<Test4 />} />
         <Route path="/test5" element={<Test5 />} />
-        <Route path="/test6" element={<Test6 />} />
-        <Route path="/test7" element={<Test7 />} />
       </Routes>
       <Footer />
     </div>
