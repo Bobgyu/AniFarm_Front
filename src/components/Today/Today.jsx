@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { BsArrowUpCircleFill, BsArrowDownCircleFill, BsDashCircleFill } from 'react-icons/bs';
 
-const Test3 = () => {
+const Today = () => {
   const [priceData, setPriceData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,18 +25,19 @@ const Test3 = () => {
           const processedData = response.data.data.item
             .filter(item => item.rank === '상품')
             .reduce((acc, item) => {
-              // 현재 시간 기준으로 사용할 가격 결정
               const now = new Date();
               const updateTime = new Date(now);
-              updateTime.setHours(14, 0, 0, 0);
+              updateTime.setHours(15, 0, 0, 0);
               const isBeforeUpdate = now < updateTime;
 
-              // 당일 데이터가 없거나 오후 2시 이전이면 전날 데이터 사용
-              const currentPrice = (item.dpr1 === '-' || isBeforeUpdate) ? item.dpr2 : item.dpr1;
-              const comparisonPrice = (item.dpr1 === '-' || isBeforeUpdate) ? item.dpr3 : item.dpr2;
+              // 오후 3시 이전: 하루 전 데이터(dpr2) 표시
+              // 오후 3시 이후: 당일 데이터(dpr1) 표시
+              // 항상 전날 데이터(dpr2)와 비교
+              const currentPrice = isBeforeUpdate ? item.dpr2 : (item.dpr1 === '-' ? item.dpr2 : item.dpr1);
+              const previousPrice = item.dpr2;
               
-              // 가격이 없는 경우 제외
-              if (currentPrice === '-' || comparisonPrice === '-') return acc;
+              // 가격이 없거나 '-' 인 경우 제외
+              if (currentPrice === '-' || previousPrice === '-') return acc;
               
               // 이미 해당 품목이 있고 현재 처리중인 품목의 가격이 더 낮은 경우 건너뛰기
               if (acc[item.item_name] && Number(acc[item.item_name].price.replace(/,/g, '')) <= Number(currentPrice.replace(/,/g, ''))) {
@@ -45,18 +46,20 @@ const Test3 = () => {
               
               // 가격 변동 계산 (전일 대비)
               const todayPrice = Number(currentPrice.replace(/,/g, '')); // 현재 표시할 가격
-              const yesterdayPrice = Number(comparisonPrice.replace(/,/g, '')); // 전일 가격
+              const yesterdayPrice = Number(previousPrice.replace(/,/g, '')); // 전일 가격
               const priceChange = todayPrice - yesterdayPrice;
               
               // 날짜 결정
-              const displayDate = (item.dpr1 === '-' || isBeforeUpdate) ? item.day2.replace(/[()]/g, '') : item.day1.replace(/[()]/g, '');
+              const displayDate = isBeforeUpdate ? item.day2.replace(/[()]/g, '') : (item.dpr1 === '-' ? item.day2.replace(/[()]/g, '') : item.day1.replace(/[()]/g, ''));
+              const previousDate = item.day2.replace(/[()]/g, ''); // 항상 전날 날짜 사용
               
               acc[item.item_name] = {
                 price: currentPrice,
                 unit: item.unit,
                 date: displayDate,
+                previousDate: previousDate,
                 priceChange: priceChange,
-                yesterdayPrice: yesterdayPrice // 전일 가격 추가
+                yesterdayPrice: yesterdayPrice
               };
               return acc;
             }, {});
@@ -77,14 +80,14 @@ const Test3 = () => {
 
     fetchPriceData();
 
-    // 오후 2시가 되면 자동으로 데이터 갱신
+    // 오후 3시가 되면 자동으로 데이터 갱신
     const now = new Date();
     const updateTime = new Date(now);
-    updateTime.setHours(14, 0, 0, 0);
+    updateTime.setHours(15, 0, 0, 0);
 
     let timeUntilUpdate;
     if (now > updateTime) {
-      // 이미 오후 2시가 지났다면 다음날 오후 2시로 설정
+      // 이미 오후 3시가 지났다면 다음날 오후 3시로 설정
       updateTime.setDate(updateTime.getDate() + 1);
     }
     timeUntilUpdate = updateTime.getTime() - now.getTime();
@@ -169,26 +172,43 @@ const Test3 = () => {
                 >
                   {item.unit}
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'flex-start', 
+                    mr: 2,
+                    flex: 1
+                  }}>
                     {item.priceChange > 0 ? (
                       <>
-                        <BsArrowUpCircleFill style={{ color: '#ff4d4d', marginRight: '4px' }} />
-                        <Typography sx={{ color: '#ff4d4d', fontSize: '0.9rem' }}>
+                        <BsArrowUpCircleFill style={{ color: '#ff4d4d', marginRight: '4px', flexShrink: 0, marginTop: '4px' }} />
+                        <Typography sx={{ 
+                          color: '#ff4d4d', 
+                          fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                          wordBreak: 'break-word'
+                        }}>
                           +{item.priceChange.toLocaleString()} ({((item.priceChange / item.yesterdayPrice) * 100).toFixed(1)}%)
                         </Typography>
                       </>
                     ) : item.priceChange < 0 ? (
                       <>
-                        <BsArrowDownCircleFill style={{ color: '#4d79ff', marginRight: '4px' }} />
-                        <Typography sx={{ color: '#4d79ff', fontSize: '0.9rem' }}>
+                        <BsArrowDownCircleFill style={{ color: '#4d79ff', marginRight: '4px', flexShrink: 0, marginTop: '4px' }} />
+                        <Typography sx={{ 
+                          color: '#4d79ff', 
+                          fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                          wordBreak: 'break-word'
+                        }}>
                           {item.priceChange.toLocaleString()} ({((item.priceChange / item.yesterdayPrice) * 100).toFixed(1)}%)
                         </Typography>
                       </>
                     ) : (
                       <>
-                        <BsDashCircleFill style={{ color: '#666666', marginRight: '4px' }} />
-                        <Typography sx={{ color: '#666666', fontSize: '0.9rem' }}>
+                        <BsDashCircleFill style={{ color: '#666666', marginRight: '4px', flexShrink: 0, marginTop: '4px' }} />
+                        <Typography sx={{ 
+                          color: '#666666', 
+                          fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                          wordBreak: 'break-word'
+                        }}>
                           0 (0.0%)
                         </Typography>
                       </>
@@ -201,14 +221,16 @@ const Test3 = () => {
                       textAlign: 'right',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'flex-end'
+                      justifyContent: 'flex-end',
+                      fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' },
+                      flexShrink: 0
                     }}
                   >
                     {parseInt(item.price.replace(/,/g, '')).toLocaleString()}
                     <Typography
                       component="span"
                       sx={{
-                        fontSize: '1rem',
+                        fontSize: { xs: '0.8rem', sm: '1rem' },
                         ml: 0.5,
                         color: '#666'
                       }}
@@ -226,4 +248,4 @@ const Test3 = () => {
   );
 };
 
-export default Test3;
+export default Today;

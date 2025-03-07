@@ -29,11 +29,11 @@ axiosInstance.interceptors.request.use(
 export const fetchPosts = createAsyncThunk(
   "write/fetchPosts",
   async (communityType) => {
-    console.log("[writeSlice] 게시글 목록 조회 시작:", communityType);
+    // console.log("[writeSlice] 게시글 목록 조회 시작:", communityType);
     const response = await axiosInstance.get(
       `/api/write/community/${communityType}`
     );
-    console.log("[writeSlice] 게시글 목록 조회 응답:", response.data);
+    // console.log("[writeSlice] 게시글 목록 조회 응답:", response.data);
     return response.data;
   }
 );
@@ -101,12 +101,12 @@ const writeSlice = createSlice({
     builder
       // 게시글 목록 조회
       .addCase(fetchPosts.pending, (state) => {
-        console.log("[writeSlice] 게시글 목록 조회 중...");
+        // console.log("[writeSlice] 게시글 목록 조회 중...");
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
-        console.log("[writeSlice] 게시글 목록 조회 성공:", action.payload);
+        // console.log("[writeSlice] 게시글 목록 조회 성공:", action.payload);
         state.loading = false;
         if (action.payload.success) {
           state.posts = {
@@ -114,7 +114,7 @@ const writeSlice = createSlice({
             success: true,
             message: null
           };
-          console.log("[writeSlice] 상태 업데이트 완료:", state.posts);
+          // console.log("[writeSlice] 상태 업데이트 완료:", state.posts);
         } else {
           state.posts = {
             data: [],
