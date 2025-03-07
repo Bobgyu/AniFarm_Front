@@ -63,6 +63,7 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/mypage" element={<Mypage />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/trainingMethod" element={<TrainingMethod />} />
         <Route path="/Today" element={<Today />} />
         <Route path="/trainingDetail" element={<TrainingDetail />} />

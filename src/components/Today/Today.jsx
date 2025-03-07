@@ -7,6 +7,8 @@ import {
   Grid,
   Paper,
   CircularProgress,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import { BsArrowUpCircleFill, BsArrowDownCircleFill, BsDashCircleFill } from 'react-icons/bs';
 
@@ -14,6 +16,11 @@ const Today = () => {
   const [priceData, setPriceData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('200'); // 기본값은 채소류
+
+  const handleCategoryChange = (event, newValue) => {
+    setSelectedCategory(newValue);
+  };
 
   useEffect(() => {
     const fetchPriceData = async () => {
@@ -30,28 +37,21 @@ const Today = () => {
               updateTime.setHours(15, 0, 0, 0);
               const isBeforeUpdate = now < updateTime;
 
-              // 오후 3시 이전: 하루 전 데이터(dpr2) 표시
-              // 오후 3시 이후: 당일 데이터(dpr1) 표시
-              // 항상 전날 데이터(dpr2)와 비교
               const currentPrice = isBeforeUpdate ? item.dpr2 : (item.dpr1 === '-' ? item.dpr2 : item.dpr1);
               const previousPrice = item.dpr2;
               
-              // 가격이 없거나 '-' 인 경우 제외
               if (currentPrice === '-' || previousPrice === '-') return acc;
               
-              // 이미 해당 품목이 있고 현재 처리중인 품목의 가격이 더 낮은 경우 건너뛰기
               if (acc[item.item_name] && Number(acc[item.item_name].price.replace(/,/g, '')) <= Number(currentPrice.replace(/,/g, ''))) {
                 return acc;
               }
               
-              // 가격 변동 계산 (전일 대비)
-              const todayPrice = Number(currentPrice.replace(/,/g, '')); // 현재 표시할 가격
-              const yesterdayPrice = Number(previousPrice.replace(/,/g, '')); // 전일 가격
+              const todayPrice = Number(currentPrice.replace(/,/g, ''));
+              const yesterdayPrice = Number(previousPrice.replace(/,/g, ''));
               const priceChange = todayPrice - yesterdayPrice;
               
-              // 날짜 결정
               const displayDate = isBeforeUpdate ? item.day2.replace(/[()]/g, '') : (item.dpr1 === '-' ? item.day2.replace(/[()]/g, '') : item.day1.replace(/[()]/g, ''));
-              const previousDate = item.day2.replace(/[()]/g, ''); // 항상 전날 날짜 사용
+              const previousDate = item.day2.replace(/[()]/g, '');
               
               acc[item.item_name] = {
                 price: currentPrice,
@@ -59,15 +59,16 @@ const Today = () => {
                 date: displayDate,
                 previousDate: previousDate,
                 priceChange: priceChange,
-                yesterdayPrice: yesterdayPrice
+                yesterdayPrice: yesterdayPrice,
+                category_code: item.category_code,
+                category_name: item.category_name
               };
               return acc;
             }, {});
           
-          console.log('Processed Data:', processedData); // 디버깅용 로그 추가
           setPriceData(processedData);
         } else {
-          console.error('Invalid API response structure:', response.data); // 디버깅용 로그 추가
+          console.error('Invalid API response structure:', response.data);
           setError('데이터 형식이 올바르지 않습니다.');
         }
       } catch (err) {
@@ -80,14 +81,12 @@ const Today = () => {
 
     fetchPriceData();
 
-    // 오후 3시가 되면 자동으로 데이터 갱신
     const now = new Date();
     const updateTime = new Date(now);
     updateTime.setHours(15, 0, 0, 0);
 
     let timeUntilUpdate;
     if (now > updateTime) {
-      // 이미 오후 3시가 지났다면 다음날 오후 3시로 설정
       updateTime.setDate(updateTime.getDate() + 1);
     }
     timeUntilUpdate = updateTime.getTime() - now.getTime();
@@ -96,7 +95,6 @@ const Today = () => {
       fetchPriceData();
     }, timeUntilUpdate);
 
-    // 컴포넌트가 언마운트될 때 타이머 정리
     return () => clearTimeout(updateTimer);
   }, []);
 
@@ -118,9 +116,7 @@ const Today = () => {
     );
   }
 
-  // 데이터가 없거나 올바르지 않은 형식일 경우 처리
   if (!priceData || typeof priceData !== 'object') {
-    console.log('Invalid data format:', priceData);
     return (
       <Container>
         <Typography color="error" variant="h6" align="center">
@@ -130,22 +126,59 @@ const Today = () => {
     );
   }
 
+  // 현재 선택된 카테고리의 데이터만 필터링
+  const filteredData = Object.entries(priceData).filter(([_, item]) => item.category_code === selectedCategory);
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
             <span role="img" aria-label="money bag">💰</span>
-            오늘의 채소 소비자 가격은?
+            오늘의 농산물 소비자 가격은?
           </Typography>
         </Box>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs 
+            value={selectedCategory} 
+            onChange={handleCategoryChange} 
+            aria-label="category tabs"
+            sx={{
+              '& .MuiTab-root': {
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                minWidth: '120px',
+                padding: '12px 24px'
+              }
+            }}
+          >
+            <Tab 
+              label="채소류" 
+              value="200" 
+              sx={{ 
+                '&.Mui-selected': {
+                  color: '#2e7d32'
+                }
+              }}
+            />
+            <Tab 
+              label="곡물류" 
+              value="100"
+              sx={{ 
+                '&.Mui-selected': {
+                  color: '#ed6c02'
+                }
+              }}
+            />
+          </Tabs>
+        </Box>
         <Typography variant="body2" align="right" sx={{ color: '#666' }}>
-          가격단위: 원    기준일 {Object.values(priceData)[0]?.date || ''}
+          가격단위: 원    기준일 {filteredData[0]?.[1]?.date || ''}
         </Typography>
       </Box>
 
       <Grid container spacing={2}>
-        {Object.entries(priceData).map(([key, item]) => (
+        {filteredData.map(([key, item]) => (
           <Grid item xs={12} sm={6} md={3} key={key}>
             <Paper
               sx={{

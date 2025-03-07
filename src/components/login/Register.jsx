@@ -18,8 +18,8 @@ const Register = () => {
   const { verificationCode, isEmailVerified } = useSelector(
     (state) => state.auth
   );
-  console.log("verificationCode", verificationCode);
-  console.log("isEmailVerified", isEmailVerified);
+  // console.log("verificationCode", verificationCode);
+  // console.log("isEmailVerified", isEmailVerified);
 
   /* React Router: useNavigate로 페이지 이동을 처리합니다. */
   useEffect(() => {
@@ -52,6 +52,8 @@ const Register = () => {
 
   const [userInputCode, setUserInputCode] = useState("");
   const [showVerificationInput, setShowVerificationInput] = useState(false);
+  const [verificationExpiry, setVerificationExpiry] = useState(null);
+  const [remainingTime, setRemainingTime] = useState(null);
 
   /* State 관리: 사용자 입력값과 인증 코드를 관리하기 위한 상태를 정의합니다. */
   const handleSendVerification = async () => {
@@ -79,10 +81,13 @@ const Register = () => {
       const response = await dispatch(fetchPostEmailVerificationData(value.email)).unwrap();
       if (response.success) {
         setShowVerificationInput(true);
+        const expiryTime = new Date().getTime() + (3 * 60 * 1000); // 3분 설정
+        setVerificationExpiry(expiryTime);
+        
         await Swal.fire({
           icon: "success",
           title: "인증코드 발송",
-          text: response.message,
+          text: "인증코드의 유효시간은 3분입니다.",
         });
       }
     } catch (error) {
@@ -93,6 +98,36 @@ const Register = () => {
       });
     }
   };
+
+  // 남은 시간 계산 및 표시
+  useEffect(() => {
+    if (verificationExpiry) {
+      const timer = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = verificationExpiry - now;
+        
+        if (distance <= 0) {
+          clearInterval(timer);
+          setRemainingTime(null);
+          setVerificationExpiry(null);
+          setShowVerificationInput(false);
+          dispatch(resetAuthState());
+          
+          Swal.fire({
+            icon: "error",
+            title: "인증 시간 만료",
+            text: "인증코드가 만료되었습니다. 다시 시도해주세요.",
+          });
+        } else {
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          setRemainingTime(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
+        }
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [verificationExpiry, dispatch]);
 
   /* - 인증 코드 발송: 이메일 입력 후 인증 코드를 발송하는 함수입니다. 이메일이 입력되지 않으면 경고를 표시합니다. */
   const handleVerifyCode = async () => {
@@ -264,7 +299,7 @@ const Register = () => {
             {showVerificationInput && (
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">
-                  이메일 확인
+                  이메일 확인 {remainingTime && `(남은시간: ${remainingTime})`}
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -278,6 +313,7 @@ const Register = () => {
                     onClick={handleVerifyCode}
                     type="button"
                     className="px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                    disabled={!remainingTime}
                   >
                     확인
                   </button>

@@ -33,6 +33,9 @@ const Write = ({ posts }) => {
       indoor: "실내 식물",
       pests: "병충해 관리",
       hydroponic: "수경 재배",
+      question: "질문하기",
+      sell: "판매하기",
+      buy: "구매하기"
     };
     return categories[category] || category;
   };

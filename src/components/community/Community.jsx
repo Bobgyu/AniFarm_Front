@@ -49,12 +49,13 @@ const Community = () => {
       case "marketplace":
         return [
           { id: "all", name: "전체" },
-          { id: "marketplace", name: "판매/구매" },
+          { id: "question", name: "질문하기" },
+          { id: "sell", name: "판매하기" },
+          { id: "buy", name: "구매하기" },
         ];
       case "freeboard":
         return [
           { id: "all", name: "전체" },
-          { id: "general", name: "일반 토론" },
         ];
       default:
         return [{ id: "all", name: "전체" }];
@@ -65,13 +66,11 @@ const Community = () => {
 
   // 게시글 가져오기
   useEffect(() => {
-    // console.log("[Community] 게시글 목록 조회 시작:", communityType);
     dispatch(fetchPosts(communityType));
   }, [dispatch, communityType]);
 
   // 게시글 필터링
   const filteredPosts = useMemo(() => {
-    // console.log("[Community] 현재 postsData:", postsData);
     if (!postsData?.data || !Array.isArray(postsData.data)) {
       console.log("[Community] 유효한 게시글 데이터가 없음");
       return [];
@@ -86,13 +85,15 @@ const Community = () => {
         post.content?.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesCategory =
-        selectedCategory === "all" || post.category === selectedCategory;
+        communityType === "freeboard" || 
+        selectedCategory === "all" || 
+        post.category === selectedCategory;
+        
       const matchesCommunityType = post.community_type === communityType;
 
       return matchesSearch && matchesCategory && matchesCommunityType;
     });
 
-    // console.log("[Community] 필터링된 게시글:", filtered);
     return filtered;
   }, [postsData, searchTerm, selectedCategory, communityType]);
 
@@ -107,31 +108,33 @@ const Community = () => {
       <CommunityNavigation />
 
       <div className="flex justify-between items-center mb-6">
-        <div className="relative">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="text-gray-600 cursor-pointer hover:text-gray-800 border border-gray-300 rounded-lg px-4 py-2 flex items-center"
-          >
-            {getCategoryName(selectedCategory)}
-          </button>
+        {communityType !== "freeboard" && (
+          <div className="relative">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="text-gray-600 cursor-pointer hover:text-gray-800 border border-gray-300 rounded-lg px-4 py-2 flex items-center"
+            >
+              {getCategoryName(selectedCategory)}
+            </button>
 
-          {isDropdownOpen && (
-            <div className="absolute z-10 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => {
-                    setSelectedCategory(category.id);
-                    setIsDropdownOpen(false);
-                  }}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+            {isDropdownOpen && (
+              <div className="absolute z-10 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => {
+                      setSelectedCategory(category.id);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center space-x-4">
           <input
