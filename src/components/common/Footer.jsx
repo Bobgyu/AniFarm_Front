@@ -2,17 +2,6 @@ import React from "react";
 import AnifarmLogo from "../../assets/main/aniform.png";
 
 const Footer = () => {
-  const navigateToTest1 = () => {
-    window.location.href = "/test1";
-  };
-
-  const navigateToTest2 = () => {
-    window.location.href = "/test2";
-  };
-
-  const navigateToTest3 = () => {
-    window.location.href = "/test3";
-  };
 
   const navigateToTest4 = () => {
     window.location.href = "/test4";
@@ -22,13 +11,6 @@ const Footer = () => {
     window.location.href = "/test5";
   };
 
-  const navigateToTest6 = () => {
-    window.location.href = "/test6";
-  };
-
-  const navigateToTest7 = () => {
-    window.location.href = "/test7";
-  };
 
   return (
     <footer className="flex justify-center items-center pt-1 sm:pt-10 md:pt-8 border-t">
@@ -52,17 +34,8 @@ const Footer = () => {
 
         {/* 버튼 추가 */}
         <div className="py-2 md:py-4 hover:text-green-500">
-          <button onClick={navigateToTest1} className="mr-2">
-            Test1
-          </button>
-          <button onClick={navigateToTest2} className="mr-2">
-            Test2
-          </button>
-          <button onClick={navigateToTest3}>Test3</button>
           <button onClick={navigateToTest4}>Test4</button>
           <button onClick={navigateToTest5}>Test5</button>
-          <button onClick={navigateToTest6}>Test6</button>
-          <button onClick={navigateToTest7}>Test7</button>
         </div>
 
         {/* 구분선 */}
