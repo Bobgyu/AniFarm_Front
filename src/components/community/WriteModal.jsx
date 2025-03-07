@@ -97,15 +97,13 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
       case "marketplace":
         return (
           <>
-            <option value="marketplace">판매/구매</option>
+            <option value="question">질문하기</option>
+            <option value="sell">판매하기</option>
+            <option value="buy">구매하기</option>
           </>
         );
       case "freeboard":
-        return (
-          <>
-            <option value="general">일반 토론</option>
-          </>
-        );
+        return null;
       default:
         return null;
     }
@@ -127,18 +125,20 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block font-semibold mb-1">카테고리</label>
-            <select
-              value={postData.category}
-              onChange={(e) =>
-                setPostData({ ...postData, category: e.target.value })
-              }
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            >
-              {getCategoryOptions()}
-            </select>
-          </div>
+          {communityType !== "freeboard" && (
+            <div>
+              <label className="block font-semibold mb-1">카테고리</label>
+              <select
+                value={postData.category}
+                onChange={(e) =>
+                  setPostData({ ...postData, category: e.target.value })
+                }
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              >
+                {getCategoryOptions()}
+              </select>
+            </div>
+          )}
 
           <div>
             <label className="block font-semibold mb-1">제목</label>

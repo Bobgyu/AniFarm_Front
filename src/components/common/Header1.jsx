@@ -113,7 +113,7 @@ const Header = () => {
           <div className="border-l h-6 border-black"></div>
           <Link
             to="/sale"
-            className="text-lg font-semibold text-black hover:text-neutral-800 hover:underline transition-all duration-100 px-6 py-2 hover:bg-gray-300 rounded-lg"
+            className="text-lg font-semibold text-black hover:text-neutral-800 line transition-all duration-100 px-6 py-2 hover:bg-[#3a9d1f] rounded-lg hover:text-white"
           >
             판매하기
           </Link>

@@ -18,8 +18,8 @@ const Register = () => {
   const { verificationCode, isEmailVerified } = useSelector(
     (state) => state.auth
   );
-  console.log("verificationCode", verificationCode);
-  console.log("isEmailVerified", isEmailVerified);
+  // console.log("verificationCode", verificationCode);
+  // console.log("isEmailVerified", isEmailVerified);
 
   /* React Router: useNavigate로 페이지 이동을 처리합니다. */
   useEffect(() => {

@@ -29,7 +29,7 @@ const Mypage = () => {
 
   // 디버깅을 위한 로그 추가
   useEffect(() => {
-    console.log("User Info:", userInfo);
+    // console.log("User Info:", userInfo);
   }, [userInfo]);
 
   const handlePasswordChange = async (e) => {
