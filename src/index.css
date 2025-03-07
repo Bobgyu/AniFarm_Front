@@ -200,7 +200,7 @@ body {
   right: 35px;
   width: 550px;
   background: #fff;
-  border-radius: 15px;
+  border-radius: 25px;
   box-shadow: 0 0 128px rgba(0, 0, 0, 0.1), 0 32px 64px -48px rgba(0, 0, 0, 0.5);
   opacity: 0;
   pointer-events: none;
@@ -220,6 +220,7 @@ body {
   justify-content: space-between;
   background: green;
   padding: 15px 20px;
+  border-radius: 25px 25px 0 0;
 }
 
 .cb-popup .header-info{
@@ -276,8 +277,13 @@ body {
 
 .cb-body .message{
   display: flex;
-  align-items: center;
   gap: 10px;
+  width: 100%;
+}
+
+.cb-body .bot-message {
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .cb-body .bot-message svg{
@@ -300,19 +306,19 @@ body {
   
 .cb-body .bot-message .message-text{
   background: #f6f2ff;
-  border-radius: 13px 13px 13px 3px; /* 위 오른쪽 아래 왼쪽 */
+  border-radius: 18px 18px 18px 5px; /* 위 오른쪽 아래 왼쪽 */
 }
 
 .cb-body .user-message{
-  flex-direction: column;
-  align-items: flex-end;
-  /* align-self: flex-end; */
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .cb-body .user-message .message-text{
   background: green;
   color: #fff;
-  border-radius: 13px 3px 13px 13px;
+  border-radius: 18px 5px 18px 18px;
 }
 
 .cb-footer{
@@ -321,6 +327,7 @@ body {
   width: 100%;
   padding: 15px 22px 20px;
   background: #fff;
+  border-radius: 0 0 25px 25px;
 }
 
 .cb-footer .chat-form{
