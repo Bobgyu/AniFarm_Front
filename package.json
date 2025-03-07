@@ -16,6 +16,7 @@
     "gsap": "^3.12.7",
     "highcharts": "^12.1.2",
     "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.477.0",
     "react": "^19.0.0",
     "react-datepicker": "^8.1.0",
     "react-dom": "^19.0.0",
