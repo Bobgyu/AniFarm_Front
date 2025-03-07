@@ -106,14 +106,14 @@ const Header = () => {
         <div className="main-menu flex gap-12 justify-center items-center h-full mt-8">
           <Link
             to="/culture"
-            className="text-lg font-semibold text-black hover:text-neutral-800 hover:underline transition-all duration-100 px-6 py-2 rounded-lg"
+            className="inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center text-gray-900 no-underline align-middle transition-all duration-300 ease-in-out bg-transparent border-2 border-gray-600 border-solid rounded-full cursor-pointer select-none hover:text-white hover:bg-[#3a9d1f] hover:border-[#3a9d1f] focus:shadow-xs focus:no-underline"
           >
             재배하기
           </Link>
           <div className="border-l h-6 border-black"></div>
           <Link
             to="/sale"
-            className="text-lg font-semibold text-black hover:text-neutral-800 line transition-all duration-100 px-6 py-2 hover:bg-[#3a9d1f] rounded-lg hover:text-white"
+            className="inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center text-gray-900 no-underline align-middle transition-all duration-300 ease-in-out bg-transparent border-2 border-gray-600 border-solid rounded-full cursor-pointer select-none hover:text-white hover:bg-[#3a9d1f] hover:border-[#3a9d1f] focus:shadow-xs focus:no-underline"
           >
             판매하기
           </Link>
