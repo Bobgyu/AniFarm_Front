@@ -46,7 +46,7 @@ const TrainingMethod = () => {
   useEffect(() => {
     const fetchYoutubeVideos = async () => {
       try {
-        const response = await axios.get('http://localhost:9000/api/youtube-videos');
+        const response = await axios.get('http://localhost:8000/youtube-videos');
         setVideos(response.data || []);
       } catch (error) {
         console.error('YouTube 데이터 fetch 오류:', error);
