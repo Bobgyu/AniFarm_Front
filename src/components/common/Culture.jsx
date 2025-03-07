@@ -105,7 +105,7 @@ const Culture = () => {
             </Link>
 
             {/* 날씨 카드 */}
-            <Link to="/test1">
+            <Link to="/weather">
               <div
                 onMouseEnter={() => handleMouseEnter("weather")}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"

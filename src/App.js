@@ -15,8 +15,7 @@ import Register from "./components/login/Register";
 import Login from "./components/login/details/Login";
 import Mypage from "./components/login/Mypage";
 import PricingInformation from "./components/PricingInformation/PricingInformation";
-import Test1 from "./components/test/Test1";
-import Test2 from "./components/test/Test2";
+import Weather from "./components/weather/Weather.jsx";
 import Test4 from "./components/test/Test4";
 import Test5 from "./components/test/Test5";
 import Test6 from "./components/test/Test6";
@@ -30,7 +29,7 @@ import Write from "./components/community/Write";
 import { useDispatch } from "react-redux";
 import AccordionItem from "./components/common/AccordionItem";
 import TrainingDetail from "./components/trainingMethod/TrainingDetail";
-import Today from "./Today/Today";
+import Today from "./components/Today/Today";
 import useAutoLogout from "./hooks/useAutoLogout";
 
 function App() {
@@ -55,12 +54,12 @@ function AppContent() {
         <Route path="/culture" element={<Culture />} />
         <Route path="/sale" element={<Sale />} />
         <Route path="/pricingInformation" element={<PricingInformation />} />
+        <Route path="/weather" element={<Weather />} />
         <Route path="/community/gardening" element={<Community />} />
         <Route path="/community/marketplace" element={<Community />} />
         <Route path="/community/freeboard" element={<Community />} />
         <Route path="/community/:postId" element={<PostDetail />} />
         <Route path="/Community/write" element={<Write />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/SalsesInformation" element={<SalsesInformation />} />
         <Route path="/pests" element={<Pests />} />
         <Route path="/login" element={<Login />} />
@@ -69,13 +68,10 @@ function AppContent() {
         <Route path="/Today" element={<Today />} />
         <Route path="/trainingDetail" element={<TrainingDetail />} />
         <Route path="/accordionitem" element={<AccordionItem />} />
-        <Route path="/test1" element={<Test1 />} />
-        <Route path="/test2" element={<Test2 />} />
         <Route path="/test4" element={<Test4 />} />
         <Route path="/test5" element={<Test5 />} />
         <Route path="/test6" element={<Test6 />} />
         <Route path="/test7" element={<Test7 />} />
-        <Route path="/accordionitem" element={<AccordionItem />} />
       </Routes>
       <Footer />
     </div>
