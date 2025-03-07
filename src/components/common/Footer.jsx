@@ -7,9 +7,6 @@ const Footer = () => {
     window.location.href = "/test4";
   };
 
-  const navigateToTest5 = () => {
-    window.location.href = "/test5";
-  };
 
 
   return (
@@ -35,7 +32,6 @@ const Footer = () => {
         {/* 버튼 추가 */}
         <div className="py-2 md:py-4 hover:text-green-500">
           <button onClick={navigateToTest4}>Test4</button>
-          <button onClick={navigateToTest5}>Test5</button>
         </div>
 
         {/* 구분선 */}

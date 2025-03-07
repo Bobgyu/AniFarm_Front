@@ -17,7 +17,6 @@ import Mypage from "./components/login/Mypage";
 import PricingInformation from "./components/PricingInformation/PricingInformation";
 import Weather from "./components/weather/Weather.jsx";
 import Test4 from "./components/test/Test4";
-import Test5 from "./components/test/Test5";
 import Community from "./components/community/Community";
 import SalsesInformation from "./components/SalsesInformation/SalsesInformation";
 import Pests from "./components/pests/Pests";
@@ -69,7 +68,6 @@ function AppContent() {
         <Route path="/trainingDetail" element={<TrainingDetail />} />
         <Route path="/accordionitem" element={<AccordionItem />} />
         <Route path="/test4" element={<Test4 />} />
-        <Route path="/test5" element={<Test5 />} />
       </Routes>
       <Footer />
     </div>
