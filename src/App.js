@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState, useRef } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -29,6 +29,9 @@ import AccordionItem from "./components/common/AccordionItem";
 import TrainingDetail from "./components/trainingMethod/TrainingDetail";
 import Today from "./components/Today/Today";
 import useAutoLogout from "./hooks/useAutoLogout";
+import { ChatIcon } from "./components/chatbot/ChatIcon";
+import { ChatMsg } from "./components/chatbot/ChatMsg";
+import ChatForm from "./components/chatbot/ChatForm";
 
 function App() {
   return (
@@ -43,6 +46,52 @@ function AppContent() {
   const location = useLocation();
   const dispatch = useDispatch();
   useAutoLogout(); // 커스텀 훅 사용
+
+  // 챗봇 관련 상태
+  const [showChatbot, setShowChatbot] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+  const chatBodyRef = useRef();
+
+  const BACKEND_URL = "http://localhost:8080/chat";
+
+  const generateChatResponse = async (history) => {
+    const updateHistory = (text) => {
+      setChatHistory((prev) => [...prev.filter((msg) => msg.text !== "생각중..."), {role: "model", text}]);
+    };
+
+    const formattedHistory = history.map(({role, text}) => ({
+      role: role === 'user' ? 'user' : 'model',
+      parts: [{text:text}]
+    }));
+    
+    const requestOptions = {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({contents: formattedHistory})
+    }
+
+    try {
+      const response = await fetch(BACKEND_URL, requestOptions);
+      const data = await response.json();
+
+      if (!response.ok)
+        throw new Error(data.error.message || "요청 오류가 발생했습니다.");
+
+      const responseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
+      updateHistory(responseText);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    if (chatBodyRef.current) {
+      chatBodyRef.current.scrollTo({
+        top: chatBodyRef.current.scrollHeight,
+        behavior: "smooth"
+      });
+    }
+  }, [chatHistory]);
 
   return (
     <div className="App">
@@ -72,6 +121,36 @@ function AppContent() {
         <Route path="/test5" element={<Test5 />} />
       </Routes>
       <Footer />
+
+      {/* 챗봇 UI */}
+      <div className={`container ${showChatbot ? "show-chatbot" : ""}`}>
+        <button id="cb-toggler" onClick={() => setShowChatbot((prev) => !prev)}>
+          <span className="material-symbols-outlined">mode_comment</span>
+          <span className="material-symbols-outlined">close</span>
+        </button>
+
+        <div className="cb-popup">
+          <div className="cb-header">
+            <div className="header-info">
+              <ChatIcon />
+              <h2 className="logo-text">Farming Agent Chatbot</h2>
+            </div>
+            <button className="material-symbols-outlined" onClick={() => setShowChatbot((prev) => !prev)}>keyboard_arrow_down</button>
+          </div>
+          <div className="cb-body" ref={chatBodyRef}>
+            <div className="message bot-message">
+              <ChatIcon />
+              <p className="message-text">안녕하세요 <br /> 저는 농업 챗봇입니다. 무엇을 도와드릴까요?</p>
+            </div>
+            {chatHistory.map((chat, index) => (
+              <ChatMsg key={index} chat={chat}/>
+            ))}
+          </div>
+          <div className="cb-footer">
+            <ChatForm chatHistory={chatHistory} setChatHistory={setChatHistory} generateChatResponse={generateChatResponse} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
