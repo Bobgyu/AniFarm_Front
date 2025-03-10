@@ -131,14 +131,14 @@ const Header = () => {
 
   return (
     <div className="w-full flex justify-center shadow-custom sticky top-0 z-50 border-b-2">
-      <div className="w-full p-1 pb-7 flex flex-col items-center relative overflow-hidden bg-white h-24">
+      <div className="w-2/3 p-1 pb-7 flex flex-col items-center relative overflow-hidden bg-white h-24">
         <div className="logo absolute left-4">
           <Link to="/">
             <img src={AnifarmLogo} alt="로고" className="w-[50px] y-[100px]" />
           </Link>
         </div>
 
-        <div className="main-menu flex gap-12 justify-center items-center h-full mt-8">
+        <div className="main-menu flex gap-12 justify-center items-center h-full mt-6">
           <Link
             to="/culture"
             className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out bg-transparent border-2 rounded-full cursor-pointer select-none focus:outline-none ${
