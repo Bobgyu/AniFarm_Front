@@ -147,7 +147,13 @@ const Today = () => {
     return (
       <Container>
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="h5" component="h1" sx={{ 
+            fontWeight: 'bold', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            mt: 4
+          }}>
             <span role="img" aria-label="money bag">💰</span>
             오늘의 농산물 소비자 가격은?
           </Typography>
@@ -197,7 +203,13 @@ const Today = () => {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="h5" component="h1" sx={{ 
+            fontWeight: 'bold', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            mt: 4
+          }}>
             <span role="img" aria-label="money bag">💰</span>
             오늘의 농산물 소비자 가격은?
           </Typography>
