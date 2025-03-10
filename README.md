@@ -1,70 +1,130 @@
-# Getting Started with Create React App
+# 농산물 가격 정보 웹 서비스
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+농산물 가격 정보 및 예측, 커뮤니티 기능을 제공하는 웹 서비스의 프론트엔드 프로젝트입니다.
 
-## Available Scripts
+## 기술 스택
 
-In the project directory, you can run:
+- React.js
+- TypeScript
+- Tailwind CSS
+- Chart.js (데이터 시각화)
+- Axios (HTTP 클라이언트)
+
+## 시작하기
+
+### 사전 요구사항
+
+- Node.js 14.0.0 이상
+- npm 6.0.0 이상
+
+### 설치
+
+1. 프로젝트 클론
+
+```bash
+git clone [repository-url]
+cd front
+```
+
+2. 의존성 설치
+
+```bash
+npm install
+```
+
+3. 개발 서버 실행
+
+```bash
+npm start
+```
+
+서버는 기본적으로 http://localhost:3000 에서 실행됩니다.
+
+## 사용 가능한 스크립트
 
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+개발 모드로 앱을 실행합니다.\
+브라우저에서 [http://localhost:3000](http://localhost:3000)으로 접속할 수 있습니다.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+코드를 수정하면 페이지가 자동으로 새로고침됩니다.\
+콘솔에서 린트 오류를 확인할 수 있습니다.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+테스트 러너를 실행합니다.\
+자세한 내용은 [테스트 실행하기](https://facebook.github.io/create-react-app/docs/running-tests)를 참조하세요.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+프로덕션용 앱을 `build` 폴더에 빌드합니다.\
+React를 프로덕션 모드로 번들링하고 최적화하여 최상의 성능을 제공합니다.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+빌드된 파일은 최소화되며 파일 이름에 해시가 포함됩니다.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 주요 기능
 
-### `npm run eject`
+### 1. 농산물 정보
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- 도시별 날씨 정보 조회
+- 참외 질병 예측 (이미지 업로드)
+- 작물 가격 예측 차트
+- 위성 이미지 뷰어
+- 실시간 농산물 가격 정보
+- 시장 정보 조회
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 2. 사용자 관리
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- 회원가입
+- 로그인/로그아웃
+- 사용자 프로필 관리
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 3. 커뮤니티
 
-## Learn More
+- 게시글 작성/조회/수정/삭제
+- 댓글 작성/조회
+- 카테고리별 게시판
+  - 텃밭 정보
+  - 농산물 마켓
+  - 자유게시판
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 프로젝트 구조
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+front/
+├── src/               # 소스 코드
+│   ├── components/    # 리액트 컴포넌트
+│   ├── pages/        # 페이지 컴포넌트
+│   ├── api/          # API 통신
+│   ├── hooks/        # 커스텀 훅
+│   ├── store/        # 상태 관리
+│   ├── types/        # TypeScript 타입 정의
+│   └── utils/        # 유틸리티 함수
+├── public/           # 정적 파일
+├── chartdata/        # 차트 데이터
+└── tailwind.config.js # Tailwind CSS 설정
+```
 
-### Code Splitting
+## 환경 변수 설정
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+`.env` 파일을 생성하고 다음 내용을 설정하세요:
 
-### Analyzing the Bundle Size
+```
+REACT_APP_API_URL=http://localhost:8000
+REACT_APP_BACKEND_URL=http://localhost:8080
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 브라우저 지원
 
-### Making a Progressive Web App
+- Chrome (최신 버전)
+- Firefox (최신 버전)
+- Safari (최신 버전)
+- Edge (최신 버전)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 백엔드 연동
 
-### Advanced Configuration
+이 프로젝트는 FastAPI 백엔드 서버와 연동됩니다. 백엔드 서버 설정에 대한 자세한 내용은 `back/README.md`를 참조하세요.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 라이선스
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+이 프로젝트는 MIT 라이선스를 따릅니다.
