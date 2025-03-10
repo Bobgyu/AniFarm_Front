@@ -27,46 +27,58 @@ const Today = () => {
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:8000/api/price');
+        console.log('API Response:', response.data);
        
         if (response.data && response.data.data && response.data.data.item) {
-          const processedData = response.data.data.item
-            .filter(item => item.rank === '상품')
-            .reduce((acc, item) => {
-              const now = new Date();
-              const updateTime = new Date(now);
-              updateTime.setHours(15, 0, 0, 0);
-              const isBeforeUpdate = now < updateTime;
-
-              const currentPrice = isBeforeUpdate ? item.dpr2 : (item.dpr1 === '-' ? item.dpr2 : item.dpr1);
-              const previousPrice = item.dpr2;
-              
-              if (currentPrice === '-' || previousPrice === '-') return acc;
-              
-              if (acc[item.item_name] && Number(acc[item.item_name].price.replace(/,/g, '')) <= Number(currentPrice.replace(/,/g, ''))) {
-                return acc;
-              }
-              
-              const todayPrice = Number(currentPrice.replace(/,/g, ''));
-              const yesterdayPrice = Number(previousPrice.replace(/,/g, ''));
-              const priceChange = todayPrice - yesterdayPrice;
-              
-              const displayDate = isBeforeUpdate ? item.day2.replace(/[()]/g, '') : (item.dpr1 === '-' ? item.day2.replace(/[()]/g, '') : item.day1.replace(/[()]/g, ''));
-              const previousDate = item.day2.replace(/[()]/g, '');
-              
-              acc[item.item_name] = {
-                price: currentPrice,
-                unit: item.unit,
-                date: displayDate,
-                previousDate: previousDate,
-                priceChange: priceChange,
-                yesterdayPrice: yesterdayPrice,
-                category_code: item.category_code,
-                category_name: item.category_name
-              };
-              return acc;
-            }, {});
+          // 가장 최근의 유효한 데이터를 찾기 위한 임시 저장소
+          const latestValidData = {};
           
-          setPriceData(processedData);
+          response.data.data.item
+            .filter(item => item.rank === '상품')
+            .forEach(item => {
+              const itemName = item.item_name;
+              const hasDpr1 = item.dpr1 !== '-';
+              const hasDpr2 = item.dpr2 !== '-';
+              
+              console.log('Processing item:', itemName, { 
+                dpr1: item.dpr1, 
+                dpr2: item.dpr2, 
+                day1: item.day1, 
+                day2: item.day2,
+                category_code: item.category_code 
+              });
+
+              // 현재 아이템의 데이터가 유효한지 확인
+              if (!hasDpr1 && !hasDpr2) return;
+
+              // 이미 저장된 데이터가 없거나, 현재 데이터가 더 최신인 경우
+              if (!latestValidData[itemName] || 
+                  (hasDpr1 && new Date(item.day1.replace(/[()]/g, '')) > new Date(latestValidData[itemName].date))) {
+                
+                const price = hasDpr1 ? item.dpr1 : item.dpr2;
+                const date = hasDpr1 ? item.day1 : item.day2;
+                const previousPrice = hasDpr2 ? item.dpr2 : price;
+                const previousDate = hasDpr2 ? item.day2 : date;
+                
+                const currentPrice = Number(price.replace(/,/g, ''));
+                const lastPrice = Number(previousPrice.replace(/,/g, ''));
+                
+                latestValidData[itemName] = {
+                  price: price,
+                  unit: item.unit,
+                  date: date.replace(/[()]/g, ''),
+                  previousDate: previousDate.replace(/[()]/g, ''),
+                  priceChange: currentPrice - lastPrice,
+                  yesterdayPrice: lastPrice,
+                  category_code: item.category_code,
+                  category_name: item.category_name,
+                  hasDpr1: hasDpr1
+                };
+              }
+            });
+          
+          console.log('Processed Data:', latestValidData);
+          setPriceData(latestValidData);
         } else {
           console.error('Invalid API response structure:', response.data);
           setError('데이터 형식이 올바르지 않습니다.');
@@ -81,6 +93,7 @@ const Today = () => {
 
     fetchPriceData();
 
+    // 매일 오후 3시에 데이터 업데이트
     const now = new Date();
     const updateTime = new Date(now);
     updateTime.setHours(15, 0, 0, 0);
@@ -128,6 +141,57 @@ const Today = () => {
 
   // 현재 선택된 카테고리의 데이터만 필터링
   const filteredData = Object.entries(priceData).filter(([_, item]) => item.category_code === selectedCategory);
+
+  // 필터링된 데이터가 없는 경우 처리
+  if (filteredData.length === 0) {
+    return (
+      <Container>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <span role="img" aria-label="money bag">💰</span>
+            오늘의 농산물 소비자 가격은?
+          </Typography>
+        </Box>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs 
+            value={selectedCategory} 
+            onChange={handleCategoryChange} 
+            aria-label="category tabs"
+            sx={{
+              '& .MuiTab-root': {
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                minWidth: '120px',
+                padding: '12px 24px'
+              }
+            }}
+          >
+            <Tab 
+              label="채소류" 
+              value="200" 
+              sx={{ 
+                '&.Mui-selected': {
+                  color: '#2e7d32'
+                }
+              }}
+            />
+            <Tab 
+              label="곡물류" 
+              value="100"
+              sx={{ 
+                '&.Mui-selected': {
+                  color: '#ed6c02'
+                }
+              }}
+            />
+          </Tabs>
+        </Box>
+        <Typography variant="h6" align="center" sx={{ mt: 4, color: '#666' }}>
+          선택한 카테고리의 데이터가 없습니다.
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
