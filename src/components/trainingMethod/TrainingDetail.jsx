@@ -29,10 +29,9 @@ const TrainingDetail = () => {
   }, [cropId, sortedCropEntries]);
 
   const handleCropChange = (index) => {
-    console.log('Clicked index:', index);
+    setCurrentIndex(index);  // 즉시 인덱스 변경
     setIsVisible(false);
     setTimeout(() => {
-      setCurrentIndex(index);
       setIsVisible(true);
     }, 300);
   };

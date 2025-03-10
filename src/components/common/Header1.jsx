@@ -20,6 +20,7 @@ const Header = () => {
     const culturePaths = [
       '/culture',
       '/trainingmethod',
+      '/trainingdetail',
       '/pests',
       '/weather',
       '/community/gardening'
