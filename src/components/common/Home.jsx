@@ -120,13 +120,22 @@ const Home = () => {
       )}
       <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex space-x-4 z-50">
         <div className="p-2 bg-transparent border-2 border-white rounded-full flex space-x-4">
-          <button onClick={() => handleDotClick("home")} className="text-white text-3xl">
+          <button
+            onClick={() => handleDotClick("home")}
+            className={`text-3xl ${currentView === "home" ? "text-black" : "text-white"}`}
+          >
             <LuDot />
           </button>
-          <button onClick={() => handleDotClick("test6")} className="text-white text-3xl">
+          <button
+            onClick={() => handleDotClick("test6")}
+            className={`text-3xl ${currentView === "test6" ? "text-black" : "text-white"}`}
+          >
             <LuDot />
           </button>
-          <button onClick={() => handleDotClick("test7")} className="text-white text-3xl">
+          <button
+            onClick={() => handleDotClick("test7")}
+            className={`text-3xl ${currentView === "test7" ? "text-black" : "text-white"}`}
+          >
             <LuDot />
           </button>
         </div>

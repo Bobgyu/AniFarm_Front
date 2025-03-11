@@ -46,11 +46,13 @@ const SaleNews = () => {
               <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="p-4">
                   {article.imageUrl && (
-                    <img
-                      src={article.imageUrl}
-                      alt={article.title}
-                      className="w-full h-48 object-cover border-2 border-black"
-                    />
+                    <a href={article.link} target="_blank" rel="noopener noreferrer">
+                      <img
+                        src={article.imageUrl}
+                        alt={article.title}
+                        className="w-full h-48 object-cover border-2 border-black transition-transform duration-300 hover:scale-105"
+                      />
+                    </a>
                   )}
                   <h3 className="text-lg font-semibold text-blue-500 mb-2 line-clamp-1 hover:text-blue-700 transition-colors duration-400">
                     <a href={article.link} target="_blank" rel="noopener noreferrer">
