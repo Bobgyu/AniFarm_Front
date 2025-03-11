@@ -23,6 +23,7 @@ import axios from 'axios';
 const TrainingMethod = () => {
   const [videos, setVideos] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
+  const [news, setNews] = useState([]);
 
   const [[page, direction], setPage] = useState([0, 0]);
 
@@ -55,6 +56,22 @@ const TrainingMethod = () => {
     }
 
     fetchYoutubeVideos();
+  }, []);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/news', {
+          params: { query: '채소 키우는법' }
+        });
+        setNews(response.data.items || []);
+      } catch (error) {
+        console.error('뉴스 데이터 fetch 오류:', error);
+        setNews([]);
+      }
+    };
+
+    fetchNews();
   }, []);
 
   const methods = [
@@ -252,6 +269,36 @@ const TrainingMethod = () => {
                 </p>
               </div>
             </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* 뉴스 섹션 */}
+      <div className="w-full max-w-[1280px] px-4 mx-auto pb-12">
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
+          최신 뉴스
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {news.map((article, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <div className="p-4">
+                {article.imageUrl && (
+                  <img
+                    src={article.imageUrl}
+                    alt={article.title}
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+                <h3 className="text-lg font-semibold text-blue-500 mb-2 line-clamp-2 hover:text-blue-700 transition-colors duration-400">
+                  <a href={article.link} target="_blank" rel="noopener noreferrer">
+                    {article.title}
+                  </a>
+                </h3>
+                <p className="text-gray-600 text-sm line-clamp-3">
+                  {article.description}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
       </div>
