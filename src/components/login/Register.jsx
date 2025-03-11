@@ -281,7 +281,7 @@ const Register = () => {
                 <input
                   type="email"
                   placeholder="Email"
-                  className="flex-1 appearance-none relative block px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
+                  className="flex-1 appearance-none relative block px-4 py-3 border border-[#3a9d1f] placeholder-[#3a9d1f]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0aab65] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#0aab65]"
                   name="email"
                   value={value.email}
                   onChange={handleChange}
@@ -305,7 +305,7 @@ const Register = () => {
                   <input
                     type="text"
                     placeholder="인증코드 입력"
-                    className="flex-1 appearance-none relative block px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
+                    className="flex-1 appearance-none relative block px-4 py-3 border border-[#3a9d1f] placeholder-[#3a9d1f]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0aab65] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#0aab65]"
                     value={userInputCode}
                     onChange={(e) => setUserInputCode(e.target.value)}
                   />
@@ -331,7 +331,7 @@ const Register = () => {
               <input
                 type="password"
                 placeholder="Password"
-                className="appearance-none relative block w-full px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
+                className="appearance-none relative block w-full px-4 py-3 border border-[#3a9d1f] placeholder-[#3a9d1f]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0aab65] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#0aab65]"
                 name="password"
                 onChange={handleChange}
               />
@@ -347,7 +347,7 @@ const Register = () => {
               <input
                 type="password"
                 placeholder="Confirm Password"
-                className="appearance-none relative block w-full px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
+                className="appearance-none relative block w-full px-4 py-3 border border-[#3a9d1f] placeholder-[#3a9d1f]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0aab65] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#0aab65]"
                 name="confirm_password"
                 onChange={handleChange}
               />
@@ -368,7 +368,7 @@ const Register = () => {
                       : "text"
                     : "date"
                 }`}
-                className="appearance-none relative block w-full px-4 py-3 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8bd05c] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#8bd05c]"
+                className="appearance-none relative block w-full px-4 py-3 border border-[#3a9d1f] placeholder-[#3a9d1f]/40 text-gray-900 font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0aab65] focus:border-transparent transition-all duration-200 ease-in-out hover:border-[#0aab65]"
                 name="birth_date"
                 onChange={handleChange}
                 max={getTodayDate()}
@@ -383,7 +383,7 @@ const Register = () => {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="flex-1 py-3 bg-[#8bd05c] text-white rounded-xl hover:bg-[#7dbb52] transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8bd05c] shadow-sm hover:shadow-md"
+              className="flex-1 py-3 bg-[#3a9d1f] text-white rounded-xl hover:bg-[#0aab65] transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8bd05c] shadow-sm hover:shadow-md"
             >
               가입하기
             </button>

@@ -92,7 +92,7 @@ const Login = () => {
               <input
                 type="email"
                 placeholder="Email"
-                className="appearance-none relative block w-full px-5 py-3.5 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#8bd05c]/30 focus:border-[#8bd05c]/30 transition-all duration-300 hover:border-[#8bd05c]/20"
+                className="appearance-none relative block w-full px-5 py-3.5 border border-[#3a9d1f] placeholder-[#3a9d1f]/40 text-gray-900 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#0aab65]/30 focus:border-[#0aab65]/30 transition-all duration-300 hover:border-[#0aab65]/20"
                 name="email"
                 onChange={handleChange}
                 id="emailInput"
@@ -108,7 +108,7 @@ const Login = () => {
               <input
                 type="password"
                 placeholder="••••••••"
-                className="appearance-none relative block w-full px-5 py-3.5 border border-[#8bd05c] placeholder-[#8bd05c]/40 text-gray-900 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#8bd05c]/30 focus:border-[#8bd05c]/30 transition-all duration-300 hover:border-[#8bd05c]/20"
+                className="appearance-none relative block w-full px-5 py-3.5 border border-[#3a9d1f] placeholder-[#3a9d1f]/40 text-gray-900 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#8bd05c]/30 focus:border-[#3a9d1f]/30 transition-all duration-300 hover:border-[#0aab65]/20"
                 name="password"
                 onChange={handleChange}
               />
@@ -118,7 +118,7 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-3.5 px-4 bg-[#8bd05c] text-white rounded-2xl hover:bg-[#7dbb52] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8bd05c] transition-all duration-300 shadow-sm hover:shadow-md"
+              className="w-full flex justify-center py-3.5 px-4 bg-[#3a9d1f] text-white rounded-2xl hover:bg-[#0aab65] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3a9d1f] transition-all duration-300 shadow-sm hover:shadow-md"
             >
               로그인 하기
             </button>

@@ -171,7 +171,7 @@ const Mypage = () => {
               <div className="space-y-3 pt-4 mt-4 border-t border-gray-200">
                 <button
                   onClick={() => setShowPasswordModal(true)}
-                  className="w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  className="w-full py-2 px-4 bg-[#3a9d1f] text-white rounded-lg hover:bg-[#0aab65] transition-colors"
                 >
                   비밀번호 재설정
                 </button>
