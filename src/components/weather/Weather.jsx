@@ -355,36 +355,30 @@ const Weather = () => {
           <h2 className="text-xl font-medium">한반도 위성 영상</h2>
           <span className="text-sm text-gray-500">10분마다 업데이트</span>
         </div>
-        <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-100">
-          <div className="flex flex-col h-full">
-            <div className="flex-1 relative">
-              {satelliteData?.response?.body?.items?.item?.[0]?.['satImgC-file'] && (
-                <div className="w-full h-full">
-                  <img
-                    src={satelliteData.response.body.items.item[0]['satImgC-file'].split(',')[0].replace('[', '')}
-                    alt="한반도 위성 영상"
-                    className="w-full h-[600px] object-cover"
-                    style={{
-                      maxWidth: '100%',
-                      objectFit: 'contain',
-                      backgroundColor: '#000'
-                    }}
-                    onError={(e) => {
-                      console.log("이미지 로딩 실패");
-                      e.target.parentElement.innerHTML = `
-                        <div class="flex items-center justify-center h-full text-gray-500">
-                          <div class="text-center">
-                            <p>위성 영상을 불러올 수 없습니다</p>
-                            <p class="text-sm mt-2">잠시 후 다시 시도해주세요</p>
-                          </div>
-                        </div>
-                      `;
-                    }}
-                  />
-                </div>
-              )}
+        <div className="relative rounded-xl overflow-hidden shadow-lg bg-gray-100">
+          {satelliteData?.response?.body?.items?.item?.[0]?.['satImgC-file'] && (
+            <div className="relative min-h-[300px] md:min-h-[400px] lg:min-h-[500px]">
+              <img
+                src={satelliteData.response.body.items.item[0]['satImgC-file'].split(',')[0].replace('[', '')}
+                alt="한반도 위성 영상"
+                className="w-full h-full object-contain"
+                style={{
+                  backgroundColor: '#000'
+                }}
+                onError={(e) => {
+                  console.log("이미지 로딩 실패");
+                  e.target.parentElement.innerHTML = `
+                    <div class="flex items-center justify-center h-full text-gray-500">
+                      <div class="text-center">
+                        <p>위성 영상을 불러올 수 없습니다</p>
+                        <p class="text-sm mt-2">잠시 후 다시 시도해주세요</p>
+                      </div>
+                    </div>
+                  `;
+                }}
+              />
             </div>
-          </div>
+          )}
           <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
             기상청 제공
           </div>
