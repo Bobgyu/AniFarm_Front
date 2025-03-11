@@ -130,136 +130,140 @@ const Header = () => {
   };
 
   return (
-    <div className="w-full flex justify-center shadow-custom sticky top-0 z-50 border-b-2">
-      <div className="w-2/3 p-1 pb-7 flex flex-col items-center relative overflow-hidden bg-white h-24">
-        <div className="logo absolute left-4">
-          <Link to="/">
-            <img src={AnifarmLogo} alt="로고" className="w-[50px] y-[100px]" />
-          </Link>
-        </div>
-
-        <div className="main-menu flex gap-12 justify-center items-center h-full mt-6">
-          <Link
-            to="/culture"
-            className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out bg-transparent border-2 rounded-full cursor-pointer select-none focus:outline-none ${
-              isActivePath('/culture')
-                ? 'border-[#3a9d1f] text-white bg-[#3a9d1f]'
-                : 'border-transparent text-gray-900 hover:border-[#3a9d1f] hover:text-white hover:bg-[#3a9d1f]'
-            }`}
-          >
-            재배하기
-          </Link>
-          <div className="border-l h-6 border-black"></div>
-          <Link
-            to="/sale"
-            className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out bg-transparent border-2 rounded-full cursor-pointer select-none focus:outline-none ${
-              isActivePath('/sale')
-                ? 'border-[#3a9d1f] text-white bg-[#3a9d1f]'
-                : 'border-transparent text-gray-900 hover:border-[#3a9d1f] hover:text-white hover:bg-[#3a9d1f]'
-            }`}
-          >
-            판매하기
-          </Link>
-        </div>
-
-        <div className="head-all absolute right-4 top-8">
-          <div className="head-top w-full text-xs md:text-sm info">
-            <ul className="flex gap-4 md:gap-8 items-center justify-end mr-4">
-              {user !== null ? (
-                <>
-                  <li className="text-neutral-500 hover:text-black transition-all duration-100">
-                    <button onClick={handleLogout}>로그아웃</button>
-                  </li>
-                  <li className="text-neutral-500 hover:text-black transition-all duration-100">
-                    <Link to="/mypage">마이페이지</Link>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li className="text-neutral-500 hover:text-black transition-all duration-100">
-                    <Link to="/login">로그인</Link>
-                  </li>
-                  <li className="text-neutral-500 hover:text-black transition-all duration-100">
-                    <Link to="/register">회원가입</Link>
-                  </li>
-                </>
-              )}
-              <li>
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
-                >
-                  <div className="w-6 h-5 flex flex-col justify-between">
-                    <span className="w-full h-0.5 bg-gray-600 rounded-full"></span>
-                    <span className="w-full h-0.5 bg-gray-600 rounded-full"></span>
-                    <span className="w-full h-0.5 bg-gray-600 rounded-full"></span>
-                  </div>
-                </button>
-              </li>
-            </ul>
+    <div className="w-full flex justify-center shadow-custom sticky top-0 z-50 border-b-2 bg-white">
+      <div className="w-full max-w-7xl px-4 flex flex-col items-center relative overflow-hidden h-24">
+        <div className="w-full flex justify-between items-center h-full">
+          <div className="flex-shrink-0">
+            <Link to="/">
+              <img src={AnifarmLogo} alt="로고" className="w-[50px]" />
+            </Link>
           </div>
 
-          {isMenuOpen && (
-            <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <div
-                className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-screen overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
+          <div className="flex-grow flex justify-center items-center mx-4">
+            <div className="flex gap-12 items-center">
+              <Link
+                to="/culture"
+                className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${
+                  isActivePath('/culture')
+                    ? 'bg-[#3a9d1f] text-white border-[#3a9d1f]'
+                    : 'bg-transparent border-transparent text-gray-900 hover:bg-[#3a9d1f] hover:text-white hover:border-[#3a9d1f]'
+                }`}
               >
-                <div className="p-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">메뉴</h2>
-                    <button
-                      onClick={() => setIsMenuOpen(false)}
-                      className="p-2 hover:bg-gray-100 rounded-full"
-                    >
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+                재배하기
+              </Link>
+              <div className="border-l h-6 border-black hidden md:block"></div>
+              <Link
+                to="/sale"
+                className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${
+                  isActivePath('/sale')
+                    ? 'bg-[#3a9d1f] text-white border-[#3a9d1f]'
+                    : 'bg-transparent border-transparent text-gray-900 hover:bg-[#3a9d1f] hover:text-white hover:border-[#3a9d1f]'
+                }`}
+              >
+                판매하기
+              </Link>
+            </div>
+          </div>
 
-                  <div className="space-y-4">
-                    {Object.entries(menuStructure).map(([category, items]) => (
-                      <div key={category} className="border rounded-lg">
-                        <div className="font-semibold p-3 bg-gray-50 rounded-t-lg border-b">
-                          {category}
-                        </div>
-                        <div className="p-3">
-                          <div className="space-y-2">
-                            {items.map((item, index) => (
-                              <div
-                                key={index}
-                                className="text-gray-600 hover:text-black cursor-pointer"
-                                onClick={() =>
-                                  handleMenuItemClick(category, item)
-                                }
-                              >
-                                {item}
-                              </div>
-                            ))}
-                          </div>
+          <div className="flex-shrink-0">
+            <div className="text-xs md:text-sm">
+              <ul className="flex gap-2 md:gap-4 items-center">
+                {user !== null ? (
+                  <>
+                    <li className="text-neutral-500 hover:text-black transition-all duration-100">
+                      <button onClick={handleLogout}>로그아웃</button>
+                    </li>
+                    <li className="text-neutral-500 hover:text-black transition-all duration-100">
+                      <Link to="/mypage">마이페이지</Link>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li className="text-neutral-500 hover:text-black transition-all duration-100">
+                      <Link to="/login">로그인</Link>
+                    </li>
+                    <li className="text-neutral-500 hover:text-black transition-all duration-100">
+                      <Link to="/register">회원가입</Link>
+                    </li>
+                  </>
+                )}
+                <li>
+                  <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                  >
+                    <div className="w-6 h-5 flex flex-col justify-between">
+                      <span className="w-full h-0.5 bg-gray-600 rounded-full"></span>
+                      <span className="w-full h-0.5 bg-gray-600 rounded-full"></span>
+                      <span className="w-full h-0.5 bg-gray-600 rounded-full"></span>
+                    </div>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {isMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <div
+              className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-screen overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">메뉴</h2>
+                  <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="p-2 hover:bg-gray-100 rounded-full"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {Object.entries(menuStructure).map(([category, items]) => (
+                    <div key={category} className="border rounded-lg">
+                      <div className="font-semibold p-3 bg-gray-50 rounded-t-lg border-b">
+                        {category}
+                      </div>
+                      <div className="p-3">
+                        <div className="space-y-2">
+                          {items.map((item, index) => (
+                            <div
+                              key={index}
+                              className="text-gray-600 hover:text-black cursor-pointer"
+                              onClick={() =>
+                                handleMenuItemClick(category, item)
+                              }
+                            >
+                              {item}
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
