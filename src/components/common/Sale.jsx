@@ -151,7 +151,7 @@ const Sale = () => {
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-20" />
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
                   <h2 className="text-4xl font-bold text-white tracking-wider">
                     농산물 판매를 위한 데이터 분석
                   </h2>
@@ -166,7 +166,7 @@ const Sale = () => {
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-30" />
-                <div className="absolute w-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
                   <h3 className="text-4xl font-bold text-white tracking-wider">
                     {hoveredContent === "trend" &&
                       "실시간 소비자 트렌드와 선호도를 분석해보세요"}
@@ -188,7 +188,7 @@ const Sale = () => {
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-20" />
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
                   <h2 className="text-4xl font-bold text-white tracking-wider">
                     농산물 판매를 위한 데이터 분석
                   </h2>

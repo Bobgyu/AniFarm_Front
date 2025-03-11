@@ -134,18 +134,18 @@ const Culture = () => {
               loading="lazy"
             />
             <div className="absolute inset-0 bg-black bg-opacity-20" />
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+            <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
               <h2 className="text-4xl font-bold text-white tracking-wider">
                 {!hoveredContent
-                  ? "재배하기에 관한 내용"
+                  ? "작물 재배 시 필요한 정보 수집"
                   : hoveredContent === "training"
-                  ? "작물의 성장 단계별 관리"
+                  ? "작물의 성장 단계별 관리를 확인 해보세요."
                   : hoveredContent === "pests"
-                  ? "작물을 위협하는 병해충 진단"
+                  ? "작물 재배 시 위협되는 병충해를 진단 해보세요."
                   : hoveredContent === "weather"
-                  ? "실시간 날씨 정보"
+                  ? "실시간 날씨 정보를 알아보세요."
                   : hoveredContent === "community"
-                  ? "다른 농부들과 경험을 나누세요"
+                  ? "다른 농부들과 경험을 나눠보세요."
                   : "재배하기에 관한 내용"}
               </h2>
             </div>
