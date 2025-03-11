@@ -127,8 +127,8 @@ const Mypage = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] w-full bg-gray-50 mt-16">
-      <div className="flex w-full p-4 gap-4">
+    <div className="min-h-[calc(100vh-64px)] w-full bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           {userInfo && (
             <div className="space-y-4">

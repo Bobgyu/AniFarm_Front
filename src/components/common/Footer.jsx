@@ -7,8 +7,6 @@ const Footer = () => {
     window.location.href = "/test4";
   };
 
-
-
   return (
     <footer className="flex justify-center items-center border-t w-full h-24">
       <div className="w-full max-w-7xl px-4">

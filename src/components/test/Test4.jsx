@@ -1,202 +1,249 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { fetchUserInfo, fetchDeleteAuthData, fetchUpdateAuthData } from "../../redux/slices/authslice";
+import { FaUser, FaEnvelope, FaCalendar } from "react-icons/fa";
+import Swal from 'sweetalert2';
 
-import culture from "../../assets/images/culture.jpg";
-import train from "../../assets/images/train.jpg";
-import pests from "../../assets/images/pests.jpg";
-import weather from "../../assets/images/weather.jpg";
-import community from "../../assets/images/community.png";
-
-const Culture = () => {
-    // 호버 기능
-  const [hoveredContent, setHoveredContent] = useState(null);
-  const imageRef = useRef(null);
-  const [news, setNews] = useState([]);
-
-  const contentMap = useMemo(() => ({
-    training: {
-      image: train,
-    },
-    pests: {
-      image: pests,
-    },
-    weather: {
-      image: weather,
-    },
-    community: {
-      image: community,
-    },
-  }), []);
-
-  const handleMouseEnter = (content) => {
-    setHoveredContent(content);
-  };
-
-  const handleTitleHover = () => {
-    setHoveredContent(null);
-  };
-
-  // 이미지 프리로딩
-  useEffect(() => {
-    const preloadImages = () => {
-      Object.values(contentMap).forEach((content) => {
-        const img = new Image();
-        img.src = content.image;
-      });
-    };
-
-    preloadImages();
-  }, [contentMap]);
+const Mypage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { userInfo, userInfoLoading, userInfoError } = useSelector(
+    (state) => state.auth
+  );
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwords, setPasswords] = useState({
+    current: "",
+    new: "",
+    confirm: ""
+  });
 
   useEffect(() => {
-    // Remove GSAP animation
-    if (imageRef.current) {
-        imageRef.current.style.opacity = 1;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
     }
-  }, [hoveredContent]);
+    dispatch(fetchUserInfo());
+  }, [dispatch, navigate]);
 
+  // 디버깅을 위한 로그 추가
   useEffect(() => {
-    // 뉴스 데이터를 가져오는 함수
-    const fetchNews = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/api/news?query=농업");
-        const data = await response.json();
-        setNews(data.items); // 뉴스 데이터를 상태에 저장
-      } catch (error) {
-        console.error("뉴스 데이터를 가져오는데 실패했습니다:", error);
+    // console.log("User Info:", userInfo);
+  }, [userInfo]);
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (passwords.new !== passwords.confirm) {
+      Swal.fire({
+        icon: 'error',
+        title: '오류',
+        text: '새 비밀번호가 일치하지 않습니다.'
+      });
+      return;
+    }
+
+    try {
+      const result = await dispatch(fetchUpdateAuthData({
+        current_password: passwords.current,
+        new_password: passwords.new
+      })).unwrap();
+
+      if (result.success) {
+        Swal.fire({
+          icon: 'success',
+          title: '성공',
+          text: '비밀번호가 성공적으로 변경되었습니다.'
+        });
+        setShowPasswordModal(false);
+        setPasswords({ current: "", new: "", confirm: "" });
+      } else {
+        throw new Error(result.message || '비밀번호 변경에 실패했습니다.');
       }
-    };
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: '오류',
+        text: error.message || '비밀번호 변경에 실패했습니다.'
+      });
+    }
+  };
 
-    fetchNews();
-  }, []);
+  const handleDeleteAccount = async () => {
+    const result = await Swal.fire({
+      title: '회원 탈퇴',
+      text: '탈퇴를 결정하시기 전에 다시 한 번 고민해 보시겠어요? 삭제 후에는 복구할 수 없어요.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: '탈퇴',
+      cancelButtonText: '취소'
+    });
 
-  return (
-    <div className="min-h-screen py-12">
-      {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h1
-            className="text-4xl font-bold text-gray-900 mb-8 cursor-pointer"
-            onMouseEnter={handleTitleHover}
-          >
-            재배하기
-          </h1>
-        </div>
+    if (result.isConfirmed) {
+      try {
+        await dispatch(fetchDeleteAuthData()).unwrap();
+        localStorage.removeItem('token');
+        navigate('/');
+        Swal.fire(
+          '탈퇴 완료',
+          '회원 탈퇴가 완료되었습니다.',
+          'success'
+        );
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: '오류',
+          text: error.message || '회원 탈퇴에 실패했습니다.'
+        });
+      }
+    }
+  };
 
-        {/* 전체 컨테이너를 flex로 변경 */}
-        <div className="flex gap-8">
-          {/* 왼쪽 네비게이션 메뉴 */}
-          <div className="flex flex-col gap-8 w-64">
-            {/* 육성법 카드 */}
-            <Link to="/trainingMethod">
-              <div
-                onMouseEnter={() => handleMouseEnter("training")}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-black"
-              >
-                <div className="p-6">
-                  <div className="text-3xl mb-4">🌱</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    육성법
-                  </h3>
-                </div>
-              </div>
-            </Link>
+  if (userInfoLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen pt-16">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800" />
+      </div>
+    );
+  }
 
-            {/* 병충해 카드 */}
-            <Link to="/pests">
-              <div
-                onMouseEnter={() => handleMouseEnter("pests")}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-black"
-              >
-                <div className="p-6">
-                  <div className="text-3xl mb-4">🔍</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    병충해
-                  </h3>
-                </div>
-              </div>
-            </Link>
+  if (userInfoError) {
+    // 토큰이 만료되었거나 유효하지 않은 경우
+    if (userInfoError.includes("인증이 만료되었습니다") || userInfoError.includes("401")) {
+      localStorage.removeItem("token");
+      navigate("/login");
+      return null;
+    }
 
-            {/* 날씨 카드 */}
-            <Link to="/test1">
-              <div
-                onMouseEnter={() => handleMouseEnter("weather")}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-black"
-              >
-                <div className="p-6">
-                  <div className="text-3xl mb-4">🌤️</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    날씨
-                  </h3>
-                </div>
-              </div>
-            </Link>
-
-            {/* 커뮤니티 카드 */}
-            <Link to="/community/gardening">
-              <div
-                onMouseEnter={() => handleMouseEnter("community")}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-black"
-              >
-                <div className="p-6">
-                  <div className="text-3xl mb-4">👥</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    커뮤니티
-                  </h3>
-                </div>
-              </div>
-            </Link>
-          </div>
-
-          {/* 오른쪽 콘텐츠 영역 */}
-          <div className="relative overflow-hidden w-full h-[650px] rounded-lg">
-            <img
-              ref={imageRef}
-              src={
-                hoveredContent
-                  ? contentMap[hoveredContent].image
-                  : culture
-              }
-              alt={hoveredContent || "기본 이미지"}
-              className="w-full h-[650px] object-cover blur-[2px]"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-20" />
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-              <h2 className="text-4xl font-bold text-white tracking-wider">
-                {!hoveredContent
-                  ? "재배하기에 관한 내용"
-                  : hoveredContent === "training"
-                  ? "작물의 성장 단계별 관리"
-                  : hoveredContent === "pests"
-                  ? "작물을 위협하는 병해충 진단"
-                  : hoveredContent === "weather"
-                  ? "실시간 날씨 정보"
-                  : hoveredContent === "community"
-                  ? "다른 농부들과 경험을 나누세요"
-                  : "재배하기에 관한 내용"}
-              </h2>
-            </div>
-          </div>
-        </div>
-
-        {/* 뉴스 섹션 추가 */}
-        <div className="mt-12 w-full mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">농업 관련 뉴스</h2>
-          <ul className="flex flex-wrap gap-2">
-            {news.map((item, index) => (
-              <li key={index} className="w-full md:w-1/3 mb-4">
-                <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-blue-500">
-                  {item.title}
-                </a>
-                <p>{item.description}</p>
-              </li>
-            ))}
-          </ul>
+    return (
+      <div className="flex justify-center items-center min-h-screen pt-16">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+          <span className="block sm:inline">{userInfoError}</span>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="min-h-[calc(100vh-64px)] w-full bg-gray-50">
+      <div className="flex w-full p-4 gap-4">
+        <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+          {userInfo && (
+            <div className="space-y-4">
+              <div className="text-center mb-8">
+                <div className="w-24 h-24 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <FaUser className="text-green-500 text-3xl" />
+                </div>
+                <h2 className="text-2xl font-bold text-green-600">내 정보</h2>
+              </div>
+
+              <div className="bg-white/50 p-4 rounded-xl">
+                <div className="flex items-center space-x-3 mb-2">
+                  <FaEnvelope className="text-green-500" />
+                  <p className="text-gray-600">이메일</p>
+                </div>
+                <p className="text-gray-900 font-medium">{userInfo.data?.email}</p>
+              </div>
+
+              <div className="bg-white/50 p-4 rounded-xl">
+                <div className="flex items-center space-x-3 mb-2">
+                  <FaCalendar className="text-green-500" />
+                  <p className="text-gray-600">생년월일</p>
+                </div>
+                <p className="text-gray-900 font-medium">
+                  {userInfo.data?.birth_date || '정보 없음'}
+                </p>
+              </div>
+
+              <div className="bg-white/50 p-4 rounded-xl">
+                <div className="flex items-center space-x-3 mb-2">
+                  <FaCalendar className="text-green-500" />
+                  <p className="text-gray-600">가입일</p>
+                </div>
+                <p className="text-gray-900 font-medium">
+                  {userInfo.data?.created_at ? userInfo.data.created_at.split(' ')[0] : '정보 없음'}
+                </p>
+              </div>
+
+              {/* 비밀번호 변경 및 회원 탈퇴 버튼 */}
+              <div className="space-y-3 pt-4 mt-4 border-t border-gray-200">
+                <button
+                  onClick={() => setShowPasswordModal(true)}
+                  className="w-full py-2 px-4 bg-[#3a9d1f] text-white rounded-lg hover:bg-[#0aab65] transition-colors"
+                >
+                  비밀번호 재설정
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  className="w-full py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  회원 탈퇴
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 비밀번호 변경 모달 */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h3 className="text-xl font-bold mb-4">비밀번호 변경</h3>
+            <form onSubmit={handlePasswordChange} className="space-y-4 border border-gray-400 rounded-lg p-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">현재 비밀번호</label>
+                <input
+                  type="password"
+                  value={passwords.current}
+                  onChange={(e) => setPasswords({...passwords, current: e.target.value})}
+                  className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">새 비밀번호</label>
+                <input
+                  type="password"
+                  value={passwords.new}
+                  onChange={(e) => setPasswords({...passwords, new: e.target.value})}
+                  className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">새 비밀번호 확인</label>
+                <input
+                  type="password"
+                  value={passwords.confirm}
+                  onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
+                  className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordModal(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                >
+                  변경
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Culture;
+export default Mypage;

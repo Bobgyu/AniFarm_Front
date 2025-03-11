@@ -175,7 +175,10 @@ const TrainingMethod = () => {
             >
               <button
                 onClick={handlePrevious}
-                className="absolute left-[-3rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg hover:bg-white transition-colors duration-200"
+                className="absolute left-[-3rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+                           hover:bg-white hover:scale-110
+                           active:bg-white active:scale-95 
+                           transition-all duration-300"
               >
                 <FaChevronLeft className="text-2xl text-green-600" />
               </button>
@@ -183,9 +186,10 @@ const TrainingMethod = () => {
               {visibleImages.map((image, index) => (
                 <Link key={image.cropId} to={`/trainingDetail?cropId=${image.cropId}`}>
                   <motion.div 
-                    className="flex flex-col items-center"
+                    className="flex flex-col items-center transition-transform duration-300"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                   >
                     <img 
@@ -202,7 +206,10 @@ const TrainingMethod = () => {
 
               <button
                 onClick={handleNext}
-                className="absolute right-[-3rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg hover:bg-white transition-colors duration-200"
+                className="absolute right-[-3rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+                           hover:bg-white hover:scale-110 
+                           active:bg-white active:scale-95 
+                           transition-all duration-300"
               >
                 <FaChevronRight className="text-2xl text-green-600" />
               </button>
@@ -252,10 +259,12 @@ const TrainingMethod = () => {
               className="bg-white rounded-lg shadow-lg overflow-hidden"
             >
               <div className="aspect-w-16 aspect-h-9">
-                <img
+                <motion.img 
                   src={video.snippet.thumbnails.high.url}
                   alt={video.snippet.title}
                   className="w-full h-[300px] object-cover"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   onClick={() => window.open(`https://www.youtube.com/watch?v=${video.id.videoId}`, '_blank')}
                   style={{ cursor: 'pointer' }}
                 />
@@ -283,11 +292,15 @@ const TrainingMethod = () => {
             <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
               <div className="p-4">
                 {article.imageUrl && (
-                  <img
-                    src={article.imageUrl}
-                    alt={article.title}
-                    className="w-full h-48 object-cover border-2 border-black"
-                  />
+                  <a href={article.link} target="_blank" rel="noopener noreferrer">
+                    <motion.img
+                      src={article.imageUrl}
+                      alt={article.title}
+                      className="w-full h-48 object-cover border-2 border-black"
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    />
+                  </a>
                 )}
                 <h3 className="text-lg font-semibold text-blue-500 mb-2 line-clamp-1 hover:text-blue-700 transition-colors duration-400">
                   <a href={article.link} target="_blank" rel="noopener noreferrer">
