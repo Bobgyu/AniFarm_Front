@@ -86,7 +86,7 @@ const Header = () => {
           path = "/Pests";
           break;
         case "날씨":
-          path = "/Test1";
+          path = "/weather";
           break;
         case "재배 커뮤니티":
           path = "/community/gardening";
