@@ -49,10 +49,10 @@ const SaleNews = () => {
                     <img
                       src={article.imageUrl}
                       alt={article.title}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-48 object-cover border-2 border-black"
                     />
                   )}
-                  <h3 className="text-lg font-semibold text-blue-500 mb-2 line-clamp-2 hover:text-blue-700 transition-colors duration-400">
+                  <h3 className="text-lg font-semibold text-blue-500 mb-2 line-clamp-1 hover:text-blue-700 transition-colors duration-400">
                     <a href={article.link} target="_blank" rel="noopener noreferrer">
                       {article.title}
                     </a>
