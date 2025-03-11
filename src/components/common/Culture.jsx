@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { gsap } from "gsap";
 import culture from "../../assets/images/culture.jpg";
 import train from "../../assets/images/train.jpg";
 import pests from "../../assets/images/pests.jpg";
@@ -46,16 +45,6 @@ const Culture = () => {
 
     preloadImages();
   }, [contentMap]);
-
-  useEffect(() => {
-    if (imageRef.current) {
-      gsap.fromTo(
-        imageRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.5 }
-      );
-    }
-  }, [hoveredContent]);
 
   return (
     <div className="min-h-full py-12 mb-12">
@@ -139,11 +128,7 @@ const Culture = () => {
           <div className="relative overflow-hidden w-full h-[650px] rounded-lg">
             <img
               ref={imageRef}
-              src={
-                hoveredContent
-                  ? contentMap[hoveredContent].image
-                  : culture
-              }
+              src={hoveredContent ? contentMap[hoveredContent].image : culture}
               alt={hoveredContent || "기본 이미지"}
               className="w-full h-[650px] object-cover blur-[2px]"
               loading="lazy"
