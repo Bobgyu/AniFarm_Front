@@ -171,7 +171,7 @@ body {
   height: 50px;
   border-radius: 50%;
   display: flex;
-  background: green;
+  background: #3a9d1f;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
@@ -219,7 +219,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: green;
+  background: #3a9d1f;
   padding: 15px 20px;
   border-radius: 25px 25px 0 0;
 }
@@ -236,7 +236,7 @@ body {
   padding: 6px;
   background: #fff;
   border-radius: 50%;
-  fill: green;
+  fill: #3a9d1f;
 }
 
 .header-info .logo-text {
@@ -291,7 +291,7 @@ body {
   width: 35px;
   height: 35px;
   padding: 6px;
-  background: green;
+  background: #3a9d1f;
   border-radius: 50%;
   fill: #fff;
   margin-bottom: 2px;
@@ -317,7 +317,7 @@ body {
 }
 
 .cb-body .user-message .message-text {
-  background: green;
+  background: #3a9d1f;
   color: #fff;
   border-radius: 18px 5px 18px 18px;
 }
@@ -341,7 +341,7 @@ body {
 }
 
 .cb-footer .chat-form:focus-within {
-  outline: 2px solid green;
+  outline: 2px solid #3a9d1f;
 }
 
 .chat-form .message-input {
@@ -365,7 +365,7 @@ body {
   outline: none;
   font-size: 1.125rem;
   margin-right: 6px;
-  background: green;
+  background: #3a9d1f;
   color: #fff;
   border-radius: 50%;
   transition: all 0.2s ease;
