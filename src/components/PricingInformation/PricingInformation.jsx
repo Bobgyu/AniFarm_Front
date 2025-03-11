@@ -16,7 +16,7 @@ const PricingInformation = () => {
 
   return (
     <div className="container">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center mt-8 gap-2">
         {/* <img src={market} alt="장바구니" className="w-8 h-8" /> */}
         <h1 className="title text-left text-4xl font-bold">
           대형마트 소비트렌드

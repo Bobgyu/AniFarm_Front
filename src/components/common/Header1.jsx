@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearToken } from "../../redux/slices/loginslice";
 import AnifarmLogo from "../../assets/main/aniform.png";
@@ -9,7 +9,42 @@ const Header = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.login.user);
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // 현재 경로가 어떤 섹션에 속하는지 확인하는 함수
+  const isActivePath = (path) => {
+    const currentPath = location.pathname.toLowerCase();
+
+    // 재배하기 관련 경로들
+    const culturePaths = [
+      '/culture',
+      '/trainingmethod',
+      '/trainingdetail',
+      '/pests',
+      '/weather',
+      '/community/gardening'
+    ];
+
+    // 판매하기 관련 경로들
+    const salePaths = [
+      '/sale',
+      '/today',
+      '/pricinginformation',
+      '/salsesinformation',
+      '/community/marketplace'
+    ];
+
+    if (path === '/culture') {
+      return culturePaths.includes(currentPath);
+    }
+
+    if (path === '/sale') {
+      return salePaths.includes(currentPath);
+    }
+
+    return false;
+  };
 
   const handleLogout = () => {
     Swal.fire({
@@ -96,24 +131,32 @@ const Header = () => {
 
   return (
     <div className="w-full flex justify-center shadow-custom sticky top-0 z-50 border-b-2">
-      <div className="w-full p-1 pb-7 flex flex-col items-center relative overflow-hidden bg-white h-24">
+      <div className="w-2/3 p-1 pb-7 flex flex-col items-center relative overflow-hidden bg-white h-24">
         <div className="logo absolute left-4">
           <Link to="/">
             <img src={AnifarmLogo} alt="로고" className="w-[50px] y-[100px]" />
           </Link>
         </div>
 
-        <div className="main-menu flex gap-12 justify-center items-center h-full mt-8">
+        <div className="main-menu flex gap-12 justify-center items-center h-full mt-6">
           <Link
             to="/culture"
-            className="inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center text-gray-900 no-underline align-middle transition-all duration-300 ease-in-out bg-transparent border-2 border-gray-600 border-solid rounded-full cursor-pointer select-none hover:text-white hover:bg-[#3a9d1f] hover:border-[#3a9d1f] focus:shadow-xs focus:no-underline"
+            className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out bg-transparent border-2 rounded-full cursor-pointer select-none focus:outline-none ${
+              isActivePath('/culture')
+                ? 'border-[#3a9d1f] text-white bg-[#3a9d1f]'
+                : 'border-transparent text-gray-900 hover:border-[#3a9d1f] hover:text-white hover:bg-[#3a9d1f]'
+            }`}
           >
             재배하기
           </Link>
           <div className="border-l h-6 border-black"></div>
           <Link
             to="/sale"
-            className="inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center text-gray-900 no-underline align-middle transition-all duration-300 ease-in-out bg-transparent border-2 border-gray-600 border-solid rounded-full cursor-pointer select-none hover:text-white hover:bg-[#3a9d1f] hover:border-[#3a9d1f] focus:shadow-xs focus:no-underline"
+            className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out bg-transparent border-2 rounded-full cursor-pointer select-none focus:outline-none ${
+              isActivePath('/sale')
+                ? 'border-[#3a9d1f] text-white bg-[#3a9d1f]'
+                : 'border-transparent text-gray-900 hover:border-[#3a9d1f] hover:text-white hover:bg-[#3a9d1f]'
+            }`}
           >
             판매하기
           </Link>

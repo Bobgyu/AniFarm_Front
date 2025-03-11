@@ -209,7 +209,7 @@ const SalsesInformation = () => {
   );
 
   return (
-    <div className="p-4 max-w-4xl mx-auto bg-gray-50 min-h-screen">
+    <div className="p-4 pt-12 max-w-4xl mx-auto bg-gray-50 min-h-screen my-8 rounded-2xl">
       <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
         농산물 가격 예측 서비스
       </h1>
