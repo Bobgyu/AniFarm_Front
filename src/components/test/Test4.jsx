@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
+
 import culture from "../../assets/images/culture.jpg";
 import train from "../../assets/images/train.jpg";
 import pests from "../../assets/images/pests.jpg";
@@ -10,6 +11,7 @@ const Culture = () => {
     // 호버 기능
   const [hoveredContent, setHoveredContent] = useState(null);
   const imageRef = useRef(null);
+  const [news, setNews] = useState([]);
 
   const contentMap = useMemo(() => ({
     training: {
@@ -52,6 +54,21 @@ const Culture = () => {
         imageRef.current.style.opacity = 1;
     }
   }, [hoveredContent]);
+
+  useEffect(() => {
+    // 뉴스 데이터를 가져오는 함수
+    const fetchNews = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/news?query=농업");
+        const data = await response.json();
+        setNews(data.items); // 뉴스 데이터를 상태에 저장
+      } catch (error) {
+        console.error("뉴스 데이터를 가져오는데 실패했습니다:", error);
+      }
+    };
+
+    fetchNews();
+  }, []);
 
   return (
     <div className="min-h-screen py-12">
@@ -161,6 +178,21 @@ const Culture = () => {
               </h2>
             </div>
           </div>
+        </div>
+
+        {/* 뉴스 섹션 추가 */}
+        <div className="mt-12 w-full mx-auto">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">농업 관련 뉴스</h2>
+          <ul className="flex flex-wrap gap-2">
+            {news.map((item, index) => (
+              <li key={index} className="w-full md:w-1/3 mb-4">
+                <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                  {item.title}
+                </a>
+                <p>{item.description}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

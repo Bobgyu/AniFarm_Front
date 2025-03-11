@@ -10,7 +10,7 @@ const Footer = () => {
 
 
   return (
-    <footer className="flex justify-center items-center border-t w-full h-[auto] ">
+    <footer className="flex justify-center items-center border-t w-full h-auto ">
       <div className="">
       <div className="flex justify-between flex-wrap w-full h-full px-4">
         {/* 로고 및 주소 정보 */}
