@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import RaceChart from "./charts/RaceChart";
 import Top10Chart from "./charts/Top10Chart";
+import SaleNews from "./SaleNews";
 // import market from "../../assets/images/free_icon_cart.png";
 
 const PricingInformation = () => {
@@ -12,6 +13,10 @@ const PricingInformation = () => {
 
   const handleShowRaceChart = () => {
     setActiveChart(activeChart === "race" ? null : "race");
+  };
+
+  const handleShowSaleNews = () => {
+    setActiveChart(activeChart === "saleNews" ? null : "saleNews");
   };
 
   return (
@@ -47,10 +52,22 @@ const PricingInformation = () => {
         >
           레이스 차트
         </button>
+        
+        <button
+          className={`px-4 py-2 rounded-full ${
+            activeChart === "saleNews"
+              ? "bg-blue-500 text-white hover:bg-blue-600"
+              : "bg-gray-100 hover:bg-gray-200"
+          }`}
+          onClick={handleShowSaleNews}
+        >
+          농산물 가격 뉴스
+        </button>
       </div>
 
       {activeChart === "top10" && <Top10Chart />}
       {activeChart === "race" && <RaceChart />}
+      {activeChart === "saleNews" && <SaleNews />}
     </div>
   );
 };

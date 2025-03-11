@@ -279,7 +279,7 @@ const TrainingMethod = () => {
           최신 뉴스
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {news.map((article, index) => (
+          {news.slice(0, 3).map((article, index) => (
             <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
               <div className="p-4">
                 {article.imageUrl && (
