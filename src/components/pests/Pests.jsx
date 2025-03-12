@@ -14,6 +14,7 @@ import {
   setSelectedImage,
   resetState,
   analyzeImage,
+  analyzeKiwiImage,
 } from "../../redux/slices/imageModelSlice";
 
 const Pests = () => {
@@ -70,7 +71,11 @@ const Pests = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    dispatch(analyzeImage(formData));
+    if (crops[selectedTab].value === "kiwi") {
+      dispatch(analyzeKiwiImage(formData));
+    } else {
+      dispatch(analyzeImage(formData));
+    }
   };
 
   return (
