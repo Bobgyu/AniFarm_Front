@@ -122,19 +122,19 @@ const Home = () => {
         <div className="p-2 bg-transparent border-2 border-white rounded-full flex space-x-4">
           <button
             onClick={() => handleDotClick("home")}
-            className={`text-3xl ${currentView === "home" ? "text-black" : "text-white"}`}
+            className={`text-3xl ${currentView === "home" ? "text-white" : "text-gray-400"}`}
           >
             <LuDot />
           </button>
           <button
             onClick={() => handleDotClick("test6")}
-            className={`text-3xl ${currentView === "test6" ? "text-black" : "text-white"}`}
+            className={`text-3xl ${currentView === "test6" ? "text-white" : "text-gray-400"}`}
           >
             <LuDot />
           </button>
           <button
             onClick={() => handleDotClick("test7")}
-            className={`text-3xl ${currentView === "test7" ? "text-black" : "text-white"}`}
+            className={`text-3xl ${currentView === "test7" ? "text-white" : "text-gray-400"}`}
           >
             <LuDot />
           </button>
