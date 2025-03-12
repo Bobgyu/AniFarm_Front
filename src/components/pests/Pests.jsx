@@ -15,6 +15,7 @@ import {
   resetState,
   analyzeImage,
   analyzeKiwiImage,
+  analyzeChamoeImage,
 } from "../../redux/slices/imageModelSlice";
 
 const Pests = () => {
@@ -25,9 +26,9 @@ const Pests = () => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   const crops = [
-    { value: "chamoe", label: "🍋참외" },
-    { value: "strawberry", label: "🍓딸기" },
-    { value: "kiwi", label: "🥝키위" },
+    { value: "chamoe", label: "🍈 참외" },
+    { value: "kiwi", label: "🥝 키위" },
+    { value: "strawberry", label: "🍓 딸기" },
   ];
 
   const resetStateHandler = () => {
@@ -71,10 +72,18 @@ const Pests = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    if (crops[selectedTab].value === "kiwi") {
-      dispatch(analyzeKiwiImage(formData));
-    } else {
-      dispatch(analyzeImage(formData));
+    switch (crops[selectedTab].value) {
+      case "kiwi":
+        dispatch(analyzeKiwiImage(formData));
+        break;
+      case "chamoe":
+        dispatch(analyzeChamoeImage(formData));
+        break;
+      case "strawberry":
+        dispatch(analyzeImage(formData));
+        break;
+      default:
+        break;
     }
   };
 

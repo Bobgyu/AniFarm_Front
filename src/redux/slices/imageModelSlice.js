@@ -56,12 +56,62 @@ export const analyzeImage = createAsyncThunk(
   }
 );
 
-// 키위 이미지 분석을 위한 새로운 Thunk 추가
+// 키위 이미지 분석을 위한 Thunk
 export const analyzeKiwiImage = createAsyncThunk(
   "imageModel/analyzeKiwiImage",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:8000/predict", {
+      const response = await fetch("http://localhost:8080/kiwi_predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("서버 응답에 문제가 있습니다.");
+      }
+
+      const data = await response.json();
+      
+      // 클래스 한글 매핑
+      const koreanClassNames = {
+        "잎_점무늬병": "잎 점무늬병",
+        "잎_정상": "정상",
+        "잎_총채벌레": "총채벌레 피해"
+      };
+
+      return {
+        status: data.class === "잎_정상" ? "healthy" : "diseased",
+        disease: koreanClassNames[data.class] || data.class,
+        confidence: (data.confidence * 100).toFixed(1),
+        details: `진단 신뢰도: ${(data.confidence * 100).toFixed(1)}%`,
+        recommendation: getKiwiRecommendation(data.class),
+      };
+    } catch (error) {
+      return rejectWithValue("서버 연결에 실패했습니다. 다시 시도해주세요.");
+    }
+  }
+);
+
+// 키위 질병에 대한 추천사항
+const getKiwiRecommendation = (disease) => {
+  switch (disease) {
+    case "잎_점무늬병":
+      return "1. 통풍과 햇빛이 잘 들도록 관리해주세요 🌞\n2. 감염된 잎은 즉시 제거하고 소각해주세요 🍂\n3. 적절한 살균제를 정기적으로 살포해주세요 🌱\n4. 과습하지 않도록 물 관리에 주의해주세요 💧";
+    case "잎_총채벌레":
+      return "1. 정기적으로 잎을 살펴보고 초기 발견이 중요해요 👀\n2. 적절한 살충제를 사용해 방제해주세요 🧪\n3. 황색 점착트랩을 설치하면 예방에 도움이 됩니다 🪤\n4. 주변 잡초를 제거하고 청결한 환경을 유지해주세요 🌿";
+    case "잎_정상":
+      return "키위가 건강하게 자라고 있어요! 현재의 관리 방법을 유지해주세요 💚\n1. 적절한 물 관리를 계속해주세요 💧\n2. 정기적인 관찰을 유지해주세요 👀\n3. 영양분 공급을 잘 해주세요 🌱";
+    default:
+      return "정확한 진단이 어렵습니다. 전문가와 상담해보세요 🤔";
+  }
+};
+
+// 참외 이미지 분석을 위한 새로운 Thunk 추가
+export const analyzeChamoeImage = createAsyncThunk(
+  "imageModel/analyzeChamoeImage",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await fetch("http://localhost:8080/chamoe_predict", {
         method: "POST",
         body: formData,
       });
@@ -75,11 +125,13 @@ export const analyzeKiwiImage = createAsyncThunk(
       if (data.success) {
         const result = data.data;
         return {
-          status: result.class === "잎_정상" ? "healthy" : "diseased",
-          disease: result.class,
+          status: result.predicted_class === "정상" ? "healthy" : "diseased",
+          disease: result.predicted_class,
           confidence: (result.confidence * 100).toFixed(1),
-          details: `신뢰도: ${(result.confidence * 100).toFixed(1)}%`,
-          recommendation: getKiwiRecommendation(result.class),
+          details: `진단 결과 상세:\n${Object.entries(result.class_probabilities)
+            .map(([key, value]) => `${key}: ${(value * 100).toFixed(1)}%`)
+            .join('\n')}`,
+          recommendation: getChamoeRecommendation(result.predicted_class),
         };
       } else {
         return rejectWithValue(
@@ -92,17 +144,17 @@ export const analyzeKiwiImage = createAsyncThunk(
   }
 );
 
-// 키위 질병에 대한 추천사항
-const getKiwiRecommendation = (disease) => {
+// 참외 질병에 대한 추천사항
+const getChamoeRecommendation = (disease) => {
   switch (disease) {
-    case "잎_점무늬병":
-      return "1. 식물 주변 공기가 잘 통하도록 해주고, 습기가 너무 많아지지 않게 조심해 주세요~ 🌬️🌿\n2. 병이 퍼지지 않게 주기적으로 살균제를 써주세요! 🧴✨\n3. 감염된 잎은 빨리 떼어내고, 다른 식물한테 옮지 않게 조심해야 해요! 🍃🚫";
-    case "잎_총채벌레":
-      return "1. 해충을 제거하기 위해 적절한 살충제를 사용해주세요 🧴\n2. 주변 잡초를 제거하고 청결한 환경을 유지해주세요 🌿\n3. 정기적으로 잎을 관찰하여 초기에 발견하는 것이 중요해요! 👀";
-    case "잎_정상":
-      return "작물이 건강하게 자라고 있어요! 지금처럼 잘 관리해주세요! 💚🌱";
+    case "노균병":
+      return "1. 통풍이 잘 되도록 관리하고 과습을 방지해주세요 🌬️\n2. 병든 잎은 즉시 제거하고 적절한 살균제를 사용하세요 🍃\n3. 야간 온도 관리와 습도 조절에 신경 써주세요 🌙";
+    case "흰가루병":
+      return "1. 일조량을 충분히 확보하고 통풍을 개선해주세요 ☀️\n2. 질소 비료는 적정량만 사용하세요 🌱\n3. 예방적 살균제 처리가 효과적입니다 💪";
+    case "정상":
+      return "참외가 건강하게 자라고 있어요! 현재의 관리 방법을 유지해주세요 💚";
     default:
-      return "작물이 건강하게 자라고 있어요! 지금처럼 잘 관리해주세요! 💚🌱";
+      return "알 수 없는 상태입니다. 전문가와 상담해보세요 🤔";
   }
 };
 
@@ -152,6 +204,18 @@ const imageModelSlice = createSlice({
         state.result = action.payload;
       })
       .addCase(analyzeKiwiImage.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(analyzeChamoeImage.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(analyzeChamoeImage.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.result = action.payload;
+      })
+      .addCase(analyzeChamoeImage.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
