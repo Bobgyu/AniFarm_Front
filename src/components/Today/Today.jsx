@@ -17,6 +17,8 @@ const Today = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('200'); // 기본값은 채소류
+  const [frozenData, setFrozenData] = useState(null);
+  const [isFrozen, setIsFrozen] = useState(false);
 
   const handleCategoryChange = (event, newValue) => {
     setSelectedCategory(newValue);
@@ -28,6 +30,18 @@ const Today = () => {
         setLoading(true);
         const response = await axios.get('http://localhost:8000/api/price');
         console.log('API Response:', response.data);
+
+        // 현재 시간이 오후 3시 이전인지 확인
+        const now = new Date();
+        const updateTime = new Date();
+        updateTime.setHours(15, 0, 0, 0);
+        
+        if (now < updateTime && !isFrozen && frozenData) {
+          console.log('Using frozen data before 3 PM');
+          setPriceData(frozenData);
+          setLoading(false);
+          return;
+        }
        
         if (response.data && response.data.data && response.data.data.item) {
           // 가장 최근의 유효한 데이터를 찾기 위한 임시 저장소
@@ -79,6 +93,16 @@ const Today = () => {
           
           console.log('Processed Data:', latestValidData);
           setPriceData(latestValidData);
+
+          // 오후 3시 이전이면 데이터를 프리징
+          if (now < updateTime) {
+            console.log('Freezing data before 3 PM');
+            setFrozenData(latestValidData);
+            setIsFrozen(true);
+          } else {
+            setFrozenData(null);
+            setIsFrozen(false);
+          }
         } else {
           console.error('Invalid API response structure:', response.data);
           setError('데이터 형식이 올바르지 않습니다.');
