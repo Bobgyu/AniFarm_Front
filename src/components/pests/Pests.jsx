@@ -26,9 +26,9 @@ const Pests = () => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   const crops = [
-    { value: "chamoe", label: "🍈 참외" },
+    { value: "chamoe", label: "🍋참외" },
+    { value: "strawberry", label: "🍓딸기" },
     { value: "kiwi", label: "🥝 키위" },
-    { value: "strawberry", label: "🍓 딸기" },
   ];
 
   const resetStateHandler = () => {
