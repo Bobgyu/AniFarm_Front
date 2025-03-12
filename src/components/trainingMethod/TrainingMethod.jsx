@@ -296,16 +296,16 @@ const TrainingMethod = () => {
                     <motion.img
                       src={article.imageUrl}
                       alt={article.title}
-                      className="w-full h-48 object-cover border-2 border-black"
+                      className="w-full h-48 object-cover transition-transform hover:scale-105"
                       whileHover={{ scale: 1.05 }}
                       transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     />
                   </a>
                 )}
-                <h3 className="text-lg font-semibold text-blue-500 mb-2 line-clamp-1 hover:text-blue-700 transition-colors duration-400">
-                  <a href={article.link} target="_blank" rel="noopener noreferrer">
-                    {article.title}
-                  </a>
+                <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-3">
+                <a href={article.link} target="_blank" rel="noopener noreferrer" className="line-clamp-1">
+                      {article.title}
+                    </a>
                 </h3>
                 <p className="text-gray-600 text-sm line-clamp-3">
                   {article.description}

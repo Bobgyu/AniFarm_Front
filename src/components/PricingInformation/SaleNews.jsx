@@ -50,12 +50,12 @@ const SaleNews = () => {
                       <img
                         src={article.imageUrl}
                         alt={article.title}
-                        className="w-full h-48 object-cover border-2 border-black transition-transform duration-300 hover:scale-105"
+                        className="w-full h-48 object-cover transition-transform hover:scale-105"
                       />
                     </a>
                   )}
-                  <h3 className="text-lg font-semibold text-blue-500 mb-2 line-clamp-1 hover:text-blue-700 transition-colors duration-400">
-                    <a href={article.link} target="_blank" rel="noopener noreferrer">
+                  <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-3">
+                    <a href={article.link} target="_blank" rel="noopener noreferrer" className="line-clamp-1">
                       {article.title}
                     </a>
                   </h3>
