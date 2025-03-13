@@ -13,6 +13,41 @@ const getRecommendation = (disease) => {
   }
 };
 
+// 식물 분류 Thunk
+export const analyzePlantFirst = createAsyncThunk(
+  "imageModel/analyzePlantFirst",
+  async (formData, { rejectWithValue }) => {
+    try {
+      // 1단계: 식물 분류
+      const response = await fetch("http://localhost:8080/plant_predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("서버 응답에 문제가 있습니다.");
+      }
+
+      const data = await response.json();
+      console.log("Plant classification result:", data);
+
+      if (data.data.predicted_class === "비식물") {
+        return {
+          status: "invalid",
+          disease: "잎사귀가 아닙니다",
+          confidence: (data.data.confidence * 100).toFixed(1),
+          details: "식물이 아닌 이미지가 감지되었습니다.",
+          recommendation: "식물의 잎사귀 이미지를 업로드해주세요 🌿"
+        };
+      }
+
+      return { isPlant: true };
+    } catch (error) {
+      return rejectWithValue("서버 연결에 실패했습니다. 다시 시도해주세요.");
+    }
+  }
+);
+
 // 이미지 분석 요청 Thunk
 export const analyzeImage = createAsyncThunk(
   "imageModel/analyzeImage",
@@ -163,6 +198,7 @@ const initialState = {
   result: null,
   isLoading: false,
   error: null,
+  isPlant: null,  // 식물 여부 상태 추가
 };
 
 const imageModelSlice = createSlice({
@@ -173,28 +209,36 @@ const imageModelSlice = createSlice({
       state.selectedImage = action.payload;
       state.result = null;
       state.error = null;
+      state.isPlant = null;  // 이미지가 변경되면 식물 여부도 초기화
     },
     resetState: (state) => {
       state.selectedImage = null;
       state.result = null;
       state.error = null;
       state.isLoading = false;
+      state.isPlant = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(analyzeImage.pending, (state) => {
+      // 식물 분류 처리
+      .addCase(analyzePlantFirst.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(analyzeImage.fulfilled, (state, action) => {
+      .addCase(analyzePlantFirst.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.result = action.payload;
+        if (action.payload.isPlant) {
+          state.isPlant = true;
+        } else {
+          state.result = action.payload;
+        }
       })
-      .addCase(analyzeImage.rejected, (state, action) => {
+      .addCase(analyzePlantFirst.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
+      // 기존 리듀서들 유지
       .addCase(analyzeKiwiImage.pending, (state) => {
         state.isLoading = true;
         state.error = null;

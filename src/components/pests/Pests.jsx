@@ -16,6 +16,7 @@ import {
   analyzeImage,
   analyzeKiwiImage,
   analyzeChamoeImage,
+  analyzePlantFirst,
 } from "../../redux/slices/imageModelSlice";
 
 const Pests = () => {
@@ -72,18 +73,24 @@ const Pests = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    switch (crops[selectedTab].value) {
-      case "kiwi":
-        dispatch(analyzeKiwiImage(formData));
-        break;
-      case "chamoe":
-        dispatch(analyzeChamoeImage(formData));
-        break;
-      case "strawberry":
-        dispatch(analyzeImage(formData));
-        break;
-      default:
-        break;
+    // 먼저 식물 분류 실행
+    const plantResult = await dispatch(analyzePlantFirst(formData));
+    
+    // 식물이라고 판단된 경우에만 병해충 분석 실행
+    if (plantResult.payload && plantResult.payload.isPlant) {
+      switch (crops[selectedTab].value) {
+        case "kiwi":
+          dispatch(analyzeKiwiImage(formData));
+          break;
+        case "chamoe":
+          dispatch(analyzeChamoeImage(formData));
+          break;
+        case "strawberry":
+          dispatch(analyzeImage(formData));
+          break;
+        default:
+          break;
+      }
     }
   };
 
