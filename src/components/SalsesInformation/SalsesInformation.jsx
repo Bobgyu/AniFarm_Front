@@ -10,6 +10,8 @@ const SalsesInformation = () => {
   const [tomatoPredictions, setTomatoPredictions] = useState(null);
   const [spinachPredictions, setSpinachPredictions] = useState(null);
   const [strawberryPredictions, setStrawberryPredictions] = useState(null);
+  const [broccoliPredictions, setBroccoliPredictions] = useState(null);
+  const [carrotPredictions, setCarrotPredictions] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("cabbage"); // 현재 활성화된 탭
@@ -27,6 +29,8 @@ const SalsesInformation = () => {
           tomatoResponse,
           spinachResponse,
           strawberryResponse,
+          broccoliResponse,
+          carrotResponse,
         ] = await Promise.all([
           axios.get("http://localhost:8000/predictions/cabbage/Seoul"),
           axios.get("http://localhost:8000/predictions/apple/Seoul"),
@@ -36,6 +40,8 @@ const SalsesInformation = () => {
           axios.get("http://localhost:8000/predictions/tomato/Seoul"),
           axios.get("http://localhost:8000/predictions/spinach/Seoul"),
           axios.get("http://localhost:8000/predictions/strawberry/Seoul"),
+          axios.get("http://localhost:8000/predictions/broccoli/Seoul"),
+          axios.get("http://localhost:8000/predictions/carrot/Seoul"),
         ]);
 
         if (cabbageResponse.data.error) {
@@ -71,6 +77,8 @@ const SalsesInformation = () => {
         setTomatoPredictions(tomatoResponse.data.predictions);
         setSpinachPredictions(spinachResponse.data.predictions);
         setStrawberryPredictions(strawberryResponse.data.predictions);
+        setBroccoliPredictions(broccoliResponse.data.predictions);
+        setCarrotPredictions(carrotResponse.data.predictions);
       } catch (err) {
         console.error("예측 데이터 가져오기 오류:", err);
         setError(err.message);
@@ -93,7 +101,9 @@ const SalsesInformation = () => {
     !cucumberPredictions ||
     !tomatoPredictions ||
     !spinachPredictions ||
-    !strawberryPredictions
+    !strawberryPredictions ||
+    !broccoliPredictions ||
+    !carrotPredictions
   )
     return <div className="text-center p-4">데이터가 없습니다.</div>;
 
@@ -107,6 +117,8 @@ const SalsesInformation = () => {
     { id: "tomato", name: "🍅 토마토", color: "red" },
     { id: "spinach", name: "🍃 시금치", color: "green" },
     { id: "strawberry", name: "🍓 딸기", color: "red" },
+    { id: "broccoli", name: "🥦 브로콜리", color: "green" },
+    { id: "carrot", name: "🥕 당근", color: "orange" },
   ];
 
   const getUnit = (id) => {
@@ -114,6 +126,7 @@ const SalsesInformation = () => {
       case "spinach":
         return ["원", "/4kg상자"];
       case "onion":
+        return ["원", "/15kg상자"];
       case "cucumber":
         return ["원", "/15kg상자"];
       case "potato":
@@ -123,8 +136,13 @@ const SalsesInformation = () => {
       case "cabbage":
         return ["원", "/10kg망"];
       case "tomato":
+        return ["원", "/10kg상자"];
       case "apple":
         return ["원", "/10kg상자"];
+      case "broccoli":
+        return ["원", "/8kg상자"];
+      case "carrot":
+        return ["원", "/20kg상자"];
       default:
         return ["원", "/kg"];
     }
@@ -215,14 +233,14 @@ const SalsesInformation = () => {
       </h1>
 
       {/* 탭 메뉴 */}
-      <div className="flex flex-wrap justify-center border-b mb-6 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-6">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={`px-3 py-2 font-medium rounded-t-lg transition-all duration-300 min-w-[80px] ${
+            className={`px-3 py-2 font-medium rounded-lg transition-all duration-300 ${
               activeTab === tab.id
-                ? `bg-${tab.color}-100 text-${tab.color}-600 border-b-2 border-${tab.color}-600 transform -translate-y-1`
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                ? `bg-${tab.color}-100 text-${tab.color}-600 border-2 border-${tab.color}-600 transform hover:-translate-y-1`
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100 border-2 border-transparent"
             }`}
             onClick={() => setActiveTab(tab.id)}
           >
@@ -321,6 +339,28 @@ const SalsesInformation = () => {
           color="red"
           emoji="🍓"
           id="strawberry"
+        />
+      )}
+      {activeTab === "broccoli" && (
+        <PriceCard
+          title="브로콜리 가격 예측"
+          current={broccoliPredictions.current}
+          tomorrow={broccoliPredictions.tomorrow}
+          weekly={broccoliPredictions.weekly}
+          color="green"
+          emoji="🥦"
+          id="broccoli"
+        />
+      )}
+      {activeTab === "carrot" && (
+        <PriceCard
+          title="당근 가격 예측"
+          current={carrotPredictions.current}
+          tomorrow={carrotPredictions.tomorrow}
+          weekly={carrotPredictions.weekly}
+          color="orange"
+          emoji="🥕"
+          id="carrot"
         />
       )}
 
