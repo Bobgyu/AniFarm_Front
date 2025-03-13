@@ -16,9 +16,15 @@ const Today = () => {
   const [priceData, setPriceData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('200'); // 기본값은 채소류
-  const [frozenData, setFrozenData] = useState(null);
-  const [isFrozen, setIsFrozen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('200');
+  const [frozenData, setFrozenData] = useState(() => {
+    const saved = localStorage.getItem('frozenPriceData');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [lastUpdateTime, setLastUpdateTime] = useState(() => {
+    const saved = localStorage.getItem('lastUpdateTime');
+    return saved ? new Date(saved) : null;
+  });
 
   const handleCategoryChange = (event, newValue) => {
     setSelectedCategory(newValue);
@@ -40,7 +46,7 @@ const Today = () => {
         if (response.data && response.data.data && response.data.data.item) {
           // 가장 최근의 유효한 데이터를 찾기 위한 임시 저장소
           const latestValidData = {};
-          let hasValidDpr1Data = false; // dpr1 데이터가 있는지 확인하는 플래그
+          let hasValidDpr1Data = false;
           
           response.data.data.item
             .filter(item => item.rank === '상품')
@@ -51,14 +57,6 @@ const Today = () => {
               
               if (hasDpr1) hasValidDpr1Data = true;
               
-              console.log('Processing item:', itemName, { 
-                dpr1: item.dpr1, 
-                dpr2: item.dpr2, 
-                day1: item.day1, 
-                day2: item.day2,
-                category_code: item.category_code 
-              });
-
               // 현재 아이템의 데이터가 유효한지 확인
               if (!hasDpr1 && !hasDpr2) return;
 
@@ -87,31 +85,33 @@ const Today = () => {
                 };
               }
             });
-          
-          console.log('Processed Data:', latestValidData);
 
           // 데이터 업데이트 및 프리징 로직
           if (now >= updateTime) {
             // 오후 3시 이후
-            if (!hasValidDpr1Data && frozenData) {
+            if (!hasValidDpr1Data && frozenData && lastUpdateTime) {
               // dpr1 데이터가 없고 프리징된 데이터가 있으면 프리징된 데이터 사용
               console.log('Using frozen data due to missing dpr1 data');
               setPriceData(frozenData);
-            } else {
-              // 새로운 데이터가 있으면 업데이트 및 프리징
+            } else if (hasValidDpr1Data) {
+              // 새로운 유효한 데이터가 있으면 업데이트 및 프리징
               setPriceData(latestValidData);
               setFrozenData(latestValidData);
-              setIsFrozen(true);
+              setLastUpdateTime(now);
+              localStorage.setItem('frozenPriceData', JSON.stringify(latestValidData));
+              localStorage.setItem('lastUpdateTime', now.toISOString());
             }
           } else {
             // 오후 3시 이전
-            if (frozenData) {
+            if (frozenData && lastUpdateTime) {
               console.log('Using frozen data before 3 PM');
               setPriceData(frozenData);
             } else {
               setPriceData(latestValidData);
               setFrozenData(latestValidData);
-              setIsFrozen(true);
+              setLastUpdateTime(now);
+              localStorage.setItem('frozenPriceData', JSON.stringify(latestValidData));
+              localStorage.setItem('lastUpdateTime', now.toISOString());
             }
           }
         } else {
@@ -144,7 +144,7 @@ const Today = () => {
     }, timeUntilUpdate);
 
     return () => clearTimeout(updateTimer);
-  }, [frozenData, isFrozen]);
+  }, []);
 
   if (loading) {
     return (
