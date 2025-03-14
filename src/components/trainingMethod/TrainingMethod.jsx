@@ -24,6 +24,8 @@ const TrainingMethod = () => {
   const [videos, setVideos] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
   const [news, setNews] = useState([]);
+  const [newsPage, setNewsPage] = useState(0);
+  const newsItemsPerPage = 3;
 
   const [[page, direction], setPage] = useState([0, 0]);
 
@@ -43,6 +45,8 @@ const TrainingMethod = () => {
       opacity: 0
     })
   };
+
+  const totalNewsPages = Math.ceil(news.length / newsItemsPerPage);
 
   useEffect(() => {
     const fetchYoutubeVideos = async () => {
@@ -132,6 +136,14 @@ const TrainingMethod = () => {
   };
 
   const visibleImages = allImages.slice(startIndex, startIndex + 4);
+
+  const handleNewsPrevious = () => {
+    setNewsPage((prev) => (prev === 0 ? totalNewsPages - 1 : prev - 1));
+  };
+
+  const handleNewsNext = () => {
+    setNewsPage((prev) => (prev === totalNewsPages - 1 ? 0 : prev + 1));
+  };
 
   return (
     <div className="min-h-screen ">
@@ -283,36 +295,56 @@ const TrainingMethod = () => {
       </div>
 
       {/* 뉴스 섹션 */}
-      <div className="w-full max-w-[1280px] px-4 mx-auto pb-12">
+      <div className="w-full max-w-[1280px] px-4 mx-auto pb-12 relative">
         <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
           최신 뉴스
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {news.slice(0, 3).map((article, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="p-4">
-                {article.imageUrl && (
-                  <a href={article.link} target="_blank" rel="noopener noreferrer">
-                    <motion.img
-                      src={article.imageUrl}
-                      alt={article.title}
-                      className="w-full h-48 object-cover transition-transform hover:scale-105"
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    />
-                  </a>
-                )}
-                <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-3">
-                <a href={article.link} target="_blank" rel="noopener noreferrer" className="line-clamp-1">
+        <div className="relative">
+          <button
+            onClick={handleNewsPrevious}
+            className="absolute left-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+                       hover:bg-white hover:scale-110 
+                       active:bg-white active:scale-95 
+                       transition-all duration-300"
+          >
+            <FaChevronLeft className="text-2xl text-green-600" />
+          </button>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {news.slice(newsPage * newsItemsPerPage, (newsPage + 1) * newsItemsPerPage).map((article, index) => (
+              <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div className="p-4">
+                  {article.imageUrl && (
+                    <a href={article.link} target="_blank" rel="noopener noreferrer">
+                      <motion.img
+                        src={article.imageUrl}
+                        alt={article.title}
+                        className="w-full h-48 object-cover transition-transform hover:scale-105"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      />
+                    </a>
+                  )}
+                  <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-3">
+                    <a href={article.link} target="_blank" rel="noopener noreferrer" className="line-clamp-1">
                       {article.title}
                     </a>
-                </h3>
-                <p className="text-gray-600 text-sm line-clamp-3">
-                  {article.description}
-                </p>
+                  </h3>
+                  <p className="text-gray-600 text-sm line-clamp-3">
+                    {article.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <button
+            onClick={handleNewsNext}
+            className="absolute right-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+                           hover:bg-white hover:scale-110 
+                           active:bg-white active:scale-95 
+                           transition-all duration-300"
+          >
+            <FaChevronRight className="text-2xl text-green-600" />
+          </button>
         </div>
       </div>
 

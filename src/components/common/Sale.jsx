@@ -10,6 +10,7 @@ import market from "../../assets/images/market.jpg"; // 오늘의 가격 이미�
 const Sale = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
   const [showDefaultContent, setShowDefaultContent] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   const contentMap = {
     trend: {
@@ -30,9 +31,17 @@ const Sale = () => {
   // 이미지 프리로딩
   useEffect(() => {
     const preloadImages = () => {
-      Object.values(contentMap).forEach((content) => {
-        const img = new Image();
-        img.src = content.image;
+      const imagePromises = Object.values(contentMap).map((content) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = content.image;
+          img.onload = resolve;
+          img.onerror = resolve; // 이미지 로딩 실패 시에도 resolve
+        });
+      });
+
+      Promise.all(imagePromises).then(() => {
+        setImagesLoaded(true);
       });
     };
 
@@ -142,57 +151,65 @@ const Sale = () => {
 
           {/* 오른쪽 콘텐츠 영역 */}
           <div className="relative overflow-hidden w-full h-[650px] rounded-lg">
-            {showDefaultContent ? (
-              <div className="relative h-full">
-                <img
-                  src={sales}
-                  alt="기본 이미지"
-                  className="w-full h-[650px] object-cover blur-[2px]"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-20" />
-                <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
-                  <h2 className="text-4xl font-bold text-white tracking-wider">
-                    농산물 판매를 위한 데이터 분석
-                  </h2>
+            {imagesLoaded ? (
+              showDefaultContent ? (
+                <div className="relative h-full">
+                  <img
+                    src={sales}
+                    alt="기본 이미지"
+                    className="w-full h-[650px] object-cover blur-[2px]"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-20" />
+                  <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <h2 className="text-4xl font-bold text-white tracking-wider">
+                      농산물 판매를 위한 데이터 분석
+                    </h2>
+                  </div>
                 </div>
-              </div>
-            ) : hoveredContent ? (
-              <>
-                <img
-                  src={contentMap[hoveredContent].image}
-                  alt={hoveredContent}
-                  className="w-full h-[650px] object-cover blur-[2px]"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-30" />
-                <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
-                  <h3 className="text-4xl font-bold text-white tracking-wider">
-                    {hoveredContent === "trend" &&
-                      "실시간 소비자 트렌드와 선호도를 분석해보세요"}
-                    {hoveredContent === "prediction" &&
-                      "AI 기반 농산물 가격 예측으로 최적의 판매 시기를 찾아보세요"}
-                    {hoveredContent === "community" &&
-                      "농산물 판매 커뮤니티에서 직거래를 시작해보세요"}
-                    {hoveredContent === "market" &&
-                      "실시간으로 업데이트되는 오늘의 농산물 가격을 확인하세요"}
-                  </h3>
+              ) : hoveredContent ? (
+                <>
+                  <img
+                    src={contentMap[hoveredContent].image}
+                    alt={hoveredContent}
+                    className="w-full h-[650px] object-cover blur-[2px]"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-30" />
+                  <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <h3 className="text-4xl font-bold text-white tracking-wider">
+                      {hoveredContent === "trend" &&
+                        "실시간 소비자 트렌드와 선호도를 분석해보세요"}
+                      {hoveredContent === "prediction" &&
+                        "AI 기반 농산물 가격 예측으로 최적의 판매 시기를 찾아보세요"}
+                      {hoveredContent === "community" &&
+                        "농산물 판매 커뮤니티에서 직거래를 시작해보세요"}
+                      {hoveredContent === "market" &&
+                        "실시간으로 업데이트되는 오늘의 농산물 가격을 확인하세요"}
+                    </h3>
+                  </div>
+                </>
+              ) : (
+                <div className="relative overflow-hidden h-full">
+                  <img
+                    src={sales}
+                    alt="기본 이미지"
+                    className="w-full h-[650px] object-cover blur-[2px]"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-20" />
+                  <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <h2 className="text-4xl font-bold text-white tracking-wider">
+                      농산물 판매를 위한 데이터 분석
+                    </h2>
+                  </div>
                 </div>
-              </>
+              )
             ) : (
-              <div className="relative overflow-hidden h-full">
-                <img
-                  src={sales}
-                  alt="기본 이미지"
-                  className="w-full h-[650px] object-cover blur-[2px]"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-20" />
-                <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
-                  <h2 className="text-4xl font-bold text-white tracking-wider">
-                    농산물 판매를 위한 데이터 분석
-                  </h2>
-                </div>
+              <div className="flex items-center justify-center h-full bg-white">
+                <h2 className="text-2xl font-bold text-gray-500">
+                  이미지 로딩 중...
+                </h2>
               </div>
             )}
           </div>
