@@ -347,20 +347,29 @@ const TrainingMethod = () => {
         </div>
       </div>
 
-      {/* CTA 섹션 */}
-      <div className=" text-black py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            지금 바로 시작하세요
-          </h2>
-          <p className="text-xl mb-8">
-            전문가의 도움을 받아 더 나은 농작물을 기르세요
-          </p>
-          <Link to="/trainingDetail?cropId=crop1">
-            <button className="bg-[#3a9d1f] text-white px-8 py-3 rounded-full hover:bg-[#0aab65]">
-              육성 가이드 보기
-            </button>
-          </Link>
+      {/* CTA 섹션 Wrapper with 배경 랜딩 이미지 */}
+      <div
+        className="bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${tomatoes})`,
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* 기존 CTA 섹션 */}
+        <div className="text-black py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-4">
+              지금 바로 시작하세요
+            </h2>
+            <p className="text-xl mb-8">
+              전문가의 도움을 받아 더 나은 농작물을 기르세요
+            </p>
+            <Link to="/trainingDetail?cropId=crop1">
+              <button className="bg-[#3a9d1f] text-white px-8 py-3 rounded-full hover:bg-[#0aab65]">
+                육성 가이드 보기
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
