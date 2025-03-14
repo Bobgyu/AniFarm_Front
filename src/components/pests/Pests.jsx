@@ -14,6 +14,9 @@ import {
   setSelectedImage,
   resetState,
   analyzeImage,
+  analyzeKiwiImage,
+  analyzeChamoeImage,
+  analyzePlantFirst,
 } from "../../redux/slices/imageModelSlice";
 
 const Pests = () => {
@@ -26,7 +29,7 @@ const Pests = () => {
   const crops = [
     { value: "chamoe", label: "🍋참외" },
     { value: "strawberry", label: "🍓딸기" },
-    { value: "kiwi", label: "🥝키위" },
+    { value: "kiwi", label: "🥝 키위" },
   ];
 
   const resetStateHandler = () => {
@@ -55,7 +58,21 @@ const Pests = () => {
         return;
       }
 
-      dispatch(setSelectedImage(URL.createObjectURL(file)));
+      // Canvas를 사용하여 이미지 다시 그리기
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        
+        // 새로 그린 이미지로 설정
+        dispatch(setSelectedImage(canvas.toDataURL()));
+      };
+      img.src = URL.createObjectURL(file);
     }
   };
 
@@ -70,17 +87,35 @@ const Pests = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    dispatch(analyzeImage(formData));
+    // 먼저 식물 분류 실행
+    const plantResult = await dispatch(analyzePlantFirst(formData));
+    
+    // 식물이라고 판단된 경우에만 병해충 분석 실행
+    if (plantResult.payload && plantResult.payload.isPlant) {
+      switch (crops[selectedTab].value) {
+        case "kiwi":
+          dispatch(analyzeKiwiImage(formData));
+          break;
+        case "chamoe":
+          dispatch(analyzeChamoeImage(formData));
+          break;
+        case "strawberry":
+          dispatch(analyzeImage(formData));
+          break;
+        default:
+          break;
+      }
+    }
   };
 
   return (
     <Container maxWidth="md">
       <Box className="py-8">
-        <Typography variant="h4" className="text-center mb-4">
+        <Typography variant="h5" className="text-center mb-4">
           병충해 진단
         </Typography>
 
-        <Paper className="p-6 mt-6 flex flex-col items-center border-2 border-gray-200">
+        <Paper className="p-6 mt-6 flex flex-col items-center border-2 border-gray-200 min-h-[600px]">
           <Box className="w-full border-b border-gray-200">
             <Tabs
               value={selectedTab}
@@ -106,109 +141,177 @@ const Pests = () => {
             </Tabs>
           </Box>
 
-          <Box className="flex gap-4 h-24 mt-6">
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              id="image-upload"
-              onChange={handleImageUpload}
-            />
-            <label htmlFor="image-upload">
-              <Button
-                variant="contained"
-                component="span"
-                startIcon={<CloudUploadIcon />}
-                disabled={isLoading}
-                className="min-w-[120px]"
-              >
-                이미지 업로드
-              </Button>
-            </label>
-            {selectedImage && (
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={resetStateHandler}
-                disabled={isLoading}
-                className="min-w-[120px] h-[2.4rem]"
-              >
-                다시 시도
-              </Button>
-            )}
+          <Box className="w-full mt-8 flex flex-col md:flex-row gap-2">
+            <Box className="md:w-1/2 flex flex-col items-center">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="image-upload"
+                onChange={handleImageUpload}
+              />
+              {!selectedImage ? (
+                <Box className="w-full">
+                  <Box className="flex justify-center flex-col items-center">
+                    <label htmlFor="image-upload">
+                      <Box className="w-[400px] h-[330px] bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
+                        <Box className="text-center">
+                          <CloudUploadIcon sx={{ fontSize: 60 }} className="text-gray-400 mb-2" />
+                          <Typography variant="body1" className="text-gray-500">
+                            이미지를 업로드해주세요
+                          </Typography>
+                          <Typography variant="body2" className="text-gray-400 mt-1">
+                            (최대 5MB)
+                          </Typography>
+                          <Button
+                            variant="contained"
+                            component="span"
+                            startIcon={<CloudUploadIcon />}
+                            className="mt-4 min-w-[120px] h-[2.4rem]"
+                          >
+                            이미지 업로드
+                          </Button>
+                        </Box>
+                      </Box>
+                    </label>
+                    
+                    <Box className="mt-4 p-4 w-[400px] border-2 border-gray-300 rounded-lg">
+                      <Typography variant="subtitle1" className="font-semibold mb-2 text-center">
+                        진단 가능한 병해충
+                      </Typography>
+                      {selectedTab === 0 && (
+                        <Box className="text-center">
+                          <Typography variant="body2" className="text-gray-600">
+                            참외 잎사귀의 다음 증상을 진단할 수 있습니다:
+                          </Typography>
+                          <Box className="mt-2 flex justify-center gap-4">
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">흰가루병</span>
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">노균병</span>
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">정상</span>
+                          </Box>
+                        </Box>
+                      )}
+                      {selectedTab === 2 && (
+                        <Box className="text-center">
+                          <Typography variant="body2" className="text-gray-600">
+                            키위 잎사귀의 다음 증상을 진단할 수 있습니다:
+                          </Typography>
+                          <Box className="mt-2 flex justify-center gap-4">
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">점무늬병</span>
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">총채벌레</span>
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">정상</span>
+                          </Box>
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                </Box>
+              ) : (
+                <>
+                <Box className="flex gap-4 mb-4 justify-center">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleDiagnosis}
+                        disabled={isLoading}
+                        className="min-w-[120px] h-[2.4rem]"
+                      >
+                        {isLoading ? "분석 중..." : "진단하기"}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={resetStateHandler}
+                        disabled={isLoading}
+                        className="min-w-[120px] h-[2.4rem]"
+                      >
+                        다시 시도
+                      </Button>
+                    </Box>
+                  <Box className="w-full">
+                    <Typography variant="h6" className="mb-4 pb-2">
+                    </Typography>
+                    <Box className="flex justify-center">
+                      <Box className="w-[400px] h-[330px] bg-white">
+                        <img
+                          src={selectedImage}
+                          alt="선택된 이미지"
+                          className="w-full h-full object-contain"
+                        />
+                      </Box>
+                    </Box>
+                    {!selectedImage && (
+                      <Box className="mt-4 p-4 border-2 border-gray-300 rounded-lg">
+                        <Typography variant="subtitle1" className="font-semibold mb-2">
+                          진단 가능한 병해충
+                        </Typography>
+                        {selectedTab === 0 && (
+                          <Typography variant="body2" className="flex gap-2">
+                            참외: 
+                            <span className="text-gray-600">흰가루병, 노균병, 정상</span>
+                          </Typography>
+                        )}
+                        {selectedTab === 2 && (
+                          <Typography variant="body2" className="flex gap-2">
+                            키위: 
+                            <span className="text-gray-600">점무늬병, 총채벌레, 정상</span>
+                          </Typography>
+                        )}
+                      </Box>
+                    )}
+                  </Box>
+                </>
+              )}
+            </Box>
+
+            <Box className="md:w-1/2 flex items-center justify-start mt-14">
+              <Box className="w-[400px]">
+                {result && (
+                  <Box className="w-[400px] h-[340px] border-2 border-gray-300 rounded-lg p-4">
+                    <Typography variant="h6" className="mb-3 border-b border-gray-200 pb-2">
+                      진단 결과
+                    </Typography>
+                    <Paper
+                      className={`p-3 ${
+                        result.status === "healthy" ? "bg-green-50" : "bg-red-50"
+                      } transition-colors duration-300`}
+                      sx={{
+                        boxShadow: 'none',
+                      }}
+                    >
+                      <Box className="space-y-2 text-sm">
+                        <Typography variant="body2">
+                          <span className="font-semibold">상태: </span>
+                          {result.disease === "유효하지 않은 이미지"
+                            ? "유효하지 않은 이미지"
+                            : result.status === "healthy"
+                            ? "정상"
+                            : "병충해 감지"}
+                        </Typography>
+                        <Typography variant="body2">
+                          <span className="font-semibold">진단 결과: </span>
+                          {result.disease}
+                        </Typography>
+                        <Typography variant="body2" className="whitespace-pre-wrap">
+                          <span className="font-semibold">상세 정보: </span>
+                          {result.details}
+                        </Typography>
+                        <Typography variant="body2" className="whitespace-pre-wrap border-b border-gray-200 pb-2">
+                          <span className="font-semibold">권장 조치: </span>
+                          {result.recommendation}
+                        </Typography>
+                      </Box>
+                    </Paper>
+                  </Box>
+                )}
+              </Box>
+            </Box>
           </Box>
 
           {error && (
             <Typography color="error" className="mt-4">
               {error}
             </Typography>
-          )}
-
-          {selectedImage && (
-            <>
-              <Box className="mt-2 w-full max-w-[500px] pb-4">
-                <Typography variant="h6" className="mb-4 pb-2">
-                  업로드된 이미지
-                </Typography>
-                <img
-                  src={selectedImage}
-                  alt="선택된 이미지"
-                  className="w-full rounded-lg"
-                />
-              </Box>
-
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                onClick={handleDiagnosis}
-                disabled={isLoading}
-                className="mt-12 mb-6 min-w-[200px] h-12"
-              >
-                {isLoading ? "분석 중..." : "진단하기"}
-              </Button>
-            </>
-          )}
-
-          {isLoading && (
-            <Box className="mt-4 text-center">
-              <Typography>이미지 분석 중...</Typography>
-            </Box>
-          )}
-
-          {result && (
-            <Box className="mt-6 w-full">
-              <Typography variant="h6" className="mb-4">
-                진단 결과
-              </Typography>
-              <Paper
-                className={`p-4 ${
-                  result.status === "healthy" ? "bg-green-50" : "bg-red-50"
-                } transition-colors duration-300`}
-              >
-                <Typography className="mb-2">
-                  상태:{" "}
-                  {result.disease === "유효하지 않은 이미지"
-                    ? "유효하지 않은 이미지"
-                    : result.status === "healthy"
-                    ? "정상"
-                    : "병충해 감지"}
-                </Typography>
-                <Typography className="mb-2">
-                  {result.disease === "유효하지 않은 이미지"
-                    ? "참외 식물 인식 확률"
-                    : "진단 결과"}
-                  : {result.disease}
-                </Typography>
-
-                <Typography className="whitespace-pre-line">
-                  상세 정보: {result.details}
-                </Typography>
-                <Typography className="whitespace-pre-line mt-4">
-                  권장 조치: {result.recommendation}
-                </Typography>
-              </Paper>
-            </Box>
           )}
         </Paper>
       </Box>

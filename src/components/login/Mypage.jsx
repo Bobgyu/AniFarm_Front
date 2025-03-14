@@ -127,57 +127,57 @@ const Mypage = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] w-full bg-gray-50">
+    <div className="min-h-[calc(100vh-64px)] w-full ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+        <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-200 p-5 mt-4">
           {userInfo && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="text-center mb-8">
-                <div className="w-24 h-24 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <div className="w-24 h-24 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center drop-shadow-[4px_4px_12px_rgba(34,197,94,0.4)]">
                   <FaUser className="text-green-500 text-3xl" />
                 </div>
-                <h2 className="text-2xl font-bold text-green-600">내 정보</h2>
+                <h2 className="text-xl font-semibold text-green-600">내 정보</h2>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-xl">
-                <div className="flex items-center space-x-3 mb-2">
-                  <FaEnvelope className="text-green-500" />
-                  <p className="text-gray-600">이메일</p>
+              <div className="bg-white/50 p-5 rounded-xl border border-gray-300">
+                <div className="flex items-center space-x-5 mb-3 border-b border-gray-300 pb-3">
+                  <FaEnvelope className="text-green-500 text-lg" />
+                  <p className="text-gray-900 text-lg">이메일</p>
                 </div>
-                <p className="text-gray-900 font-medium">{userInfo.data?.email}</p>
+                <p className="text-gray-900 text-lg pl-9">{userInfo.data?.email}</p>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-xl">
-                <div className="flex items-center space-x-3 mb-2">
-                  <FaCalendar className="text-green-500" />
-                  <p className="text-gray-600">생년월일</p>
+              <div className="bg-white/50 p-5 rounded-xl border border-gray-300">
+                <div className="flex items-center space-x-5 mb-3 border-b border-gray-300 pb-3">
+                  <FaCalendar className="text-green-500 text-lg" />
+                  <p className="text-gray-900 text-lg">생년월일</p>
                 </div>
-                <p className="text-gray-900 font-medium">
+                <p className="text-gray-900 text-lg pl-9">
                   {userInfo.data?.birth_date || '정보 없음'}
                 </p>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-xl">
-                <div className="flex items-center space-x-3 mb-2">
-                  <FaCalendar className="text-green-500" />
-                  <p className="text-gray-600">가입일</p>
+              <div className="bg-white/50 p-5 rounded-xl border border-gray-300">
+                <div className="flex items-center space-x-5 mb-3 border-b border-gray-300 pb-3">
+                  <FaCalendar className="text-green-500 text-lg" />
+                  <p className="text-gray-900 text-lg">가입일</p>
                 </div>
-                <p className="text-gray-900 font-medium">
+                <p className="text-gray-900 text-lg pl-9">
                   {userInfo.data?.created_at ? userInfo.data.created_at.split(' ')[0] : '정보 없음'}
                 </p>
               </div>
 
               {/* 비밀번호 변경 및 회원 탈퇴 버튼 */}
-              <div className="space-y-3 pt-4 mt-4 border-t border-gray-200">
+              <div className="space-y-4 pt-5 mt-4 border-t border-gray-200">
                 <button
                   onClick={() => setShowPasswordModal(true)}
-                  className="w-full py-2 px-4 bg-[#3a9d1f] text-white rounded-lg hover:bg-[#0aab65] transition-colors"
+                  className="w-full py-3 px-4 bg-[#3db451] text-white rounded-lg hover:bg-[#36a575] transition-colors text-lg"
                 >
                   비밀번호 재설정
                 </button>
                 <button
                   onClick={handleDeleteAccount}
-                  className="w-full py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  className="w-full py-2 px-4 bg-[#c41e3a] text-white rounded-lg hover:bg-[#a01830] transition-colors text-base border-2 border-red-700"
                 >
                   회원 탈퇴
                 </button>
