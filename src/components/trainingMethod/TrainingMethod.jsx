@@ -351,8 +351,8 @@ const TrainingMethod = () => {
       <div
         className="bg-cover bg-center"
         style={{
-          backgroundImage: `url(${tomatoes})`,
-          backgroundRepeat: 'no-repeat'
+          // backgroundImage: `url(${tomatoes})`,
+          // backgroundRepeat: 'no-repeat'
         }}
       >
         {/* 기존 CTA 섹션 */}
