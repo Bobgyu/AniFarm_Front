@@ -2,11 +2,6 @@ import React from "react";
 import AnifarmLogo from "../../assets/main/aniform.png";
 
 const Footer = () => {
-
-  const navigateToTest4 = () => {
-    window.location.href = "/test4";
-  };
-
   return (
     <footer className="flex justify-center items-center border-t w-full h-24">
       <div className="w-full max-w-7xl px-4">
@@ -25,12 +20,6 @@ const Footer = () => {
               대표전화: 02-2038-0800 | FAX: 02-000-0000
             </p>
           </div>
-
-          {/* 버튼 추가 */}
-          <div className="flex items-center hover:text-green-500">
-            <button onClick={navigateToTest4}>Test4</button>
-          </div>
-
           {/* 저작권 정보 */}
           <div className="text-center">
             <p className="text-sm text-gray-500">
