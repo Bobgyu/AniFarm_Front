@@ -84,6 +84,20 @@ export const deletePost = createAsyncThunk(
   }
 );
 
+export const fetchMyPosts = createAsyncThunk(
+  "write/fetchMyPosts",
+  async (_, { rejectWithValue }) => {
+    try {
+      // URL을 backend.py와 일치하도록 수정
+      const response = await axiosInstance.get(`/api/write/user`);
+      return response.data;
+    } catch (error) {
+      console.error("[writeSlice] 내 게시글 조회 실패:", error);
+      return rejectWithValue(error.response?.data || "게시글 조회에 실패했습니다.");
+    }
+  }
+);
+
 const writeSlice = createSlice({
   name: "write",
   initialState: {
@@ -95,6 +109,7 @@ const writeSlice = createSlice({
     currentPost: null,
     loading: false,
     error: null,
+    myPosts: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -177,6 +192,18 @@ const writeSlice = createSlice({
         console.error("[writeSlice] 게시글 삭제 실패:", action.payload);
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchMyPosts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMyPosts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.myPosts = action.payload.data || [];
+      })
+      .addCase(fetchMyPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
@@ -185,5 +212,6 @@ export const selectPosts = (state) => state.write.posts;
 export const selectCurrentPost = (state) => state.write.currentPost;
 export const selectLoading = (state) => state.write.loading;
 export const selectError = (state) => state.write.error;
+export const selectMyPosts = (state) => state.write.myPosts;
 
 export default writeSlice.reducer;

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUserInfo, fetchDeleteAuthData, fetchUpdateAuthData } from "../../redux/slices/authslice";
-import { FaUser, FaEnvelope, FaCalendar } from "react-icons/fa";
+import { fetchMyPosts } from "../../redux/slices/writeSlice";
+import { fetchMyComments } from "../../redux/slices/commentSlice";
+import { FaUser, FaEnvelope, FaCalendar, FaComments, FaPen } from "react-icons/fa";
 import Swal from 'sweetalert2';
 
 const Mypage = () => {
@@ -18,6 +20,9 @@ const Mypage = () => {
     confirm: ""
   });
 
+  const myPosts = useSelector((state) => state.write.myPosts);
+  const myComments = useSelector((state) => state.comments.myComments);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -25,6 +30,8 @@ const Mypage = () => {
       return;
     }
     dispatch(fetchUserInfo());
+    dispatch(fetchMyPosts());
+    dispatch(fetchMyComments());
   }, [dispatch, navigate]);
 
   // 디버깅을 위한 로그 추가
@@ -127,63 +134,132 @@ const Mypage = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] w-full ">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-200 p-5 mt-4">
-          {userInfo && (
-            <div className="space-y-6">
-              <div className="text-center mb-8">
-                <div className="w-24 h-24 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center drop-shadow-[4px_4px_12px_rgba(34,197,94,0.4)]">
-                  <FaUser className="text-green-500 text-3xl" />
+    <div className="min-h-[calc(100vh-64px)] w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex gap-6">
+          {/* 프로필 섹션 */}
+          <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
+            {userInfo && (
+              <div className="space-y-6">
+                <div className="text-center mb-8">
+                  <div className="w-24 h-24 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center drop-shadow-[4px_4px_12px_rgba(34,197,94,0.4)]">
+                    <FaUser className="text-green-500 text-3xl" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-green-600">내 정보</h2>
                 </div>
-                <h2 className="text-xl font-semibold text-green-600">내 정보</h2>
-              </div>
 
-              <div className="bg-white/50 p-5 rounded-xl border border-gray-300">
-                <div className="flex items-center space-x-5 mb-3 border-b border-gray-300 pb-3">
-                  <FaEnvelope className="text-green-500 text-lg" />
-                  <p className="text-gray-900 text-lg">이메일</p>
+                <div className="bg-white/50 p-5 rounded-xl border border-gray-300">
+                  <div className="flex items-center space-x-5 mb-3 border-b border-gray-300 pb-3">
+                    <FaEnvelope className="text-green-500 text-lg" />
+                    <p className="text-gray-900 text-lg">이메일</p>
+                  </div>
+                  <p className="text-gray-900 text-lg pl-9">{userInfo.data?.email}</p>
                 </div>
-                <p className="text-gray-900 text-lg pl-9">{userInfo.data?.email}</p>
-              </div>
 
-              <div className="bg-white/50 p-5 rounded-xl border border-gray-300">
-                <div className="flex items-center space-x-5 mb-3 border-b border-gray-300 pb-3">
-                  <FaCalendar className="text-green-500 text-lg" />
-                  <p className="text-gray-900 text-lg">생년월일</p>
+                <div className="bg-white/50 p-5 rounded-xl border border-gray-300">
+                  <div className="flex items-center space-x-5 mb-3 border-b border-gray-300 pb-3">
+                    <FaCalendar className="text-green-500 text-lg" />
+                    <p className="text-gray-900 text-lg">생년월일</p>
+                  </div>
+                  <p className="text-gray-900 text-lg pl-9">
+                    {userInfo.data?.birth_date || '정보 없음'}
+                  </p>
                 </div>
-                <p className="text-gray-900 text-lg pl-9">
-                  {userInfo.data?.birth_date || '정보 없음'}
-                </p>
-              </div>
 
-              <div className="bg-white/50 p-5 rounded-xl border border-gray-300">
-                <div className="flex items-center space-x-5 mb-3 border-b border-gray-300 pb-3">
-                  <FaCalendar className="text-green-500 text-lg" />
-                  <p className="text-gray-900 text-lg">가입일</p>
+                <div className="bg-white/50 p-5 rounded-xl border border-gray-300">
+                  <div className="flex items-center space-x-5 mb-3 border-b border-gray-300 pb-3">
+                    <FaCalendar className="text-green-500 text-lg" />
+                    <p className="text-gray-900 text-lg">가입일</p>
+                  </div>
+                  <p className="text-gray-900 text-lg pl-9">
+                    {userInfo.data?.created_at ? userInfo.data.created_at.split(' ')[0] : '정보 없음'}
+                  </p>
                 </div>
-                <p className="text-gray-900 text-lg pl-9">
-                  {userInfo.data?.created_at ? userInfo.data.created_at.split(' ')[0] : '정보 없음'}
-                </p>
-              </div>
 
-              {/* 비밀번호 변경 및 회원 탈퇴 버튼 */}
-              <div className="space-y-4 pt-5 mt-4 border-t border-gray-200">
-                <button
-                  onClick={() => setShowPasswordModal(true)}
-                  className="w-full py-3 px-4 bg-[#3db451] text-white rounded-lg hover:bg-[#36a575] transition-colors text-lg"
-                >
-                  비밀번호 재설정
-                </button>
-                <button
-                  onClick={handleDeleteAccount}
-                  className="w-full py-2 px-4 bg-[#c41e3a] text-white rounded-lg hover:bg-[#a01830] transition-colors text-base border-2 border-red-700"
-                >
-                  회원 탈퇴
-                </button>
+                {/* 비밀번호 변경 및 회원 탈퇴 버튼 */}
+                <div className="space-y-4 pt-5 mt-4 border-t border-gray-200">
+                  <button
+                    onClick={() => setShowPasswordModal(true)}
+                    className="w-full py-3 px-4 bg-[#3db451] text-white rounded-lg hover:bg-[#36a575] transition-colors text-lg"
+                  >
+                    비밀번호 재설정
+                  </button>
+                  <button
+                    onClick={handleDeleteAccount}
+                    className="w-full py-2 px-4 bg-[#c41e3a] text-white rounded-lg hover:bg-[#a01830] transition-colors text-base border-2 border-red-700"
+                  >
+                    회원 탈퇴
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 활동 내역 섹션 */}
+          <div className="flex-1 max-w-xl space-y-6">
+            {/* 내 게시글 */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
+              <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-200">
+                <FaPen className="text-green-500 text-xl" />
+                <h2 className="text-xl font-semibold text-gray-800">
+                  내 게시글 ({myPosts?.length || 0})
+                </h2>
+              </div>
+              <div className="max-h-[300px] overflow-y-auto">
+                {myPosts && myPosts.length > 0 ? (
+                  <div className="space-y-3">
+                    {myPosts.map((post) => (
+                      <div
+                        key={post.post_id}
+                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                        onClick={() => navigate(`/community/${post.community_type}/${post.post_id}`)}
+                      >
+                        <h3 className="font-medium text-gray-900">{post.title}</h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {new Date(post.date).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-4">작성한 게시글이 없습니다.</p>
+                )}
               </div>
             </div>
-          )}
+
+            {/* 내 댓글 */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
+              <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-200">
+                <FaComments className="text-green-500 text-xl" />
+                <h2 className="text-xl font-semibold text-gray-800">
+                  내 댓글 ({myComments?.length || 0})
+                </h2>
+              </div>
+              <div className="max-h-[300px] overflow-y-auto">
+                {myComments && myComments.length > 0 ? (
+                  <div className="space-y-3">
+                    {myComments.map((comment) => (
+                      <div
+                        key={comment.comment_id}
+                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                        onClick={() => navigate(`/community/post/${comment.post_id}`)}
+                      >
+                        <p className="text-gray-900">{comment.content}</p>
+                        <div className="flex justify-between items-center mt-2">
+                          <p className="text-sm text-gray-500">게시글: {comment.post_title}</p>
+                          <p className="text-sm text-gray-500">
+                            {new Date(comment.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-4">작성한 댓글이 없습니다.</p>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

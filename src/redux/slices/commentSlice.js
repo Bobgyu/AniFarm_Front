@@ -1,24 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {
-  getRequest,
-  postRequest,
-  putRequest,
-  deleteRequest,
-} from "../../utils/requestMethods";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-const BASE_URL = "http://localhost:8000/api";
-
 // axios 인스턴스 생성
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: 'http://localhost:8000',
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  },
-  withCredentials: true,
-  timeout: 10000
+  }
 });
 
 // 요청 인터셉터 추가
@@ -26,25 +15,12 @@ axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Bearer 접두사가 이미 있는지 확인
-      const tokenValue = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
-      config.headers.Authorization = tokenValue;
+      config.headers.Authorization = `Bearer ${token}`;
     }
-
-    // 요청 전 상세 로깅
-    console.log('[상세 요청 정보]', {
-      url: config.url,
-      method: config.method,
-      headers: config.headers,
-      data: config.data,
-      token: token ? token.substring(0, 20) + "..." : 'none'
-    });
-
     return config;
   },
   (error) => {
-    console.error('[요청 인터셉터 에러]', error);
-    return Promise.reject(new Error('요청 준비 중 오류가 발생했습니다.'));
+    return Promise.reject(error);
   }
 );
 
@@ -178,6 +154,18 @@ const commentSlice = createSlice({
         state.error = null;
       })
       .addCase(createComment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchMyComments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMyComments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.myComments = action.payload.data || [];
+      })
+      .addCase(fetchMyComments.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
@@ -354,19 +342,48 @@ export const deleteComment = (commentId) => async (dispatch) => {
   }
 };
 
-export const fetchMyComments = () => async (dispatch) => {
-  try {
-    dispatch(setLoading(true));
-    const response = await getRequest("comments/my");
-    console.log("내 댓글 조회 응답:", response);
+export const fetchMyComments = createAsyncThunk(
+  "comments/fetchMyComments",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      console.log("[내 댓글 조회] 시작");
+      console.log("[내 댓글 조회] 토큰:", token?.substring(0, 20) + "...");  // 토큰 일부만 출력
+      
+      if (!token) {
+        return rejectWithValue("로그인이 필요합니다.");
+      }
 
-    if (response.success) {
-      dispatch(setMyComments(response.data));
+      // 요청 설정 로깅
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      };
+      console.log("[내 댓글 조회] 요청 설정:", config);
+
+      const response = await axiosInstance.get('/api/comments/user', config);
+      console.log("[내 댓글 조회] 응답:", response.data);
+      
+      return response.data;
+    } catch (error) {
+      console.error("[내 댓글 조회] 상세 에러:", {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers
+        }
+      });
+      return rejectWithValue(error.response?.data?.detail || "댓글 조회에 실패했습니다.");
     }
-  } catch (error) {
-    console.error("내 댓글 조회 실패:", error);
-    dispatch(setError(error.message));
   }
-};
+);
+
+export const selectMyComments = (state) => state.comments.myComments;
 
 export default commentSlice.reducer;
