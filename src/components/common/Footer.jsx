@@ -1,7 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import AnifarmLogo from "../../assets/main/aniform.png";
 
 const Footer = () => {
+  const navigate = useNavigate();
+
+  const handleTest4 = () => {
+    navigate("/test4");
+  };
+
   return (
     <footer className="flex justify-center items-center border-t w-full h-24">
       <div className="w-full max-w-7xl px-4">
@@ -20,10 +27,17 @@ const Footer = () => {
               대표전화: 02-2038-0800 | FAX: 02-000-0000
             </p>
           </div>
+          {/* Test4로 이동하는 버튼 */}
+          <button
+            onClick={handleTest4}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Test4로 이동
+          </button>
           {/* 저작권 정보 */}
           <div className="text-center">
             <p className="text-sm text-gray-500">
-              Copyright © 2025 AnIfarmAll rights reserved.
+              Copyright © 2025 AnIfarm All rights reserved.
             </p>
           </div>
         </div>

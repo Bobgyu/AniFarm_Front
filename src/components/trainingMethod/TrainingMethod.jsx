@@ -26,7 +26,6 @@ const TrainingMethod = () => {
   const [news, setNews] = useState([]);
   const [newsPage, setNewsPage] = useState(0);
   const newsItemsPerPage = 3;
-
   const [[page, direction], setPage] = useState([0, 0]);
 
   const slideVariants = {
@@ -62,15 +61,15 @@ const TrainingMethod = () => {
     fetchYoutubeVideos();
   }, []);
 
+  // 크롤러 엔드포인트로부터 뉴스를 가져오기 위한 useEffect (여기서는 list/20 사용)
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/news', {
-          params: { query: '채소 키우는법' }
-        });
-        setNews(response.data.items || []);
+        const response = await axios.get('http://localhost:8000/api/crawler/news-links?list=20');
+        // 응답 구조: { news_links: [ { title, link, image, content }, ... ] }
+        setNews(response.data.news_links || []);
       } catch (error) {
-        console.error('뉴스 데이터 fetch 오류:', error);
+        console.error('뉴스 크롤링 데이터 fetch 오류:', error);
         setNews([]);
       }
     };
@@ -294,7 +293,7 @@ const TrainingMethod = () => {
         </div>
       </div>
 
-      {/* 뉴스 섹션 */}
+      {/* 뉴스 섹션 (크롤러 사용) */}
       <div className="w-full max-w-[1280px] px-4 mx-auto pb-12 relative">
         <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
           최신 뉴스
@@ -313,10 +312,10 @@ const TrainingMethod = () => {
             {news.slice(newsPage * newsItemsPerPage, (newsPage + 1) * newsItemsPerPage).map((article, index) => (
               <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="p-4">
-                  {article.imageUrl && (
+                  {article.image && (
                     <a href={article.link} target="_blank" rel="noopener noreferrer">
                       <motion.img
-                        src={article.imageUrl}
+                        src={article.image}
                         alt={article.title}
                         className="w-full h-48 object-cover transition-transform hover:scale-105"
                         whileHover={{ scale: 1.05 }}
@@ -330,7 +329,7 @@ const TrainingMethod = () => {
                     </a>
                   </h3>
                   <p className="text-gray-600 text-sm line-clamp-3">
-                    {article.description}
+                    {article.content}
                   </p>
                 </div>
               </div>

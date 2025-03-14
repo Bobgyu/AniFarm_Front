@@ -11,11 +11,10 @@ const SaleNews = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/news', {
-          params: { query: '채소 가격' } // 필요한 쿼리 값 설정
-        });
-        // 백엔드에서 전체 30개의 뉴스 데이터를 받아옵니다.
-        setNews(response.data.items || []);
+        // list=19 을 쿼리 파라미터로 전달 (SaleNews용 크롤링 링크)
+        const response = await axios.get('http://localhost:8000/api/crawler/news-links?list=19');
+        // response.data.news_links 가 기사 배열로 구성되어 있다고 가정합니다.
+        setNews(response.data.news_links || []);
       } catch (error) {
         console.error("뉴스 데이터 fetch 오류:", error);
         setNews([]);
@@ -37,30 +36,42 @@ const SaleNews = () => {
   return (
     <div className="w-full max-w-[1280px] px-4 mx-auto pb-12">
       <h2 className="text-3xl font-bold text-center mt-8 md:mt-16 mb-12 text-gray-800">
-        최신 농산물 가격 뉴스
+        최신 농산물 관련 뉴스
       </h2>
       {news.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {visibleNews.map((article, index) => (
               <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
+                {/* 이미지 URL이 존재하면 이미지 표시 */}
+                {article.image && (
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    className="w-full h-48 object-cover"
+                  />
+                )}
                 <div className="p-4">
-                  {article.imageUrl && (
-                    <a href={article.link} target="_blank" rel="noopener noreferrer">
-                      <img
-                        src={article.imageUrl}
-                        alt={article.title}
-                        className="w-full h-48 object-cover transition-transform hover:scale-105"
-                      />
-                    </a>
-                  )}
                   <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-3">
-                    <a href={article.link} target="_blank" rel="noopener noreferrer" className="line-clamp-1">
+                    <a
+                      href={article.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       {article.title}
                     </a>
                   </h3>
-                  <p className="text-gray-600 text-sm line-clamp-3">
-                    {article.description}
+                  {/* 뉴스 본문(content) 3줄까지만 표시 */}
+                  <p 
+                    className="text-gray-600 text-sm mt-2"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    {article.content}
                   </p>
                 </div>
               </div>
@@ -82,9 +93,9 @@ const SaleNews = () => {
             </span>
             <button
               onClick={() => setCurrentPage((prev) => prev + 1)}
-              disabled={currentPage === totalPages - 1}
+              disabled={currentPage >= totalPages - 1}
               className={`p-2 rounded-full bg-white shadow-lg ${
-                currentPage === totalPages - 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100"
+                currentPage >= totalPages - 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100"
               }`}
             >
               <FaChevronRight size={24} />
