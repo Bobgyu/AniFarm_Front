@@ -11,6 +11,7 @@ const Culture = () => {
     // 호버 기능
   const [hoveredContent, setHoveredContent] = useState(null);
   const imageRef = useRef(null);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   const contentMap = useMemo(() => ({
     training: {
@@ -38,9 +39,17 @@ const Culture = () => {
   // 이미지 프리로딩
   useEffect(() => {
     const preloadImages = () => {
-      Object.values(contentMap).forEach((content) => {
-        const img = new Image();
-        img.src = content.image;
+      const imagePromises = Object.values(contentMap).map((content) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = content.image;
+          img.onload = resolve;
+          img.onerror = resolve; // 이미지 로딩 실패 시에도 resolve 호출
+        });
+      });
+
+      Promise.all(imagePromises).then(() => {
+        setImagesLoaded(true);
       });
     };
 
@@ -135,13 +144,21 @@ const Culture = () => {
 
           {/* 오른쪽 콘텐츠 영역 */}
           <div className="relative overflow-hidden w-full h-[650px] rounded-lg">
-            <img
-              ref={imageRef}
-              src={hoveredContent ? contentMap[hoveredContent].image : culture}
-              alt={hoveredContent || "기본 이미지"}
-              className="w-full h-[650px] object-cover blur-[2px]"
-              loading="lazy"
-            />
+            {imagesLoaded ? (
+              <img
+                ref={imageRef}
+                src={hoveredContent ? contentMap[hoveredContent].image : culture}
+                alt={hoveredContent || "기본 이미지"}
+                className="w-full h-[650px] object-cover blur-[2px]"
+                loading="lazy"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full bg-white">
+                <h2 className="text-2xl font-bold text-gray-500">
+                  이미지 로딩 중...
+                </h2>
+              </div>
+            )}
             <div className="absolute inset-0 bg-black bg-opacity-20" />
             <div className="absolute top-1/2 left-1/2 w-full transform -translate-x-1/2 -translate-y-1/2 text-center">
               <h2 className="text-4xl font-bold text-white tracking-wider">

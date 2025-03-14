@@ -12,7 +12,7 @@ const SaleNews = () => {
     const fetchNews = async () => {
       try {
         const response = await axios.get('http://localhost:8000/api/news', {
-          params: { query: '농산물 가격' } // 필요한 쿼리 값 설정
+          params: { query: '채소 가격' } // 필요한 쿼리 값 설정
         });
         // 백엔드에서 전체 30개의 뉴스 데이터를 받아옵니다.
         setNews(response.data.items || []);
