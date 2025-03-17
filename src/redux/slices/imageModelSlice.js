@@ -19,7 +19,7 @@ export const analyzePlantFirst = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       // 1단계: 식물 분류
-      const response = await fetch("http://localhost:8080/plant_predict", {
+      const response = await fetch("http://localhost:8000/plant_predict", {
         method: "POST",
         body: formData,
       });
@@ -96,7 +96,7 @@ export const analyzeKiwiImage = createAsyncThunk(
   "imageModel/analyzeKiwiImage",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:8080/kiwi_predict", {
+      const response = await fetch("http://localhost:8000/kiwi_predict", {
         method: "POST",
         body: formData,
       });
@@ -146,7 +146,7 @@ export const analyzeChamoeImage = createAsyncThunk(
   "imageModel/analyzeChamoeImage",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:8080/chamoe_predict", {
+      const response = await fetch("http://localhost:8000/chamoe_predict", {
         method: "POST",
         body: formData,
       });

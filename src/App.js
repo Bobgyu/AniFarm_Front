@@ -51,7 +51,7 @@ function AppContent() {
   const [chatHistory, setChatHistory] = useState([]);
   const chatBodyRef = useRef();
 
-  const BACKEND_URL = "http://localhost:8080/chat";
+  const BACKEND_URL = "http://localhost:8000/chat";
 
   const generateChatResponse = async (history) => {
     const updateHistory = (text) => {
