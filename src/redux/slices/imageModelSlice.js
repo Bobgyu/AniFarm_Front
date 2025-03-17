@@ -19,7 +19,7 @@ export const analyzePlantFirst = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       // 1단계: 식물 분류
-      const response = await fetch("http://localhost:8000/plant_predict", {
+      const response = await fetch("http://localhost:8000/predict", {
         method: "POST",
         body: formData,
       });
