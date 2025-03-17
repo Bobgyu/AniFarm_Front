@@ -103,8 +103,8 @@ const Culture = () => {
             </div>
 
             {/* 중앙 텍스트 */}
-            <div className="text-center flex-1 flex items-start justify-center mt-4">
-              <h2 className="text-3xl text-white tracking-wider select-none">
+            <div className="text-center flex items-start justify-center mt-4 absolute top-1/3 left-0 right-0">
+              <h2 className="text-3xl text-white tracking-wider select-none max-w-4xl mx-auto px-4">
                 {!hoveredContent
                   ? "작물 재배에 필요한 정보 수집"
                   : hoveredContent === "training"
@@ -120,19 +120,19 @@ const Culture = () => {
             </div>
 
             {/* 하단 버튼 그룹 */}
-            <div className="mb-24">
-              <div className="flex justify-center gap-8 px-4">
+            <div className="absolute bottom-24 left-0 right-0">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 max-w-4xl mx-auto">
                 {/* 육성법 카드 */}
                 <Link to="/trainingMethod">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     onMouseEnter={() => handleMouseEnter("training")}
-                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-48"
+                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-full"
                   >
-                    <div className="p-6">
-                      <div className="text-3xl mb-4 text-center">🌱</div>
-                      <h3 className="text-xl font-semibold text-gray-900 text-center">
+                    <div className="p-4">
+                      <div className="text-2xl mb-2 text-center">🌱</div>
+                      <h3 className="text-lg font-semibold text-gray-900 text-center">
                         육성법
                       </h3>
                     </div>
@@ -145,11 +145,11 @@ const Culture = () => {
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     onMouseEnter={() => handleMouseEnter("pests")}
-                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-48"
+                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-full"
                   >
-                    <div className="p-6">
-                      <div className="text-3xl mb-4 text-center">🔍</div>
-                      <h3 className="text-xl font-semibold text-gray-900 text-center">
+                    <div className="p-4">
+                      <div className="text-2xl mb-2 text-center">🔍</div>
+                      <h3 className="text-lg font-semibold text-gray-900 text-center">
                         병충해
                       </h3>
                     </div>
@@ -162,11 +162,11 @@ const Culture = () => {
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     onMouseEnter={() => handleMouseEnter("weather")}
-                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-48"
+                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-full"
                   >
-                    <div className="p-6">
-                      <div className="text-3xl mb-4 text-center">🌤️</div>
-                      <h3 className="text-xl font-semibold text-gray-900 text-center">
+                    <div className="p-4">
+                      <div className="text-2xl mb-2 text-center">🌤️</div>
+                      <h3 className="text-lg font-semibold text-gray-900 text-center">
                         날씨
                       </h3>
                     </div>
@@ -179,11 +179,11 @@ const Culture = () => {
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     onMouseEnter={() => handleMouseEnter("community")}
-                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-48"
+                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-full"
                   >
-                    <div className="p-6">
-                      <div className="text-3xl mb-4 text-center">👥</div>
-                      <h3 className="text-xl font-semibold text-gray-900 text-center">
+                    <div className="p-4">
+                      <div className="text-2xl mb-2 text-center">👥</div>
+                      <h3 className="text-lg font-semibold text-gray-900 text-center">
                         커뮤니티
                       </h3>
                     </div>
