@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -14,16 +14,34 @@ import {
   setSelectedImage,
   resetState,
   analyzeImage,
-  analyzeKiwiImage,
-  analyzeChamoeImage,
-  analyzePlantFirst,
 } from "../../redux/slices/imageModelSlice";
 
 const Pests = () => {
   const dispatch = useDispatch();
-  const { selectedImage, result, isLoading, error } = useSelector(
-    (state) => state.imageModel
-  );
+  
+  // useSelector를 분리해서 각각의 상태를 가져옴
+  const selectedImage = useSelector((state) => state.imageModel.selectedImage);
+  const result = useSelector((state) => state.imageModel.result);
+  const isLoading = useSelector((state) => state.imageModel.isLoading);
+  const error = useSelector((state) => state.imageModel.error);
+
+  // 상태 변화 추적을 위한 useEffect들
+  useEffect(() => {
+    console.log("이미지 상태:", selectedImage);
+  }, [selectedImage]);
+
+  useEffect(() => {
+    console.log("로딩 상태:", isLoading);
+  }, [isLoading]);
+
+  useEffect(() => {
+    console.log("결과 상태:", result);
+  }, [result]);
+
+  useEffect(() => {
+    console.log("에러 상태:", error);
+  }, [error]);
+
   const [selectedTab, setSelectedTab] = useState(0);
 
   const crops = [
@@ -87,24 +105,34 @@ const Pests = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    // 먼저 식물 분류 실행
-    const plantResult = await dispatch(analyzePlantFirst(formData));
-    
-    // 식물이라고 판단된 경우에만 병해충 분석 실행
-    if (plantResult.payload && plantResult.payload.isPlant) {
+    try {
+      let response;
+      // 작물 타입에 따른 분석 요청
       switch (crops[selectedTab].value) {
         case "kiwi":
-          dispatch(analyzeKiwiImage(formData));
+          response = await dispatch(analyzeImage({ formData, type: 'kiwi' })).unwrap();
+          console.log("키위 분석 결과:", response);
           break;
         case "chamoe":
-          dispatch(analyzeChamoeImage(formData));
+          response = await dispatch(analyzeImage({ formData, type: 'chamoe' })).unwrap();
+          console.log("참외 분석 결과:", response);
           break;
         case "strawberry":
-          dispatch(analyzeImage(formData));
+          response = await dispatch(analyzeImage({ formData, type: 'plant' })).unwrap();
+          console.log("딸기 분석 결과:", response);
           break;
         default:
           break;
       }
+
+      // 응답이 없는 경우 에러 처리
+      if (!response) {
+        throw new Error("분석 결과를 받지 못했습니다.");
+      }
+
+    } catch (err) {
+      console.error("진단 중 오류 발생:", err);
+      alert("진단 중 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -273,20 +301,22 @@ const Pests = () => {
                     </Typography>
                     <Paper
                       className={`p-3 ${
-                        result.status === "healthy" ? "bg-green-50" : "bg-red-50"
+                        result.status === "healthy" 
+                          ? "bg-green-50" 
+                          : result.status === "invalid"
+                            ? "bg-gray-50"  // 비식물일 경우 회색 배경
+                            : "bg-red-50"   // 병충해일 경우 빨간색 배경
                       } transition-colors duration-300`}
-                      sx={{
-                        boxShadow: 'none',
-                      }}
+                      sx={{ boxShadow: 'none' }}
                     >
                       <Box className="space-y-2 text-sm">
                         <Typography variant="body2">
                           <span className="font-semibold">상태: </span>
-                          {result.disease === "유효하지 않은 이미지"
+                          {result.status === "invalid"
                             ? "유효하지 않은 이미지"
                             : result.status === "healthy"
-                            ? "정상"
-                            : "병충해 감지"}
+                              ? "정상"
+                              : "병충해 감지"}
                         </Typography>
                         <Typography variant="body2">
                           <span className="font-semibold">진단 결과: </span>

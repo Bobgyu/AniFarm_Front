@@ -244,7 +244,7 @@ const Mypage = () => {
           </div>
 
           {/* 활동 내역 섹션 */}
-          <div className="flex-1 max-w-xl space-y-6">
+          <div className="flex-1 space-y-6">
             {/* 내 게시글 */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
               <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-200">
