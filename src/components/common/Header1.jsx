@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearToken } from "../../redux/slices/loginslice";
-import AnifarmLogo from "../../assets/main/aniform.png";
+import AnifarmLogo from "../../assets/main/anifarmbig.png";
 import Swal from "sweetalert2";
 
 const Header = () => {
@@ -135,7 +135,7 @@ const Header = () => {
         <div className="w-full flex justify-between items-center h-full">
           <div className="flex-shrink-0">
             <Link to="/">
-              <img src={AnifarmLogo} alt="로고" className="w-[55px]" />
+              <img src={AnifarmLogo} alt="로고" className="w-[200px]" />
             </Link>
           </div>
 
