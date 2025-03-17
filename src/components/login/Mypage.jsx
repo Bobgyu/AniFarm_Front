@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUserInfo, fetchDeleteAuthData, fetchUpdateAuthData } from "../../redux/slices/authslice";
@@ -30,60 +30,46 @@ const Mypage = () => {
   const [currentCommentPage, setCurrentCommentPage] = useState(1);
   const ITEMS_PER_PAGE = 3;
 
-  // 카테고리별 게시글 필터링 함수
-  const getFilteredPosts = () => {
+  // 페이지네이션 함수
+  const paginate = (items, pageNumber) => {
+    const startIndex = (pageNumber - 1) * ITEMS_PER_PAGE;
+    return items?.slice(startIndex, startIndex + ITEMS_PER_PAGE) || [];
+  };
+
+  // 전체 페이지 수 계산
+  const getTotalPages = (items) => {
+    return Math.ceil((items?.length || 0) / ITEMS_PER_PAGE);
+  };
+
+  // 필터링된 게시글 목록
+  const filteredPosts = useMemo(() => {
+    if (!myPosts) return [];
     if (selectedCategory === 'all') return myPosts;
-    
-    return myPosts?.filter(post => {
+
+    return myPosts.filter(post => {
       switch(selectedCategory) {
         case 'growing':
-          // 재배하기 관련 카테고리 (자유게시판이 아닌 게시글 중에서)
           return post.community_type !== 'freeboard' && 
                  ['food', 'indoor', 'pests', 'hydroponic', 'general'].includes(post.category);
         case 'market':
-          // 판매/구매 관련 카테고리
           return post.community_type !== 'freeboard' && 
                  ['sell', 'buy'].includes(post.category);
         case 'free':
-          // 자유게시판
           return post.community_type === 'freeboard';
         default:
           return true;
       }
     });
-  };
+  }, [myPosts, selectedCategory]);
 
-  // 페이지네이션 함수
-  const paginate = (items, currentPage) => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return items?.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  };
+  // 현재 페이지의 게시글/댓글
+  const currentPosts = paginate(filteredPosts, currentPostPage);
+  const currentComments = paginate(myComments, currentCommentPage);
 
-  // 전체 페이지 수 계산 함수
-  const getTotalPages = (totalItems) => {
-    return Math.ceil(totalItems / ITEMS_PER_PAGE);
-  };
-
-  // 페이지네이션 버튼 컴포넌트
-  const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-    return (
-      <div className="flex justify-center gap-2 mt-4">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-          <button
-            key={pageNum}
-            onClick={() => onPageChange(pageNum)}
-            className={`px-3 py-1 rounded-lg transition-all duration-200 ${
-              currentPage === pageNum
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-            }`}
-          >
-            {pageNum}
-          </button>
-        ))}
-      </div>
-    );
-  };
+  // 카테고리 변경 시 페이지 초기화
+  useEffect(() => {
+    setCurrentPostPage(1);
+  }, [selectedCategory]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -314,16 +300,14 @@ const Mypage = () => {
 
               {/* 필터링된 게시글 목록 */}
               <div className="max-h-[300px] overflow-y-auto">
-                {getFilteredPosts()?.length > 0 ? (
+                {filteredPosts.length > 0 ? (
                   <>
                     <div className="space-y-3">
-                      {paginate(getFilteredPosts(), currentPostPage).map((post) => (
+                      {currentPosts.map((post) => (
                         <div
                           key={post.post_id}
                           className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                          onClick={() => {
-                            navigate(`/Community/${post.post_id}`);
-                          }}
+                          onClick={() => navigate(`/Community/${post.post_id}`)}
                         >
                           <h3 className="font-medium text-gray-900">{post.title}</h3>
                           <div className="flex justify-between items-center mt-2">
@@ -339,11 +323,25 @@ const Mypage = () => {
                         </div>
                       ))}
                     </div>
-                    <Pagination 
-                      currentPage={currentPostPage}
-                      totalPages={getTotalPages(getFilteredPosts().length)}
-                      onPageChange={setCurrentPostPage}
-                    />
+                    
+                    {/* 게시글 페이지네이션 */}
+                    {getTotalPages(filteredPosts) > 1 && (
+                      <div className="flex justify-center gap-2 mt-4">
+                        {Array.from({ length: getTotalPages(filteredPosts) }, (_, i) => i + 1).map((pageNum) => (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPostPage(pageNum)}
+                            className={`px-3 py-1 rounded-lg transition-all duration-200 ${
+                              currentPostPage === pageNum
+                                ? 'bg-green-600 text-white'
+                                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <p className="text-gray-500 text-center py-4">
@@ -364,16 +362,14 @@ const Mypage = () => {
                 </h2>
               </div>
               <div className="max-h-[300px] overflow-y-auto">
-                {myComments && myComments.length > 0 ? (
+                {myComments?.length > 0 ? (
                   <>
                     <div className="space-y-3">
-                      {paginate(myComments, currentCommentPage).map((comment) => (
+                      {currentComments.map((comment) => (
                         <div
                           key={comment.comment_id}
                           className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                          onClick={() => {
-                            navigate(`/Community/${comment.post_id}`);
-                          }}
+                          onClick={() => navigate(`/Community/${comment.post_id}`)}
                         >
                           <div className="flex justify-between items-center mb-2">
                             <h3 className="font-medium text-gray-900 truncate flex-1">
@@ -394,11 +390,25 @@ const Mypage = () => {
                         </div>
                       ))}
                     </div>
-                    <Pagination 
-                      currentPage={currentCommentPage}
-                      totalPages={getTotalPages(myComments.length)}
-                      onPageChange={setCurrentCommentPage}
-                    />
+
+                    {/* 댓글 페이지네이션 */}
+                    {getTotalPages(myComments) > 1 && (
+                      <div className="flex justify-center gap-2 mt-4">
+                        {Array.from({ length: getTotalPages(myComments) }, (_, i) => i + 1).map((pageNum) => (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentCommentPage(pageNum)}
+                            className={`px-3 py-1 rounded-lg transition-all duration-200 ${
+                              currentCommentPage === pageNum
+                                ? 'bg-green-600 text-white'
+                                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <p className="text-gray-500 text-center py-4">작성한 댓글이 없습니다.</p>
