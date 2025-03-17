@@ -10,7 +10,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="flex justify-center items-center border-t w-full h-24">
+    <footer className="flex justify-center items-center border-t w-full h-32">
       <div className="w-full max-w-7xl px-4">
         <div className="flex justify-between items-center w-full h-full">
           {/* 로고 및 주소 정보 */}
@@ -18,7 +18,7 @@ const Footer = () => {
             <img
               src={AnifarmLogo}
               alt="Logo"
-              className="w-[50px] mr-4"
+              className="w-[55px] mr-4"
             />
             <p className="text-sm text-gray-600">
               (08503) 서울 금천구 가산디지털2로 144 현대테라타워 가산DK A동 20층

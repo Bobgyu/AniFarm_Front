@@ -135,7 +135,7 @@ const Header = () => {
         <div className="w-full flex justify-between items-center h-full">
           <div className="flex-shrink-0">
             <Link to="/">
-              <img src={AnifarmLogo} alt="로고" className="w-[50px]" />
+              <img src={AnifarmLogo} alt="로고" className="w-[55px]" />
             </Link>
           </div>
 
