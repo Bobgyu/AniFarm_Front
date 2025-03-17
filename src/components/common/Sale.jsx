@@ -92,11 +92,12 @@ const Sale = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col">
             <div className="text-center mt-48">
               <h1
-                className="text-4xl text-white mb-16 select-none tracking-widest drop-shadow-xl"
+                className="text-4xl text-white mb-4 select-none tracking-widest drop-shadow-xl"
                 onMouseEnter={handleTitleHover}
               >
                 판매하기
               </h1>
+              <div className="w-24 h-1 bg-white mx-auto rounded-full mb-12 opacity-80"></div>
             </div>
 
             {/* 중앙 텍스트 */}

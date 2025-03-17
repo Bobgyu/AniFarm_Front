@@ -1,84 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import axios from "axios";
 
+// PriceCard 컴포넌트를 별도로 분리
+const PriceCard = lazy(() => import('./PriceCard'));
+
 const SalsesInformation = () => {
-  const [cabbagePredictions, setCabbagePredictions] = useState(null);
-  const [onionPredictions, setOnionPredictions] = useState(null);
-  const [applePredictions, setApplePredictions] = useState(null);
-  const [potatoPredictions, setPotatoPredictions] = useState(null);
-  const [cucumberPredictions, setCucumberPredictions] = useState(null);
-  const [tomatoPredictions, setTomatoPredictions] = useState(null);
-  const [spinachPredictions, setSpinachPredictions] = useState(null);
-  const [strawberryPredictions, setStrawberryPredictions] = useState(null);
-  const [broccoliPredictions, setBroccoliPredictions] = useState(null);
-  const [carrotPredictions, setCarrotPredictions] = useState(null);
+  const [predictions, setPredictions] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("cabbage"); // 현재 활성화된 탭
+  const [activeTab, setActiveTab] = useState("cabbage");
 
   useEffect(() => {
     const fetchPredictions = async () => {
       try {
         setLoading(true);
-        const [
-          cabbageResponse,
-          appleResponse,
-          onionResponse,
-          potatoResponse,
-          cucumberResponse,
-          tomatoResponse,
-          spinachResponse,
-          strawberryResponse,
-          broccoliResponse,
-          carrotResponse,
-        ] = await Promise.all([
-          axios.get("http://localhost:8000/predictions/cabbage/Seoul"),
-          axios.get("http://localhost:8000/predictions/apple/Seoul"),
-          axios.get("http://localhost:8000/predictions/onion/Seoul"),
-          axios.get("http://localhost:8000/predictions/potato/Seoul"),
-          axios.get("http://localhost:8000/predictions/cucumber/Seoul"),
-          axios.get("http://localhost:8000/predictions/tomato/Seoul"),
-          axios.get("http://localhost:8000/predictions/spinach/Seoul"),
-          axios.get("http://localhost:8000/predictions/strawberry/Seoul"),
-          axios.get("http://localhost:8000/predictions/broccoli/Seoul"),
-          axios.get("http://localhost:8000/predictions/carrot/Seoul"),
-        ]);
+        const products = [
+          "cabbage", "apple", "onion", "potato", "cucumber",
+          "tomato", "spinach", "strawberry", "broccoli", "carrot"
+        ];
+        
+        const responses = await Promise.all(
+          products.map(product => 
+            axios.get(`http://localhost:8000/predictions/${product}/Seoul`)
+            .catch(error => ({ data: { error: error.message } }))
+          )
+        );
 
-        if (cabbageResponse.data.error) {
-          throw new Error(cabbageResponse.data.error);
-        }
-        if (appleResponse.data.error) {
-          throw new Error(appleResponse.data.error);
-        }
-        if (onionResponse.data.error) {
-          throw new Error(onionResponse.data.error);
-        }
-        if (potatoResponse.data.error) {
-          throw new Error(potatoResponse.data.error);
-        }
-        if (cucumberResponse.data.error) {
-          throw new Error(cucumberResponse.data.error);
-        }
-        if (tomatoResponse.data.error) {
-          throw new Error(tomatoResponse.data.error);
-        }
-        if (spinachResponse.data.error) {
-          throw new Error(spinachResponse.data.error);
-        }
-        if (strawberryResponse.data.error) {
-          throw new Error(strawberryResponse.data.error);
-        }
+        const newPredictions = {};
+        responses.forEach((response, index) => {
+          if (response.data.error) {
+            console.error(`Error fetching ${products[index]}: ${response.data.error}`);
+          } else {
+            newPredictions[products[index]] = response.data.predictions;
+          }
+        });
 
-        setCabbagePredictions(cabbageResponse.data.predictions);
-        setApplePredictions(appleResponse.data.predictions);
-        setOnionPredictions(onionResponse.data.predictions);
-        setPotatoPredictions(potatoResponse.data.predictions);
-        setCucumberPredictions(cucumberResponse.data.predictions);
-        setTomatoPredictions(tomatoResponse.data.predictions);
-        setSpinachPredictions(spinachResponse.data.predictions);
-        setStrawberryPredictions(strawberryResponse.data.predictions);
-        setBroccoliPredictions(broccoliResponse.data.predictions);
-        setCarrotPredictions(carrotResponse.data.predictions);
+        setPredictions(newPredictions);
       } catch (err) {
         console.error("예측 데이터 가져오기 오류:", err);
         setError(err.message);
@@ -90,20 +47,25 @@ const SalsesInformation = () => {
     fetchPredictions();
   }, []);
 
-  if (loading) return <div className="text-center p-4">로딩중...</div>;
+  if (loading) return (
+    <div className="text-center p-8">
+      <p className="text-lg text-gray-700">데이터를 불러오고 있습니다.</p>
+      <p className="text-sm text-gray-500 mt-2">잠시만 기다려주세요...</p>
+    </div>
+  );
   if (error)
     return <div className="text-center p-4 text-red-500">에러: {error}</div>;
   if (
-    !cabbagePredictions ||
-    !applePredictions ||
-    !onionPredictions ||
-    !potatoPredictions ||
-    !cucumberPredictions ||
-    !tomatoPredictions ||
-    !spinachPredictions ||
-    !strawberryPredictions ||
-    !broccoliPredictions ||
-    !carrotPredictions
+    !predictions.cabbage ||
+    !predictions.apple ||
+    !predictions.onion ||
+    !predictions.potato ||
+    !predictions.cucumber ||
+    !predictions.tomato ||
+    !predictions.spinach ||
+    !predictions.strawberry ||
+    !predictions.broccoli ||
+    !predictions.carrot
   )
     return <div className="text-center p-4">데이터가 없습니다.</div>;
 
@@ -148,83 +110,24 @@ const SalsesInformation = () => {
     }
   };
 
-  const PriceCard = ({
-    title,
-    current,
-    tomorrow,
-    weekly,
-    color,
-    emoji,
-    id,
-  }) => (
-    <div className="mb-8">
-      <h2 className={`text-2xl font-bold mb-6 text-center text-${color}-600`}>
-        <div className="flex flex-col items-center">
-          <span className="text-3xl mb-2">{emoji}</span>
-          <span>{title}</span>
-        </div>
-      </h2>
-      <div className="grid gap-4">
-        {/* 현재 예측 가격 */}
-        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
-          <h3 className="font-semibold mb-3 text-gray-700">현재 예측 가격</h3>
-          <div className="text-center">
-            <p
-              className={`text-3xl font-bold text-${color}-600 mb-2 flex items-center justify-center`}
-            >
-              <span>{current?.price?.toLocaleString()}</span>
-              <span className="text-3xl">{getUnit(id)[0]}</span>
-              <span className="text-base ml-1">{getUnit(id)[1]}</span>
-            </p>
-            <p className="text-sm text-gray-600">
-              정확도: {(current?.r2_score * 100).toFixed(2)}%
-            </p>
-          </div>
-        </div>
+  // 탭 컨텐츠 렌더링 로직 수정
+  const renderTabContent = () => {
+    if (!predictions[activeTab]) return null;
 
-        {/* 내일 예측 가격 */}
-        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
-          <h3 className="font-semibold mb-3 text-gray-700">내일 예측 가격</h3>
-          <div className="text-center">
-            <p
-              className={`text-3xl font-bold text-${color}-600 mb-2 flex items-center justify-center`}
-            >
-              <span>{tomorrow?.price?.toLocaleString()}</span>
-              <span className="text-3xl">{getUnit(id)[0]}</span>
-              <span className="text-base ml-1">{getUnit(id)[1]}</span>
-            </p>
-            <p className="text-sm text-gray-600">
-              정확도: {(tomorrow?.r2_score * 100).toFixed(2)}%
-            </p>
-          </div>
-        </div>
-
-        {/* 주간 예측 가격 */}
-        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
-          <h3 className="font-semibold mb-3 text-gray-700">주간 예측 가격</h3>
-          <div className="space-y-3">
-            {weekly?.map((day, index) => (
-              <div
-                key={index}
-                className="text-center py-2 border-b last:border-0"
-              >
-                <p
-                  className={`text-xl font-semibold text-${color}-600 flex items-center justify-center`}
-                >
-                  <span>{day.price?.toLocaleString()}</span>
-                  <span className="text-xl">{getUnit(id)[0]}</span>
-                  <span className="text-sm ml-1">{getUnit(id)[1]}</span>
-                </p>
-                <p className="text-sm text-gray-600">
-                  {index + 2}일 후 (정확도: {(day.r2_score * 100).toFixed(2)}%)
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    return (
+      <Suspense fallback={<div className="text-center p-4">카드 로딩중...</div>}>
+        <PriceCard
+          title={`${tabs.find(tab => tab.id === activeTab)?.name.split(" ")[1]} 가격 예측`}
+          current={predictions[activeTab].current}
+          tomorrow={predictions[activeTab].tomorrow}
+          weekly={predictions[activeTab].weekly}
+          color={tabs.find(tab => tab.id === activeTab)?.color}
+          emoji={tabs.find(tab => tab.id === activeTab)?.name.split(" ")[0]}
+          id={activeTab}
+        />
+      </Suspense>
+    );
+  };
 
   return (
     <div className="p-4 pt-12 max-w-4xl mx-auto bg-gray-50 min-h-screen my-8 rounded-2xl">
@@ -252,116 +155,15 @@ const SalsesInformation = () => {
         ))}
       </div>
 
-      {/* 선택된 탭에 따른 컨텐츠 표시 */}
-      {activeTab === "cabbage" && (
-        <PriceCard
-          title="배추 가격 예측"
-          current={cabbagePredictions.current}
-          tomorrow={cabbagePredictions.tomorrow}
-          weekly={cabbagePredictions.weekly}
-          color="green"
-          emoji="🥬"
-          id="cabbage"
-        />
-      )}
-      {activeTab === "apple" && (
-        <PriceCard
-          title="사과 가격 예측"
-          current={applePredictions.current}
-          tomorrow={applePredictions.tomorrow}
-          weekly={applePredictions.weekly}
-          color="red"
-          emoji="🍎"
-          id="apple"
-        />
-      )}
-      {activeTab === "onion" && (
-        <PriceCard
-          title="양파 가격 예측"
-          current={onionPredictions.current}
-          tomorrow={onionPredictions.tomorrow}
-          weekly={onionPredictions.weekly}
-          color="yellow"
-          emoji="🧅"
-          id="onion"
-        />
-      )}
-      {activeTab === "potato" && (
-        <PriceCard
-          title="감자 가격 예측"
-          current={potatoPredictions.current}
-          tomorrow={potatoPredictions.tomorrow}
-          weekly={potatoPredictions.weekly}
-          color="brown"
-          emoji="🥔"
-          id="potato"
-        />
-      )}
-      {activeTab === "cucumber" && (
-        <PriceCard
-          title="오이 가격 예측"
-          current={cucumberPredictions.current}
-          tomorrow={cucumberPredictions.tomorrow}
-          weekly={cucumberPredictions.weekly}
-          color="green"
-          emoji="🥒"
-          id="cucumber"
-        />
-      )}
-      {activeTab === "tomato" && (
-        <PriceCard
-          title="토마토 가격 예측"
-          current={tomatoPredictions.current}
-          tomorrow={tomatoPredictions.tomorrow}
-          weekly={tomatoPredictions.weekly}
-          color="red"
-          emoji="🍅"
-          id="tomato"
-        />
-      )}
-      {activeTab === "spinach" && (
-        <PriceCard
-          title="시금치 가격 예측"
-          current={spinachPredictions.current}
-          tomorrow={spinachPredictions.tomorrow}
-          weekly={spinachPredictions.weekly}
-          color="green"
-          emoji="🍃"
-          id="spinach"
-        />
-      )}
-      {activeTab === "strawberry" && (
-        <PriceCard
-          title="딸기 가격 예측"
-          current={strawberryPredictions.current}
-          tomorrow={strawberryPredictions.tomorrow}
-          weekly={strawberryPredictions.weekly}
-          color="red"
-          emoji="🍓"
-          id="strawberry"
-        />
-      )}
-      {activeTab === "broccoli" && (
-        <PriceCard
-          title="브로콜리 가격 예측"
-          current={broccoliPredictions.current}
-          tomorrow={broccoliPredictions.tomorrow}
-          weekly={broccoliPredictions.weekly}
-          color="green"
-          emoji="🥦"
-          id="broccoli"
-        />
-      )}
-      {activeTab === "carrot" && (
-        <PriceCard
-          title="당근 가격 예측"
-          current={carrotPredictions.current}
-          tomorrow={carrotPredictions.tomorrow}
-          weekly={carrotPredictions.weekly}
-          color="orange"
-          emoji="🥕"
-          id="carrot"
-        />
+      {loading ? (
+        <div className="text-center p-8">
+          <p className="text-lg text-gray-700">데이터를 불러오고 있습니다.</p>
+          <p className="text-sm text-gray-500 mt-2">잠시만 기다려주세요...</p>
+        </div>
+      ) : error ? (
+        <div className="text-center p-4 text-red-500">에러: {error}</div>
+      ) : (
+        renderTabContent()
       )}
 
       {/* 모델 정보 */}
