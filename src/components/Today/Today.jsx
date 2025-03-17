@@ -42,6 +42,9 @@ const Today = () => {
         const updateTime = new Date();
         updateTime.setHours(15, 0, 0, 0);
         
+        // 주말 체크 (0: 일요일, 6: 토요일)
+        const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+        
         // 새로운 데이터 처리 로직
         if (response.data && response.data.data && response.data.data.item) {
           // 가장 최근의 유효한 데이터를 찾기 위한 임시 저장소
@@ -87,14 +90,25 @@ const Today = () => {
             });
 
           // 데이터 업데이트 및 프리징 로직
-          if (now >= updateTime) {
-            // 오후 3시 이후
+          if (isWeekend) {
+            // 주말인 경우
+            if (frozenData && lastUpdateTime) {
+              console.log('Using frozen data during weekend');
+              setPriceData(frozenData);
+            } else {
+              // 프리징된 데이터가 없는 경우 현재 데이터를 프리징
+              setPriceData(latestValidData);
+              setFrozenData(latestValidData);
+              setLastUpdateTime(now);
+              localStorage.setItem('frozenPriceData', JSON.stringify(latestValidData));
+              localStorage.setItem('lastUpdateTime', now.toISOString());
+            }
+          } else if (now >= updateTime) {
+            // 평일 오후 3시 이후
             if (!hasValidDpr1Data && frozenData && lastUpdateTime) {
-              // dpr1 데이터가 없고 프리징된 데이터가 있으면 프리징된 데이터 사용
               console.log('Using frozen data due to missing dpr1 data');
               setPriceData(frozenData);
             } else if (hasValidDpr1Data) {
-              // 새로운 유효한 데이터가 있으면 업데이트 및 프리징
               setPriceData(latestValidData);
               setFrozenData(latestValidData);
               setLastUpdateTime(now);
@@ -102,7 +116,7 @@ const Today = () => {
               localStorage.setItem('lastUpdateTime', now.toISOString());
             }
           } else {
-            // 오후 3시 이전
+            // 평일 오후 3시 이전
             if (frozenData && lastUpdateTime) {
               console.log('Using frozen data before 3 PM');
               setPriceData(frozenData);
@@ -128,22 +142,26 @@ const Today = () => {
 
     fetchPriceData();
 
-    // 매일 오후 3시에 데이터 업데이트
+    // 매일 오후 3시에 데이터 업데이트 (주말 제외)
     const now = new Date();
-    const updateTime = new Date(now);
-    updateTime.setHours(15, 0, 0, 0);
+    const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+    
+    if (!isWeekend) {
+      const updateTime = new Date(now);
+      updateTime.setHours(15, 0, 0, 0);
 
-    let timeUntilUpdate;
-    if (now > updateTime) {
-      updateTime.setDate(updateTime.getDate() + 1);
+      let timeUntilUpdate;
+      if (now > updateTime) {
+        updateTime.setDate(updateTime.getDate() + 1);
+      }
+      timeUntilUpdate = updateTime.getTime() - now.getTime();
+
+      const updateTimer = setTimeout(() => {
+        fetchPriceData();
+      }, timeUntilUpdate);
+
+      return () => clearTimeout(updateTimer);
     }
-    timeUntilUpdate = updateTime.getTime() - now.getTime();
-
-    const updateTimer = setTimeout(() => {
-      fetchPriceData();
-    }, timeUntilUpdate);
-
-    return () => clearTimeout(updateTimer);
   }, []);
 
   if (loading) {
