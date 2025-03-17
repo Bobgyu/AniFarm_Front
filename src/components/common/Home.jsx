@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { LuDot } from "react-icons/lu";
+import { Link } from "react-router-dom";
+import anifarmw from "../../assets/main/anifarmw.png";
 
 const Home = () => {
   const [currentView, setCurrentView] = useState("home");
@@ -44,11 +46,11 @@ const Home = () => {
           <div className="absolute inset-0 bg-black bg-opacity-40">
             <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-center">
               <div className="text-white text-center">
-                <h1 className="text-4xl font-bold mb-4">AnI Farm</h1>
+                <img src={anifarmw} alt="AnI Farm" className="h-80 mx-auto mb-8" />
                 <p className="text-xl mb-4">
                   AI로 심고, 데이터로 키우는 당신을 위한 smart한 농사의 시작
                 </p>
-                <p className="text-l">
+                <p className="text-xl">
                   지혜가 모이고 소통하는 공간, 함께 키워가는 AI 농업 커뮤니티
                 </p>
               </div>
@@ -75,11 +77,15 @@ const Home = () => {
           <div className="absolute inset-0 bg-black bg-opacity-40">
             <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-center">
               <div className="text-white text-center">
-                <h1 className="text-4xl font-bold mb-4">재배하기</h1>
+                <h1 className="text-4xl font-bold mb-4">
+                  <Link to="/culture" className="hover:text-gray-300 transition-colors duration-300">
+                    재배하기
+                  </Link>
+                </h1>
                 <p className="text-xl mb-4">
                   재배하기는 다양한 농업 정보를 제공합니다.
                 </p>
-                <p className="text-l">
+                <p className="text-xl">
                   작물 육성법, 병충해 이미지 분석 , 날씨 정보, 그리고 농업 커뮤니티를 통해 함께 성장하세요.
                 </p>
               </div>
@@ -106,11 +112,15 @@ const Home = () => {
           <div className="absolute inset-0 bg-black bg-opacity-40">
             <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-center">
               <div className="text-white text-center">
-                <h1 className="text-4xl font-bold mb-4">판매하기</h1>
+                <h1 className="text-4xl font-bold mb-4">
+                  <Link to="/sale" className="hover:text-gray-300 transition-colors duration-300">
+                    판매하기
+                  </Link>
+                </h1>
                 <p className="text-xl mb-4">
                   농산물 판매를 위한 데이터 분석과 AI 기반 가격 예측을 통해 최적의 판매 시기를 찾으세요.
                 </p>
-                <p className="text-l">
+                <p className="text-xl">
                   실시간 소비자 트렌드와 선호도를 분석하고, 커뮤니티에서 직거래를 시작해보세요.
                 </p>
               </div>
