@@ -11,21 +11,31 @@ import { useNavigate } from "react-router-dom";
 const Write = ({ posts }) => {
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading);
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 10;
 
   const [selectedPost, setSelectedPost] = useState(null);
   const [modalMode, setModalMode] = useState(null);
   const navigate = useNavigate();
+
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+  const totalPages = Math.ceil(posts.length / postsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const handlePostClick = (postId) => {
     navigate(`/Community/${postId}`);
   };
 
   const handlePostDeleted = (deletedPostId) => {
-    // 삭제된 게시글은 deletePost thunk에서 자동으로 처리됨
     dispatch(deletePost(deletedPostId));
   };
 
-  // 카테고리 매핑 함수 추가
   const getCategoryName = (category) => {
     const categories = {
       general: "일반 토론",
@@ -68,7 +78,7 @@ const Write = ({ posts }) => {
           </tr>
         </thead>
         <tbody>
-          {posts.map((post, index) => (
+          {currentPosts.map((post, index) => (
             <tr
               key={`post-${post.post_id || index}`}
               onClick={() => handlePostClick(post.post_id)}
@@ -84,6 +94,22 @@ const Write = ({ posts }) => {
           ))}
         </tbody>
       </table>
+
+      <div className="flex justify-center mt-4 gap-2 mb-3">
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+          <button
+            key={pageNum}
+            onClick={() => handlePageChange(pageNum)}
+            className={`px-3 py-1 rounded ${
+              currentPage === pageNum
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-200 hover:bg-gray-300'
+            }`}
+          >
+            {pageNum}
+          </button>
+        ))}
+      </div>
 
       {selectedPost && (
         <WriteModal

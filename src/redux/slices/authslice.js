@@ -233,7 +233,7 @@ export const logoutWithAlert = createAsyncThunk(
   }
 );
 
-// 로그인 상태 체크를 위한 thunk
+// 토큰 만료 체크 로직 수정
 export const checkLoginStatusThunk = createAsyncThunk(
   'auth/checkLoginStatusThunk',
   async (_, { dispatch, getState }) => {
@@ -247,16 +247,22 @@ export const checkLoginStatusThunk = createAsyncThunk(
       return;
     }
 
-    if (now > parseInt(tokenExpiry)) {
-      await dispatch(logoutWithAlert({
-        title: '토큰이 만료되었습니다',
-        text: '다시 로그인해주세요.'
-      }));
-      return;
+    // 토큰 만료 15분 전에 자동으로 갱신 시도
+    if (parseInt(tokenExpiry) - now < 15 * 60 * 1000) {
+      try {
+        await dispatch(refreshToken()).unwrap();
+        return;
+      } catch (error) {
+        await dispatch(logoutWithAlert({
+          title: '토큰 갱신 실패',
+          text: '다시 로그인해주세요.'
+        }));
+        return;
+      }
     }
 
+    // 활동 시간 체크
     const lastActivity = state.lastActivity || now;
-    // const inactivityLimit = 30 * 1000; // 30초
     const inactivityLimit = 2 * 60 * 60 * 1000; // 2시간
 
     if (now - lastActivity > inactivityLimit) {
@@ -264,6 +270,20 @@ export const checkLoginStatusThunk = createAsyncThunk(
         title: '자동 로그아웃',
         text: '장시간 활동이 없어 자동 로그아웃됩니다.'
       }));
+    }
+  }
+);
+
+// 토큰 만료 15분 전에 자동 갱신하는 로직 추가 제안
+export const checkTokenExpiration = createAsyncThunk(
+  'auth/checkTokenExpiration',
+  async (_, { dispatch }) => {
+    const tokenExpiry = localStorage.getItem('tokenExpiry');
+    const now = new Date().getTime();
+    const timeToExpiry = parseInt(tokenExpiry) - now;
+    
+    if (timeToExpiry < 15 * 60 * 1000) { // 15분 미만 남은 경우
+      await dispatch(refreshToken());
     }
   }
 );
@@ -278,12 +298,36 @@ const handleFulfilled = (stateKey) => (state, action) => {
   state[stateKey] = action.payload; // action.payload에 응답 데이터가 들어있음
 };
 
-// handleRejected 함수 정의 : 요청 실패 시 상태 업데이트 로직을 별도의 함수로 분리
+// handleRejected 함수 수정
 const handleRejected = (state, action) => {
-  // console.log('Error', action.payload);
   state.isError = true;
-  state.errorMessage = action.payload?.msg || "Something went wrong";
+  state.errorMessage = action.payload?.message || "오류가 발생했습니다.";
 };
+
+// refreshToken 함수 수정
+export const refreshToken = createAsyncThunk(
+  'auth/refreshToken',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/refresh`, {}, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.data.access_token) {
+        localStorage.setItem('token', response.data.access_token);
+        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000; // 24시간
+        localStorage.setItem('tokenExpiry', expiry.toString());
+        return response.data;
+      }
+      
+      throw new Error('토큰 갱신 실패');
+    } catch (error) {
+      return rejectWithValue(error.response?.data || '토큰 갱신 실패');
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -363,6 +407,13 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        if (action.payload?.status === 401) {
+          state.errorMessage = "인증이 만료되었습니다. 다시 로그인해주세요.";
+          return logoutWithAlert({
+            title: '인증 만료',
+            text: '다시 로그인해주세요.'
+          });
+        }
       })
 
       .addCase(fetchPostEmailVerificationData.fulfilled, (state, action) => {
