@@ -81,7 +81,7 @@ const Sale = () => {
           </motion.div>
         ) : (
           <div className="flex items-center justify-center h-full bg-white">
-            <h2 className="text-2xl font-bold text-gray-500">
+            <h2 className="text-2xl text-gray-500">
               이미지 로딩 중...
             </h2>
           </div>
@@ -90,9 +90,9 @@ const Sale = () => {
         {/* 콘텐츠 */}
         <div className="absolute inset-0 flex flex-col">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col">
-            <div className="text-center mt-16">
+            <div className="text-center mt-24">
               <h1
-                className="text-4xl font-bold text-white mb-8 cursor-pointer"
+                className="text-4xl text-white mb-4 cursor-pointer"
                 onMouseEnter={handleTitleHover}
               >
                 판매하기
@@ -101,7 +101,7 @@ const Sale = () => {
 
             {/* 중앙 텍스트 */}
             <div className="text-center flex-1 flex items-center justify-center">
-              <h2 className="text-4xl font-bold text-white tracking-wider">
+              <h2 className="text-4xl text-white tracking-wider">
                 {!hoveredContent
                   ? "농산물 판매를 위한 데이터 분석"
                   : hoveredContent === "market"

@@ -93,9 +93,9 @@ const Culture = () => {
         {/* 콘텐츠 */}
         <div className="absolute inset-0 flex flex-col">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col">
-            <div className="text-center mt-16">
+            <div className="text-center mt-24">
               <h1
-                className="text-4xl font-bold text-white mb-8 cursor-pointer"
+                className="text-4xl text-white mb-8 cursor-pointer"
                 onMouseEnter={handleTitleHover}
               >
                 재배하기
@@ -104,7 +104,7 @@ const Culture = () => {
 
             {/* 중앙 텍스트 */}
             <div className="text-center flex-1 flex items-center justify-center">
-              <h2 className="text-4xl font-bold text-white tracking-wider">
+              <h2 className="text-4xl text-white tracking-wider">
                 {!hoveredContent
                   ? "작물 재배에 필요한 정보 수집"
                   : hoveredContent === "training"
