@@ -23,6 +23,68 @@ const Mypage = () => {
   const myPosts = useSelector((state) => state.write.myPosts);
   const myComments = useSelector((state) => state.comments.myComments);
 
+  // 선택된 카테고리 상태 추가
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const [currentPostPage, setCurrentPostPage] = useState(1);
+  const [currentCommentPage, setCurrentCommentPage] = useState(1);
+  const ITEMS_PER_PAGE = 3;
+
+  // 카테고리별 게시글 필터링 함수
+  const getFilteredPosts = () => {
+    if (selectedCategory === 'all') return myPosts;
+    
+    return myPosts?.filter(post => {
+      switch(selectedCategory) {
+        case 'growing':
+          // 재배하기 관련 카테고리 (자유게시판이 아닌 게시글 중에서)
+          return post.community_type !== 'freeboard' && 
+                 ['food', 'indoor', 'pests', 'hydroponic', 'general'].includes(post.category);
+        case 'market':
+          // 판매/구매 관련 카테고리
+          return post.community_type !== 'freeboard' && 
+                 ['sell', 'buy'].includes(post.category);
+        case 'free':
+          // 자유게시판
+          return post.community_type === 'freeboard';
+        default:
+          return true;
+      }
+    });
+  };
+
+  // 페이지네이션 함수
+  const paginate = (items, currentPage) => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return items?.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  };
+
+  // 전체 페이지 수 계산 함수
+  const getTotalPages = (totalItems) => {
+    return Math.ceil(totalItems / ITEMS_PER_PAGE);
+  };
+
+  // 페이지네이션 버튼 컴포넌트
+  const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+    return (
+      <div className="flex justify-center gap-2 mt-4">
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+          <button
+            key={pageNum}
+            onClick={() => onPageChange(pageNum)}
+            className={`px-3 py-1 rounded-lg transition-all duration-200 ${
+              currentPage === pageNum
+                ? 'bg-green-600 text-white'
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+            }`}
+          >
+            {pageNum}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -205,24 +267,90 @@ const Mypage = () => {
                   내 게시글 ({myPosts?.length || 0})
                 </h2>
               </div>
+
+              {/* 카테고리 필터 버튼 */}
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                    selectedCategory === 'all'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  전체
+                </button>
+                <button
+                  onClick={() => setSelectedCategory('growing')}
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                    selectedCategory === 'growing'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  재배하기
+                </button>
+                <button
+                  onClick={() => setSelectedCategory('market')}
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                    selectedCategory === 'market'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  판매/구매
+                </button>
+                <button
+                  onClick={() => setSelectedCategory('free')}
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                    selectedCategory === 'free'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  자유게시판
+                </button>
+              </div>
+
+              {/* 필터링된 게시글 목록 */}
               <div className="max-h-[300px] overflow-y-auto">
-                {myPosts && myPosts.length > 0 ? (
-                  <div className="space-y-3">
-                    {myPosts.map((post) => (
-                      <div
-                        key={post.post_id}
-                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/community/${post.community_type}/${post.post_id}`)}
-                      >
-                        <h3 className="font-medium text-gray-900">{post.title}</h3>
-                        <p className="text-sm text-gray-500 mt-1">
-                          {new Date(post.date).toLocaleDateString()}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+                {getFilteredPosts()?.length > 0 ? (
+                  <>
+                    <div className="space-y-3">
+                      {paginate(getFilteredPosts(), currentPostPage).map((post) => (
+                        <div
+                          key={post.post_id}
+                          className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                          onClick={() => {
+                            navigate(`/Community/${post.post_id}`);
+                          }}
+                        >
+                          <h3 className="font-medium text-gray-900">{post.title}</h3>
+                          <div className="flex justify-between items-center mt-2">
+                            <span className="text-sm text-gray-500">
+                              {post.community_type === 'freeboard' 
+                                ? '자유게시판' 
+                                : getCategoryName(post.category)}
+                            </span>
+                            <p className="text-sm text-gray-500">
+                              {new Date(post.created_at || post.date).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <Pagination 
+                      currentPage={currentPostPage}
+                      totalPages={getTotalPages(getFilteredPosts().length)}
+                      onPageChange={setCurrentPostPage}
+                    />
+                  </>
                 ) : (
-                  <p className="text-gray-500 text-center py-4">작성한 게시글이 없습니다.</p>
+                  <p className="text-gray-500 text-center py-4">
+                    {selectedCategory === 'all' 
+                      ? '작성한 게시글이 없습니다.' 
+                      : '해당 카테고리의 게시글이 없습니다.'}
+                  </p>
                 )}
               </div>
             </div>
@@ -237,23 +365,41 @@ const Mypage = () => {
               </div>
               <div className="max-h-[300px] overflow-y-auto">
                 {myComments && myComments.length > 0 ? (
-                  <div className="space-y-3">
-                    {myComments.map((comment) => (
-                      <div
-                        key={comment.comment_id}
-                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/community/post/${comment.post_id}`)}
-                      >
-                        <p className="text-gray-900">{comment.content}</p>
-                        <div className="flex justify-between items-center mt-2">
-                          <p className="text-sm text-gray-500">게시글: {comment.post_title}</p>
-                          <p className="text-sm text-gray-500">
-                            {new Date(comment.created_at).toLocaleDateString()}
+                  <>
+                    <div className="space-y-3">
+                      {paginate(myComments, currentCommentPage).map((comment) => (
+                        <div
+                          key={comment.comment_id}
+                          className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                          onClick={() => {
+                            navigate(`/Community/${comment.post_id}`);
+                          }}
+                        >
+                          <div className="flex justify-between items-center mb-2">
+                            <h3 className="font-medium text-gray-900 truncate flex-1">
+                              게시글: {comment.post_title}
+                            </h3>
+                            <span className="text-sm text-gray-500 ml-2">
+                              {comment.community_type === 'freeboard' 
+                                ? '자유게시판' 
+                                : getCategoryName(comment.category)}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 break-words">
+                            {comment.content}
+                          </p>
+                          <p className="text-sm text-gray-500 mt-2">
+                            {new Date(comment.created_at || comment.date).toLocaleDateString()}
                           </p>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                    <Pagination 
+                      currentPage={currentCommentPage}
+                      totalPages={getTotalPages(myComments.length)}
+                      onPageChange={setCurrentCommentPage}
+                    />
+                  </>
                 ) : (
                   <p className="text-gray-500 text-center py-4">작성한 댓글이 없습니다.</p>
                 )}
@@ -320,6 +466,21 @@ const Mypage = () => {
       )}
     </div>
   );
+};
+
+// Write.jsx의 getCategoryName 함수도 가져와서 사용
+const getCategoryName = (category) => {
+  const categories = {
+    general: "일반 토론",
+    food: "식물 재배",
+    indoor: "실내 식물",
+    pests: "병충해 관리",
+    hydroponic: "수경 재배",
+    question: "질문하기",
+    sell: "판매하기",
+    buy: "구매하기"
+  };
+  return categories[category] || category;
 };
 
 export default Mypage;
