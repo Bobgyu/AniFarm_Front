@@ -111,7 +111,7 @@ front/
 
 ```
 REACT_APP_API_URL=http://localhost:8000
-REACT_APP_BACKEND_URL=http://localhost:8080
+REACT_APP_BACKEND_URL=http://localhost:8000
 ```
 
 ## 브라우저 지원
