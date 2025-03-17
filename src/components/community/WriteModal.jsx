@@ -19,11 +19,17 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
     }
   };
 
-  const [postData, setPostData] = useState({
+  const initialPostData = {
     title: "",
     content: "",
-    category: getInitialCategory(), // communityType 대신 적절한 초기 카테고리 설정
-  });
+    category: getInitialCategory(),
+  };
+
+  const [postData, setPostData] = useState(initialPostData);
+
+  const resetForm = () => {
+    setPostData(initialPostData);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,6 +46,8 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
 
       const result = await dispatch(createPost(formData)).unwrap();
       console.log("[WriteModal] 게시글 작성 성공:", result);
+
+      resetForm();
 
       Swal.fire({
         icon: "success",
@@ -72,6 +80,11 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
         });
       }
     }
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
   };
 
   const isFormValid = () => {
@@ -117,7 +130,7 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">새 게시글 작성</h3>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-gray-500 hover:text-gray-700"
           >
             ✕
@@ -171,7 +184,7 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
           <div className="flex justify-end space-x-3">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
             >
               취소
