@@ -47,7 +47,7 @@ const Home = () => {
             <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-center">
               <div className="text-white text-center">
                 <img src={anifarmw} alt="AnI Farm" className="h-80 mx-auto mb-8" />
-                <p className="text-xl mb-4">
+                <p className="text-xl mb-2">
                   AI로 심고, 데이터로 키우는 당신을 위한 smart한 농사의 시작
                 </p>
                 <p className="text-xl">
@@ -77,12 +77,12 @@ const Home = () => {
           <div className="absolute inset-0 bg-black bg-opacity-40">
             <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-center">
               <div className="text-white text-center">
-                <h1 className="text-4xl font-bold mb-4">
+                <h1 className="text-4xl font-bold mb-8">
                   <Link to="/culture" className="hover:text-gray-300 transition-colors duration-300">
                     재배하기
                   </Link>
                 </h1>
-                <p className="text-xl mb-4">
+                <p className="text-xl mb-2">
                   재배하기는 다양한 농업 정보를 제공합니다.
                 </p>
                 <p className="text-xl">
@@ -112,12 +112,12 @@ const Home = () => {
           <div className="absolute inset-0 bg-black bg-opacity-40">
             <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-center">
               <div className="text-white text-center">
-                <h1 className="text-4xl font-bold mb-4">
+                <h1 className="text-4xl font-bold mb-8">
                   <Link to="/sale" className="hover:text-gray-300 transition-colors duration-300">
                     판매하기
                   </Link>
                 </h1>
-                <p className="text-xl mb-4">
+                <p className="text-xl mb-2">
                   농산물 판매를 위한 데이터 분석과 AI 기반 가격 예측을 통해 최적의 판매 시기를 찾으세요.
                 </p>
                 <p className="text-xl">
