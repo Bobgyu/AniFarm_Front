@@ -20,18 +20,23 @@ const SalsesInformation = () => {
         ];
         
         const responses = await Promise.all(
-          products.map(product => 
-            axios.get(`http://localhost:8000/predictions/${product}/Seoul`)
-            .catch(error => ({ data: { error: error.message } }))
-          )
+          products.map(async product => {
+            try {
+              const response = await axios.get(`http://localhost:8000/predictions/${product}/Seoul`);
+              return response;
+            } catch (error) {
+              console.error(`Error fetching ${product}:`, error.message);
+              return { data: { error: error.message } };
+            }
+          })
         );
 
         const newPredictions = {};
         responses.forEach((response, index) => {
-          if (response.data.error) {
-            console.error(`Error fetching ${products[index]}: ${response.data.error}`);
-          } else {
+          if (response.data && !response.data.error && response.data.predictions) {
             newPredictions[products[index]] = response.data.predictions;
+          } else {
+            console.error(`Error fetching ${products[index]}: ${response.data?.error || 'Unknown error'}`);
           }
         });
 
@@ -53,23 +58,12 @@ const SalsesInformation = () => {
       <p className="text-sm text-gray-500 mt-2">잠시만 기다려주세요...</p>
     </div>
   );
-  if (error)
-    return <div className="text-center p-4 text-red-500">에러: {error}</div>;
-  if (
-    !predictions.cabbage ||
-    !predictions.apple ||
-    !predictions.onion ||
-    !predictions.potato ||
-    !predictions.cucumber ||
-    !predictions.tomato ||
-    !predictions.spinach ||
-    !predictions.strawberry ||
-    !predictions.broccoli ||
-    !predictions.carrot
-  )
-    return <div className="text-center p-4">데이터가 없습니다.</div>;
 
-  // 탭 설정 수정
+  if (error) return (
+    <div className="text-center p-4 text-red-500">에러: {error}</div>
+  );
+
+  // 탭 설정
   const tabs = [
     { id: "cabbage", name: "🥬 배추", color: "green" },
     { id: "apple", name: "🍎 사과", color: "red" },
@@ -80,39 +74,17 @@ const SalsesInformation = () => {
     { id: "spinach", name: "🍃 시금치", color: "green" },
     { id: "strawberry", name: "🍓 딸기", color: "red" },
     { id: "broccoli", name: "🥦 브로콜리", color: "green" },
-    { id: "carrot", name: "🥕 당근", color: "orange" },
+    { id: "carrot", name: "🥕 당근", color: "orange" }
   ];
 
-  const getUnit = (id) => {
-    switch (id) {
-      case "spinach":
-        return ["원", "/4kg상자"];
-      case "onion":
-        return ["원", "/15kg상자"];
-      case "cucumber":
-        return ["원", "/15kg상자"];
-      case "potato":
-        return ["원", "/20kg상자"];
-      case "strawberry":
-        return ["원", "/2kg상자"];
-      case "cabbage":
-        return ["원", "/10kg망"];
-      case "tomato":
-        return ["원", "/10kg상자"];
-      case "apple":
-        return ["원", "/10kg상자"];
-      case "broccoli":
-        return ["원", "/8kg상자"];
-      case "carrot":
-        return ["원", "/20kg상자"];
-      default:
-        return ["원", "/kg"];
-    }
-  };
-
-  // 탭 컨텐츠 렌더링 로직 수정
+  // 탭 컨텐츠 렌더링
   const renderTabContent = () => {
-    if (!predictions[activeTab]) return null;
+    if (!predictions[activeTab]) return (
+      <div className="text-center p-4">
+        <p className="text-gray-600">해당 작물의 예측 데이터를 가져올 수 없습니다.</p>
+        <p className="text-sm text-gray-500 mt-2">잠시 후 다시 시도해주세요.</p>
+      </div>
+    );
 
     return (
       <Suspense fallback={<div className="text-center p-4">카드 로딩중...</div>}>
@@ -155,16 +127,7 @@ const SalsesInformation = () => {
         ))}
       </div>
 
-      {loading ? (
-        <div className="text-center p-8">
-          <p className="text-lg text-gray-700">데이터를 불러오고 있습니다.</p>
-          <p className="text-sm text-gray-500 mt-2">잠시만 기다려주세요...</p>
-        </div>
-      ) : error ? (
-        <div className="text-center p-4 text-red-500">에러: {error}</div>
-      ) : (
-        renderTabContent()
-      )}
+      {renderTabContent()}
 
       {/* 모델 정보 */}
       <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
