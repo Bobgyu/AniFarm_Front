@@ -322,10 +322,6 @@ const Pests = () => {
                           <span className="font-semibold">진단 결과: </span>
                           {result.disease}
                         </Typography>
-                        <Typography variant="body2" className="whitespace-pre-wrap">
-                          <span className="font-semibold">상세 정보: </span>
-                          {result.details}
-                        </Typography>
                         <Typography variant="body2" className="whitespace-pre-wrap border-b border-gray-200 pb-2">
                           <span className="font-semibold">권장 조치: </span>
                           {result.recommendation}
