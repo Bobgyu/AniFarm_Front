@@ -159,7 +159,7 @@ const TrainingMethod = () => {
   };
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       {/* 히어로 섹션 */}
       <div className="relative min-h-[80vh] bg-cover bg-center flex flex-col items-center justify-start">
         <div className="absolute inset-0 opacity-40"></div>
@@ -187,7 +187,7 @@ const TrainingMethod = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             <motion.div 
-              className="flex items-center justify-center gap-4 mb-8 px-12"
+              className="flex items-center justify-center gap-4 mb-8 px-4 sm:px-12"
               animate="center"
               initial="enter"
               exit="exit"
@@ -200,7 +200,7 @@ const TrainingMethod = () => {
             >
               <button
                 onClick={handlePrevious}
-                className="absolute left-[-3rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+                className="absolute left-[-1rem] sm:left-[-3rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
                            hover:bg-white hover:scale-110
                            active:bg-white active:scale-95 
                            transition-all duration-300"
@@ -220,7 +220,7 @@ const TrainingMethod = () => {
                     <img 
                       src={image.src}
                       alt={image.alt}
-                      className="w-72 h-48 object-cover rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity mb-2"
+                      className="w-40 md:w-72 aspect-[3/2] object-cover rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity mb-2"
                     />
                     <h3 className="text-black text-lg font-semibold mt-2">
                       {image.alt}
@@ -231,7 +231,7 @@ const TrainingMethod = () => {
 
               <button
                 onClick={handleNext}
-                className="absolute right-[-3rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+                className="absolute right-[-1rem] sm:right-[-3rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
                            hover:bg-white hover:scale-110 
                            active:bg-white active:scale-95 
                            transition-all duration-300"
@@ -255,7 +255,7 @@ const TrainingMethod = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white p-6 rounded-lg  duration-300"
+                  className="bg-white p-6 rounded-lg duration-300"
                 >
                   <div className="flex flex-col items-center text-center">
                     <div className="mb-4">{method.icon}</div>
@@ -277,7 +277,7 @@ const TrainingMethod = () => {
         <div className="relative">
           <button
             onClick={handleVideoPrevious}
-            className="absolute left-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+            className="absolute left-[-1rem] sm:left-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
                        hover:bg-white hover:scale-110
                        active:bg-white active:scale-95 
                        transition-all duration-300"
@@ -288,22 +288,16 @@ const TrainingMethod = () => {
             {videos
               .slice(videoPage * videoItemsPerPage, (videoPage + 1) * videoItemsPerPage)
               .map((video) => (
-                <motion.div
+                <div
                   key={video.id.videoId}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
                   className="bg-white rounded-lg shadow-lg overflow-hidden"
                 >
                   <div className="aspect-w-16 aspect-h-9">
-                    <motion.img 
+                    <img 
                       src={video.snippet.thumbnails.high.url}
                       alt={video.snippet.title}
-                      className="w-full h-[300px] object-cover"
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      className="w-full h-[300px] object-cover cursor-pointer"
                       onClick={() => window.open(`https://www.youtube.com/watch?v=${video.id.videoId}`, '_blank')}
-                      style={{ cursor: 'pointer' }}
                     />
                   </div>
                   <div className="p-4">
@@ -314,12 +308,12 @@ const TrainingMethod = () => {
                       {video.snippet.description}
                     </p>
                   </div>
-                </motion.div>
+                </div>
               ))}
           </div>
           <button
             onClick={handleVideoNext}
-            className="absolute right-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+            className="absolute right-[-1rem] sm:right-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
                        hover:bg-white hover:scale-110
                        active:bg-white active:scale-95 
                        transition-all duration-300"
@@ -329,72 +323,24 @@ const TrainingMethod = () => {
         </div>
       </div>
 
-      {/* 뉴스 섹션 (크롤러 사용) */}
-      <div className="w-full max-w-[1280px] px-4 mx-auto pb-12 ">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-          육성 관련 뉴스
-        </h2>
-        <div className="relative">
-          {/* 페이지 네비게이션 CSS*/}
-          <button
-            onClick={handleNewsPrevious}
-            className="absolute left-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
-                       hover:bg-white hover:scale-110 
-                       active:bg-white active:scale-95 
-                       transition-all duration-300"
-          >
-            <FaChevronLeft className="text-2xl text-green-600" />
-          </button>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {news.slice(newsPage * newsItemsPerPage, (newsPage + 1) * newsItemsPerPage).map((article, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
-              {/* 이미지 URL이 존재하면 이미지 표시 */}
-              {article.image && (
-                <img
-                  src={article.image}
-                  alt={article.title}
-                  className="w-full h-48 object-cover"
-                />
-              )}
-                <div className="p-4">
-                  {article.image && (
-                    <a href={article.link} target="_blank" rel="noopener noreferrer">
-                    </a>
-                  )}
-                  <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-3">
-                    <a href={article.link} target="_blank" rel="noopener noreferrer" className="line-clamp-1">
-                      {article.title}
-                    </a>
-                  </h3>
-                  <p className="text-gray-600 text-sm line-clamp-3">
-                    {article.content}
-                  </p>
-                </div>
-              </div>
-            ))}
+    
+         {/* 기존 CTA 섹션 */}
+         <div className="text-black py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-4">
+              지금 바로 시작하세요
+            </h2>
+            <p className="text-xl mb-8">
+              전문가의 도움을 받아 더 나은 농작물을 기르세요
+            </p>
+            <Link to="/trainingDetail?cropId=crop1">
+              <button className="bg-[#3a9d1f] text-white px-8 py-3 rounded-full hover:bg-[#0aab65]">
+                육성 가이드 보기
+              </button>
+            </Link>
           </div>
-          <button
-            onClick={handleNewsNext}
-            className="absolute right-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
-                           hover:bg-white hover:scale-110 
-                           active:bg-white active:scale-95 
-                           transition-all duration-300"
-          >
-            <FaChevronRight className="text-2xl text-green-600" />
-          </button>
         </div>
       </div>
-
-      {/* CTA 섹션 Wrapper with 배경 랜딩 이미지 */}
-      <div
-        className="bg-cover bg-center"
-        style={{
-          // backgroundImage: `url(${tomatoes})`,
-          // backgroundRepeat: 'no-repeat'
-        }}
-      >
-      </div>
-    </div>
   );
 };
 
