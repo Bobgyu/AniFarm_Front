@@ -167,7 +167,7 @@ const Today = () => {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65]" />
       </Box>
     );
   }

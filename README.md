@@ -1,6 +1,23 @@
-# 농산물 가격 정보 웹 서비스
+# 농산물 가격 정보 웹 서비스 프론트엔드
 
 농산물 가격 정보 및 예측, 커뮤니티 기능을 제공하는 웹 서비스의 프론트엔드 프로젝트입니다.
+
+## 프로젝트 구조
+
+```
+front/
+├── src/               # 소스 코드
+│   ├── components/    # 리액트 컴포넌트
+│   ├── pages/        # 페이지 컴포넌트
+│   ├── api/          # API 통신
+│   ├── hooks/        # 커스텀 훅
+│   ├── store/        # 상태 관리
+│   ├── types/        # TypeScript 타입 정의
+│   └── utils/        # 유틸리티 함수
+├── public/           # 정적 파일
+├── chartdata/        # 차트 데이터
+└── node_modules/     # 의존성 패키지
+```
 
 ## 기술 스택
 
@@ -10,64 +27,12 @@
 - Chart.js (데이터 시각화)
 - Axios (HTTP 클라이언트)
 
-## 시작하기
-
-### 사전 요구사항
-
-- Node.js 14.0.0 이상
-- npm 6.0.0 이상
-
-### 설치
-
-1. 프로젝트 클론
-
-```bash
-git clone [repository-url]
-cd front
-```
-
-2. 의존성 설치
-
-```bash
-npm install
-```
-
-3. 개발 서버 실행
-
-```bash
-npm start
-```
-
-서버는 기본적으로 http://localhost:3000 에서 실행됩니다.
-
-## 사용 가능한 스크립트
-
-### `npm start`
-
-개발 모드로 앱을 실행합니다.\
-브라우저에서 [http://localhost:3000](http://localhost:3000)으로 접속할 수 있습니다.
-
-코드를 수정하면 페이지가 자동으로 새로고침됩니다.\
-콘솔에서 린트 오류를 확인할 수 있습니다.
-
-### `npm test`
-
-테스트 러너를 실행합니다.\
-자세한 내용은 [테스트 실행하기](https://facebook.github.io/create-react-app/docs/running-tests)를 참조하세요.
-
-### `npm run build`
-
-프로덕션용 앱을 `build` 폴더에 빌드합니다.\
-React를 프로덕션 모드로 번들링하고 최적화하여 최상의 성능을 제공합니다.
-
-빌드된 파일은 최소화되며 파일 이름에 해시가 포함됩니다.
-
 ## 주요 기능
 
 ### 1. 농산물 정보
 
 - 도시별 날씨 정보 조회
-- 참외 질병 예측 (이미지 업로드)
+- 농산물 질병 예측 (이미지 업로드)
 - 작물 가격 예측 차트
 - 위성 이미지 뷰어
 - 실시간 농산물 가격 정보
@@ -88,22 +53,45 @@ React를 프로덕션 모드로 번들링하고 최적화하여 최상의 성능
   - 농산물 마켓
   - 자유게시판
 
-## 프로젝트 구조
+## 시작하기
 
+### 사전 요구사항
+
+- Node.js 14.0.0 이상
+- npm 6.0.0 이상
+
+### 설치 및 실행
+
+1. 의존성 설치
+
+```bash
+npm install
 ```
-front/
-├── src/               # 소스 코드
-│   ├── components/    # 리액트 컴포넌트
-│   ├── pages/        # 페이지 컴포넌트
-│   ├── api/          # API 통신
-│   ├── hooks/        # 커스텀 훅
-│   ├── store/        # 상태 관리
-│   ├── types/        # TypeScript 타입 정의
-│   └── utils/        # 유틸리티 함수
-├── public/           # 정적 파일
-├── chartdata/        # 차트 데이터
-└── tailwind.config.js # Tailwind CSS 설정
+
+2. 개발 서버 실행
+
+```bash
+npm start
 ```
+
+서버는 기본적으로 http://localhost:3000 에서 실행됩니다.
+
+## 사용 가능한 스크립트
+
+### `npm start`
+
+- 개발 모드로 앱을 실행합니다.
+- http://localhost:3000 으로 접속 가능합니다.
+- 코드 수정 시 자동 새로고침됩니다.
+
+### `npm test`
+
+- 테스트 러너를 실행합니다.
+
+### `npm run build`
+
+- 프로덕션용 앱을 `build` 폴더에 빌드합니다.
+- 최적화된 프로덕션 빌드를 생성합니다.
 
 ## 환경 변수 설정
 
@@ -113,6 +101,26 @@ front/
 REACT_APP_API_URL=http://localhost:8000
 REACT_APP_BACKEND_URL=http://localhost:8000
 ```
+
+## 주요 컴포넌트
+
+### 페이지
+
+- `/` - 메인 페이지
+- `/weather` - 날씨 정보
+- `/disease` - 농산물 질병 예측
+- `/price` - 가격 정보
+- `/market` - 시장 정보
+- `/community` - 커뮤니티
+
+### 공통 컴포넌트
+
+- `Header` - 네비게이션 바
+- `Footer` - 푸터
+- `Chart` - 차트 컴포넌트
+- `ImageUploader` - 이미지 업로드
+- `Loading` - 로딩 스피너
+- `Error` - 에러 메시지
 
 ## 브라우저 지원
 

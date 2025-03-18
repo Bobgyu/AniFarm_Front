@@ -9,13 +9,11 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
   const getInitialCategory = () => {
     switch (communityType) {
       case "gardening":
-        return "general";
+        return "전체";
       case "marketplace":
-        return "marketplace";
-      case "freeboard":
-        return "general";
+        return "sell";
       default:
-        return "general";
+        return "";
     }
   };
 
@@ -33,7 +31,15 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("[WriteModal] 게시글 작성 시작:", postData);
+
+    if (postData.title.length > 50) {
+      Swal.fire({
+        icon: "error",
+        title: "제목 길이 초과",
+        text: "제목은 50자를 초과할 수 없습니다.",
+      });
+      return;
+    }
 
     try {
       const formData = {
@@ -42,12 +48,8 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
         category: postData.category,
         community_type: communityType,
       };
-      console.log("[WriteModal] 전송할 데이터:", formData);
 
       const result = await dispatch(createPost(formData)).unwrap();
-      console.log("[WriteModal] 게시글 작성 성공:", result);
-
-      resetForm();
 
       Swal.fire({
         icon: "success",
@@ -55,6 +57,7 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
         showConfirmButton: false,
         timer: 1500,
       });
+      resetForm();
       onClose();
     } catch (error) {
       console.error("[WriteModal] 게시글 작성 실패:", error);
@@ -68,7 +71,6 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
           cancelButtonText: "취소"
         }).then((result) => {
           if (result.isConfirmed) {
-            // 로그인 페이지로 이동하는 로직 추가 필요
             window.location.href = "/login";
           }
         });
@@ -76,7 +78,7 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
         Swal.fire({
           icon: "error",
           title: "게시글 작성 실패",
-          text: error.message || "게시글 작성 중 오류가 발생했습니다.",
+          text: "게시글 작성 중 오류가 발생했습니다.",
         });
       }
     }
@@ -100,23 +102,21 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
       case "gardening":
         return (
           <>
-            <option value="general">일반 토론</option>
-            <option value="food">식물 재배</option>
-            <option value="indoor">실내 식물</option>
-            <option value="pests">병충해 관리</option>
-            <option value="hydroponic">수경 재배</option>
+            <option value="전체">전체</option>
+            <option value="일반토론">일반토론</option>
+            <option value="식물재배">식물 재배</option>
+            <option value="실내식물">실내 식물</option>
+            <option value="병충해관리">병충해 관리</option>
+            <option value="수경재배">수경재배</option>
           </>
         );
       case "marketplace":
         return (
           <>
-            <option value="question">질문하기</option>
             <option value="sell">판매하기</option>
             <option value="buy">구매하기</option>
           </>
         );
-      case "freeboard":
-        return null;
       default:
         return null;
     }
@@ -147,6 +147,7 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
                   setPostData({ ...postData, category: e.target.value })
                 }
                 className="w-full p-2 border border-gray-300 rounded-lg"
+                required
               >
                 {getCategoryOptions()}
               </select>
@@ -162,9 +163,11 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
                 setPostData({ ...postData, title: e.target.value })
               }
               required
+              maxLength={50}
               className="w-full p-2 border border-gray-300 rounded-lg"
-              placeholder="제목을 입력하세요"
+              placeholder="제목을 입력하세요 (50자 이내)"
             />
+            <small className="text-gray-500">{postData.title.length}/50</small>
           </div>
 
           <div>

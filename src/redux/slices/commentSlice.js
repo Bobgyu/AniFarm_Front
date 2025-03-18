@@ -2,9 +2,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
+const BASE_URL = 'http://localhost:8000';
+
 // axios 인스턴스 생성
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   }
@@ -168,6 +170,23 @@ const commentSlice = createSlice({
       .addCase(fetchMyComments.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(deleteComment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        state.loading = false;
+        state.myComments = state.myComments.filter(
+          comment => comment.comment_id !== action.meta.arg
+        );
+        state.comments = state.comments.filter(
+          comment => comment.comment_id !== action.meta.arg
+        );
+      })
+      .addCase(deleteComment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
@@ -298,82 +317,29 @@ export const editComment = (commentId, content, postId) => async (dispatch) => {
   }
 };
 
-export const deleteComment = (commentId) => async (dispatch) => {
-  try {
-    dispatch(setLoading(true));
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error("로그인이 필요합니다.");
-    }
-
-    const decoded = jwtDecode(token);
-    const userEmail = decoded.sub;
-
-    // URL 경로 수정
-    const response = await axiosInstance.delete(`/api/comments/${commentId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      params: { user_email: userEmail }
-    });
-
-    if (response.data.success) {
-      dispatch(removeComment(commentId));
-      return response.data;
-    } else {
-      throw new Error(response.data.message || "댓글 삭제에 실패했습니다.");
-    }
-  } catch (error) {
-    console.error("댓글 삭제 실패:", error);
-    if (error.response?.status === 404) {
-      throw new Error("댓글을 찾을 수 없습니다.");
-    } else if (error.response?.status === 403) {
-      throw new Error("댓글을 삭제할 권한이 없습니다.");
-    }
-    throw error;
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
-
-export const fetchMyComments = createAsyncThunk(
-  "comments/fetchMyComments",
-  async (_, { rejectWithValue }) => {
+export const deleteComment = createAsyncThunk(
+  'comments/deleteComment',
+  async (commentId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
-      console.log("[내 댓글 조회] 시작");
-      console.log("[내 댓글 조회] 토큰:", token?.substring(0, 20) + "...");  // 토큰 일부만 출력
-      
-      if (!token) {
-        return rejectWithValue("로그인이 필요합니다.");
-      }
-
-      // 요청 설정 로깅
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      };
-      console.log("[내 댓글 조회] 요청 설정:", config);
-
-      const response = await axiosInstance.get('/api/comments/user', config);
-      console.log("[내 댓글 조회] 응답:", response.data);
-      
+      console.log('[댓글 삭제] 시작:', commentId);
+      const response = await axiosInstance.delete(`/api/comments/${commentId}`);
+      console.log('[댓글 삭제] 응답:', response.data);
       return response.data;
     } catch (error) {
-      console.error("[내 댓글 조회] 상세 에러:", {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        message: error.message,
-        config: {
-          url: error.config?.url,
-          method: error.config?.method,
-          headers: error.config?.headers
-        }
-      });
-      return rejectWithValue(error.response?.data?.detail || "댓글 조회에 실패했습니다.");
+      console.error('[댓글 삭제] 오류:', error);
+      return rejectWithValue(error.response?.data || { message: '댓글 삭제에 실패했습니다.' });
+    }
+  }
+);
+
+export const fetchMyComments = createAsyncThunk(
+  'comments/fetchMyComments',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get('/api/comments/user');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
     }
   }
 );
