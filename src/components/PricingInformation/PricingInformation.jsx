@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import RaceChart from "./charts/RaceChart";
 import Top10Chart from "./charts/Top10Chart";
-import SaleNews from "./News/SaleNews";
-import TrainNews from "./News/TrainNews";
+import News from "./News/News";
+
 // import market from "../../assets/images/free_icon_cart.png";
 
 const PricingInformation = () => {
@@ -16,13 +16,10 @@ const PricingInformation = () => {
     setActiveChart(activeChart === "race" ? null : "race");
   };
 
-  const handleShowSaleNews = () => {
-    setActiveChart(activeChart === "saleNews" ? null : "saleNews");
+  const handleShowNews = () => {
+    setActiveChart(activeChart === "News" ? null : "News");
   };
 
-  const handleShowTrainNews = () => {
-    setActiveChart(activeChart === "trainNews" ? null : "trainNews");
-  };
 
   return (
     <div className="container">
@@ -60,30 +57,19 @@ const PricingInformation = () => {
         
         <button
           className={`px-4 py-2 rounded-full ${
-            activeChart === "saleNews"
+            activeChart === "News"
               ? "bg-blue-500 text-white hover:bg-blue-600"
               : "bg-gray-100 hover:bg-gray-200"
           }`}
-          onClick={handleShowSaleNews}
+          onClick={handleShowNews}
         >
-          농산물 가격 뉴스
-        </button>
-
-        <button
-          className={`px-4 py-2 rounded-full ${
-            activeChart === "trainNews"
-              ? "bg-blue-500 text-white hover:bg-blue-600"
-              : "bg-gray-100 hover:bg-gray-200"
-          }`}
-          onClick={handleShowTrainNews}
-        >
-          농산물 육성 뉴스
+          농산물  뉴스
         </button>
       </div>
       {activeChart === "top10" && <Top10Chart />}
       {activeChart === "race" && <RaceChart />}
-      {activeChart === "saleNews" && <SaleNews />}
-      {activeChart === "trainNews" && <TrainNews />}
+      {activeChart === "News" && <News />}
+
     </div>
   );
 };

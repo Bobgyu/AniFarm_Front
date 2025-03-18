@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearToken } from "../../redux/slices/loginslice";
 import AnifarmLogo from "../../assets/main/anifarmbig.png";
+// 모바일 로고 이미지 (실제 경로에 맞게 수정)
+import AnifarmMobileLogo from "../../assets/main/anifarmlogo-001.png";
 import Swal from "sweetalert2";
 
 const Header = () => {
@@ -11,7 +13,19 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // 반응형 상태: 화면 너비가 768px 미만이면 모바일 환경으로 판단
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
   // 현재 경로가 어떤 섹션에 속하는지 확인하는 함수
   const isActivePath = (path) => {
     const currentPath = location.pathname.toLowerCase();
@@ -131,33 +145,38 @@ const Header = () => {
 
   return (
     <div className="w-full flex justify-center shadow-custom sticky top-0 z-50 border-b-2 bg-white">
-      <div className="w-full max-w-7xl px-4 flex flex-col items-center relative overflow-hidden h-24">
+      <div className="w-full max-w-7xl px-2 md:px-4 flex flex-col items-center relative overflow-hidden h-20 md:h-24">
         <div className="w-full flex justify-between items-center h-full">
           <div className="flex-shrink-0">
             <Link to="/">
-              <img src={AnifarmLogo} alt="로고" className="w-[220px]" />
+              {/* 화면 크기에 따라 다른 로고 이미지 사용 */}
+              <img
+                src={isMobile ? AnifarmMobileLogo : AnifarmLogo}
+                alt="로고"
+                className="w-[40px] md:w-[220px]"
+              />
             </Link>
           </div>
 
           <div className="flex-grow flex justify-center items-center mx-4">
-            <div className="flex gap-12 items-center mr-12">
+            <div className="flex gap-4 md:gap-12 items-center mr-0 md:mr-12">
               <Link
                 to="/culture"
-                className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${
+                className={`inline-flex items-center justify-center h-[40px] md:h-[50px] px-3 md:px-5 py-0 text-base md:text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${
                   isActivePath('/culture')
                     ? 'bg-[#3a9d1f] text-white border-[#3a9d1f]'
-                    : 'bg-transparent border-transparent text-gray-900 hover:bg-[#3a9d1f] hover:text-white hover:border-[#3a9d1f]'
+                    : 'bg-transparent border-transparent text-gray-900 hover:bg-[#3a9d1f] hover:text-white hover:border-[#3a9d1f] active:bg-[#3a9d1f] active:text-white active:border-[#3a9d1f]'
                 }`}
               >
                 재배하기
               </Link>
-              <div className="border-l-[3px] h-6 border-gray-500 hidden md:block"></div>
+              <div className="border-l-[3px] h-6 border-gray-500"></div>
               <Link
                 to="/sale"
-                className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${
+                className={`inline-flex items-center justify-center h-[40px] md:h-[50px] px-3 md:px-5 py-0 text-base md:text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${
                   isActivePath('/sale')
                     ? 'bg-[#3a9d1f] text-white border-[#3a9d1f]'
-                    : 'bg-transparent border-transparent text-gray-900 hover:bg-[#3a9d1f] hover:text-white hover:border-[#3a9d1f]'
+                    : 'bg-transparent border-transparent text-gray-900 hover:bg-[#3a9d1f] hover:text-white hover:border-[#3a9d1f] active:bg-[#3a9d1f] active:text-white active:border-[#3a9d1f]'
                 }`}
               >
                 판매하기
@@ -170,19 +189,19 @@ const Header = () => {
               <ul className="flex gap-2 md:gap-4 items-center">
                 {user !== null ? (
                   <>
-                    <li className="text-neutral-500 hover:text-black transition-all duration-100">
+                    <li className="text-xs md:text-sm text-neutral-500 hover:text-black transition-all duration-100">
                       <button onClick={handleLogout}>로그아웃</button>
                     </li>
-                    <li className="text-neutral-500 hover:text-black transition-all duration-100">
+                    <li className="text-xs md:text-sm text-neutral-500 hover:text-black transition-all duration-100">
                       <Link to="/mypage">마이페이지</Link>
                     </li>
                   </>
                 ) : (
                   <>
-                    <li className="text-neutral-500 hover:text-black transition-all duration-100">
+                    <li className="text-xs md:text-sm text-neutral-500 hover:text-black transition-all duration-100">
                       <Link to="/login">로그인</Link>
                     </li>
-                    <li className="text-neutral-500 hover:text-black transition-all duration-100">
+                    <li className="text-xs md:text-sm text-neutral-500 hover:text-black transition-all duration-100">
                       <Link to="/register">회원가입</Link>
                     </li>
                   </>
@@ -210,12 +229,12 @@ const Header = () => {
             onClick={() => setIsMenuOpen(false)}
           >
             <div
-              className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-screen overflow-y-auto"
+              className="absolute right-0 top-0 w-80 h-40 bg-white shadow-lg rounded-l-lg  md:h-screen"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-4">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold">메뉴</h2>
+                  <h2 className="text-lg md:text-xl font-bold">메뉴</h2>
                   <button
                     onClick={() => setIsMenuOpen(false)}
                     className="p-2 hover:bg-gray-100 rounded-full"
@@ -247,7 +266,7 @@ const Header = () => {
                           {items.map((item, index) => (
                             <div
                               key={index}
-                              className="text-gray-600 hover:text-black cursor-pointer"
+                              className="text-sm md:text-base text-gray-600 hover:text-black cursor-pointer"
                               onClick={() =>
                                 handleMenuItemClick(category, item)
                               }
