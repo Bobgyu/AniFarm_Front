@@ -184,7 +184,11 @@ const Weather = () => {
   }, []); // 최초 로딩시에만 실행
 
   // 전체 로딩 상태 체크 수정
-  if (loading && !weatherData) return <div>로딩중...</div>;
+  if (loading && !weatherData) return (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65]" />
+    </div>
+  );
   if (error) return <div>에러: {error}</div>;
   if (!weatherData) return <div>날씨 데이터가 없습니다.</div>;
 

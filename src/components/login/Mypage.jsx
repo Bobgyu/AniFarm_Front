@@ -53,8 +53,8 @@ const Mypage = () => {
 
   if (userInfoLoading) {
     return (
-      <div className="flex justify-center items-center h-screen pt-16">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800" />
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65] mt-[-100px]" />
       </div>
     );
   }
