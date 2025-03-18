@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import RaceChart from "./charts/RaceChart";
 import Top10Chart from "./charts/Top10Chart";
 import News from "./News/News";
@@ -7,18 +7,30 @@ import News from "./News/News";
 
 const PricingInformation = () => {
   const [activeChart, setActiveChart] = useState("top10");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleShowTop10Chart = () => {
-    setActiveChart(activeChart === "top10" ? null : "top10");
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleChartChange = (chartType) => {
+    if (activeChart === chartType) return; // 같은 차트를 클릭한 경우 무시
+    
+    setIsLoading(true);
+    setActiveChart(chartType);
+    
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   };
 
-  const handleShowRaceChart = () => {
-    setActiveChart(activeChart === "race" ? null : "race");
-  };
-
-  const handleShowNews = () => {
-    setActiveChart(activeChart === "News" ? null : "News");
-  };
+  const handleShowTop10Chart = () => handleChartChange("top10");
+  const handleShowRaceChart = () => handleChartChange("race");
+  const handleShowNews = () => handleChartChange("News");
 
   const renderDataSource = () => {
     if (activeChart === "top10" || activeChart === "race") {
@@ -48,6 +60,25 @@ const PricingInformation = () => {
       );
     }
     return null;
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65] mt-[-100px]" />
+        </div>
+      );
+    }
+
+    return (
+      <>
+        {activeChart === "top10" && <Top10Chart />}
+        {activeChart === "race" && <RaceChart />}
+        {activeChart === "News" && <News />}
+        {renderDataSource()}
+      </>
+    );
   };
 
   return (
@@ -95,10 +126,7 @@ const PricingInformation = () => {
           농산물  뉴스
         </button>
       </div>
-      {activeChart === "top10" && <Top10Chart />}
-      {activeChart === "race" && <RaceChart />}
-      {activeChart === "News" && <News />}
-      {renderDataSource()}
+      {renderContent()}
     </div>
   );
 };
