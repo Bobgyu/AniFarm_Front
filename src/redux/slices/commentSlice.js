@@ -187,7 +187,7 @@ export const {
 export const fetchComments = createAsyncThunk(
   'comments/fetchComments',
   async (postId) => {
-    const response = await axiosInstance.get(`/comments/${postId}`);
+    const response = await axiosInstance.get(`/api/comments/${postId}`);
     return response.data.data;
   }
 );
@@ -201,7 +201,6 @@ export const createComment = createAsyncThunk(
         return rejectWithValue("로그인이 필요합니다.");
       }
 
-      // 토큰에서 이메일 추출
       const decoded = jwtDecode(token);
       const userEmail = decoded.sub;
 
@@ -216,7 +215,7 @@ export const createComment = createAsyncThunk(
         token: token.substring(0, 20) + "..."
       });
 
-      const response = await axiosInstance.post('/comments', requestData, {
+      const response = await axiosInstance.post('/api/comments', requestData, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -265,7 +264,7 @@ export const editComment = (commentId, content, postId) => async (dispatch) => {
       userEmail
     });
 
-    const response = await axiosInstance.put(`/comments/${commentId}`, {
+    const response = await axiosInstance.put(`/api/comments/${commentId}`, {
       content: content.trim(),
       user_email: userEmail
     });
@@ -283,18 +282,7 @@ export const editComment = (commentId, content, postId) => async (dispatch) => {
       throw new Error(response.data?.message || "댓글 수정에 실패했습니다.");
     }
   } catch (error) {
-    console.error("[댓글 수정] API 오류:", {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      message: error.message,
-      config: {
-        url: error.config?.url,
-        method: error.config?.method,
-        data: error.config?.data,
-        params: error.config?.params
-      }
-    });
+    console.error("[댓글 수정] API 오류:", error);
     
     if (error.response?.status === 401) {
       throw new Error("인증이 만료되었습니다. 다시 로그인해주세요.");
@@ -302,11 +290,9 @@ export const editComment = (commentId, content, postId) => async (dispatch) => {
       throw new Error("댓글을 수정할 권한이 없습니다.");
     } else if (error.response?.status === 404) {
       throw new Error("댓글을 찾을 수 없습니다.");
-    } else if (error.response?.status === 422) {
-      throw new Error("잘못된 요청 데이터입니다.");
     }
     
-    throw new Error(error.response?.data?.message || "댓글 수정에 실패했습니다.");
+    throw new Error(error.response?.data?.detail || "댓글 수정에 실패했습니다.");
   } finally {
     dispatch(setLoading(false));
   }
@@ -323,7 +309,11 @@ export const deleteComment = (commentId) => async (dispatch) => {
     const decoded = jwtDecode(token);
     const userEmail = decoded.sub;
 
-    const response = await axiosInstance.delete(`/comments/${commentId}`, {
+    // URL 경로 수정
+    const response = await axiosInstance.delete(`/api/comments/${commentId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
       params: { user_email: userEmail }
     });
 
@@ -335,7 +325,11 @@ export const deleteComment = (commentId) => async (dispatch) => {
     }
   } catch (error) {
     console.error("댓글 삭제 실패:", error);
-    dispatch(setError(error.message));
+    if (error.response?.status === 404) {
+      throw new Error("댓글을 찾을 수 없습니다.");
+    } else if (error.response?.status === 403) {
+      throw new Error("댓글을 삭제할 권한이 없습니다.");
+    }
     throw error;
   } finally {
     dispatch(setLoading(false));

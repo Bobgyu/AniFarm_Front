@@ -60,7 +60,7 @@ const PostDetail = () => {
       if (response.data.success && response.data.data) {
         setPost(response.data.data);
         // Redux thunk를 통해 댓글 데이터 가져오기
-        dispatch(fetchComments(postId));
+        await dispatch(fetchComments(postId));
       } else {
         throw new Error("게시물을 찾을 수 없습니다.");
       }
@@ -174,10 +174,31 @@ const PostDetail = () => {
 
   const handleEditPost = async () => {
     try {
-      const response = await axios.put(`${BASE_URL}/api/posts/${postId}`, {
-        title: post.title,
-        content: post.content,
-      });
+      const token = localStorage.getItem('token');
+      if (!token) {
+        await Swal.fire({
+          icon: "error",
+          title: "인증 오류",
+          text: "로그인이 필요합니다.",
+        });
+        return;
+      }
+
+      const response = await axios.put(
+        `${BASE_URL}/api/posts/${postId}`,
+        {
+          title: post.title,
+          content: post.content,
+          category: post.category,
+          community_type: post.community_type
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
       if (response.data.success) {
         setIsEditing(false);
@@ -185,6 +206,8 @@ const PostDetail = () => {
           icon: "success",
           title: "수정 완료",
           text: "게시글이 성공적으로 수정되었습니다.",
+          showConfirmButton: false,
+          timer: 1500
         });
         await fetchPostAndComments();
       } else {
@@ -192,10 +215,20 @@ const PostDetail = () => {
       }
     } catch (error) {
       console.error("게시글 수정 실패:", error);
+      
+      let errorMessage = "게시글 수정 중 오류가 발생했습니다.";
+      if (error.response?.status === 401) {
+        errorMessage = "로그인이 필요하거나 인증이 만료되었습니다.";
+      } else if (error.response?.status === 403) {
+        errorMessage = "게시글을 수정할 권한이 없습니다.";
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      }
+
       await Swal.fire({
         icon: "error",
         title: "오류 발생",
-        text: error.message || "게시글 수정 중 오류가 발생했습니다.",
+        text: errorMessage
       });
     }
   };
