@@ -375,3 +375,37 @@ body {
 .chat-form button:hover {
   background: #0aab65;
 }
+
+/* 챗봇 반응형  */
+@media (max-width: 768px) {
+  .cb-popup {
+    width: 90%;
+    right: 5%;
+    bottom: 130px;
+    border-radius: 15px;
+  }
+  
+  .cb-header {
+    padding: 10px 15px;
+  }
+  
+  .cb-body {
+    height: 550px;
+    padding: 15px;
+  }
+  
+  .cb-footer {
+    padding: 10px 15px;
+  }
+  
+  #cb-toggler {
+    bottom: 150px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+  }
+
+  #cb-toggler span {
+    font-size: 1.2rem;
+  }
+}

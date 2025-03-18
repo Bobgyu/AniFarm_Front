@@ -30,7 +30,6 @@ import { ChatIcon } from "./components/chatbot/ChatIcon";
 import { ChatMsg } from "./components/chatbot/ChatMsg";
 import ChatForm from "./components/chatbot/ChatForm";
 
-
 function App() {
   return (
     <Router>
