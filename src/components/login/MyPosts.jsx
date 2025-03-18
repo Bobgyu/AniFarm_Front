@@ -27,10 +27,10 @@ const MyPosts = () => {
     if (selectedCategory === 'all') return true;
     switch(selectedCategory) {
       case 'growing':
-        return post.community_type !== 'freeboard' && 
-               ['food', 'indoor', 'pests', 'hydroponic', 'general'].includes(post.category);
+        return post.community_type === 'gardening' && 
+               ['general', 'food', 'indoor', 'pests', 'hydroponic'].includes(post.category);
       case 'market':
-        return post.community_type !== 'freeboard' && 
+        return post.community_type === 'marketplace' && 
                ['sell', 'buy'].includes(post.category);
       case 'free':
         return post.community_type === 'freeboard';
@@ -64,29 +64,40 @@ const MyPosts = () => {
               <textarea 
                 id="swal-content" 
                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                rows="5"
+                rows="8"
+                style="min-height: 200px;"
               >${post.content}</textarea>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 text-left mb-1">게시판</label>
+              <label class="block text-sm font-medium text-gray-700 text-left mb-1">카테고리</label>
               <select 
-                id="swal-type" 
+                id="swal-category" 
                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
               >
-                <option value="gardening" ${post.community_type === 'gardening' ? 'selected' : ''}>재배하기</option>
-                <option value="marketplace" ${post.community_type === 'marketplace' ? 'selected' : ''}>판매하기</option>
-                <option value="freeboard" ${post.community_type === 'freeboard' ? 'selected' : ''}>자유게시판</option>
+                ${post.community_type === 'gardening' ? `
+                  <option value="general" ${post.category === 'general' ? 'selected' : ''}>일반토론</option>
+                  <option value="food" ${post.category === 'food' ? 'selected' : ''}>식물 재배</option>
+                  <option value="indoor" ${post.category === 'indoor' ? 'selected' : ''}>실내 식물</option>
+                  <option value="pests" ${post.category === 'pests' ? 'selected' : ''}>병충해 관리</option>
+                  <option value="hydroponic" ${post.category === 'hydroponic' ? 'selected' : ''}>수경 재배</option>
+                ` : post.community_type === 'marketplace' ? `
+                  <option value="sell" ${post.category === 'sell' ? 'selected' : ''}>판매</option>
+                  <option value="buy" ${post.category === 'buy' ? 'selected' : ''}>구매</option>
+                ` : `
+                  <option value="free" selected>자유</option>
+                `}
               </select>
             </div>
           </div>
         `,
+        width: '600px',
         showCancelButton: true,
         confirmButtonText: '수정',
         cancelButtonText: '취소',
         preConfirm: () => {
           const title = document.getElementById('swal-title').value;
           const content = document.getElementById('swal-content').value;
-          const community_type = document.getElementById('swal-type').value;
+          const category = document.getElementById('swal-category').value;
           
           if (!title.trim()) {
             Swal.showValidationMessage('제목을 입력해주세요');
@@ -97,20 +108,18 @@ const MyPosts = () => {
             return false;
           }
           
-          return { title, content, community_type };
+          return { title, content, category };
         }
       });
 
       if (result.isConfirmed) {
-        console.log('[MyPosts] 게시글 수정 시도:', post.post_id);
-
         const response = await axios.put(
           `http://localhost:8000/api/posts/${post.post_id}`,
           {
             title: result.value.title,
             content: result.value.content,
-            community_type: result.value.community_type,
-            category: post.category
+            community_type: post.community_type,
+            category: result.value.category
           },
           {
             headers: {
@@ -119,8 +128,6 @@ const MyPosts = () => {
             }
           }
         );
-
-        console.log('[MyPosts] 수정 응답:', response.data);
 
         if (response.data.success) {
           dispatch(fetchMyPosts());
