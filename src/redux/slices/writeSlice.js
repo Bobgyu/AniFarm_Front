@@ -98,6 +98,24 @@ export const fetchMyPosts = createAsyncThunk(
   }
 );
 
+export const updatePost = createAsyncThunk(
+  'write/updatePost',
+  async (postData) => {
+    try {
+      const response = await axiosInstance.put(`/api/posts/${postData.post_id}`, {
+        title: postData.title,
+        content: postData.content,
+        category: postData.category,
+        community_type: postData.community_type
+      });
+      return response.data;
+    } catch (error) {
+      console.error("[writeSlice] 게시글 수정 실패:", error);
+      throw error;
+    }
+  }
+);
+
 const writeSlice = createSlice({
   name: "write",
   initialState: {
@@ -204,6 +222,19 @@ const writeSlice = createSlice({
       .addCase(fetchMyPosts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // updatePost 액션 처리
+      .addCase(updatePost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updatePost.fulfilled, (state, action) => {
+        state.loading = false;
+        // 필요한 경우 상태 업데이트
+      })
+      .addCase(updatePost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });
