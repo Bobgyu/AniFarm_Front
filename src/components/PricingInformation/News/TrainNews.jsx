@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-const SaleNews = () => {
+const TrainNews = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
@@ -11,7 +11,7 @@ const SaleNews = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        // list=19 을 쿼리 파라미터로 전달 (SaleNews용 크롤링 링크)
+        // list=20 을 쿼리 파라미터로 전달 (TrainNews용 크롤링 링크)
         const response = await axios.get('http://localhost:8000/api/crawler/news-links?list=20');
         // response.data.news_links 가 기사 배열로 구성되어 있다고 가정합니다.
         setNews(response.data.news_links || []);
@@ -41,13 +41,15 @@ const SaleNews = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {visibleNews.map((article, index) => (
               <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                {/* 이미지 URL이 존재하면 이미지 표시 */}
+                {/* 이미지 URL이 존재하면 이미지 표시 (클릭 시 기사 링크로 이동) */}
                 {article.image && (
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-48 object-cover"
-                  />
+                  <a href={article.link} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="w-full h-48 object-cover"
+                    />
+                  </a>
                 )}
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-3">
@@ -109,4 +111,4 @@ const SaleNews = () => {
   );
 };
 
-export default SaleNews;
+export default TrainNews;

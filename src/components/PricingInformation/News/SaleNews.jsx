@@ -42,13 +42,15 @@ const SaleNews = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {visibleNews.map((article, index) => (
               <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                {/* 이미지 URL이 존재하면 이미지 표시 */}
+                {/* 이미지 URL이 존재하면 이미지 표시 (클릭 시 기사 링크로 이동) */}
                 {article.image && (
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-48 object-cover"
-                  />
+                  <a href={article.link} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="w-full h-48 object-cover"
+                    />
+                  </a>
                 )}
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-3">

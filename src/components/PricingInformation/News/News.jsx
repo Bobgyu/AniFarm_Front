@@ -16,7 +16,7 @@ const News = () => {
               activeTab === 'price' ? 'text-blue-500' : ''
             }`}
           >
-            농산물 가격 관련 뉴스
+            가격 관련 뉴스
           </span>
           <div className="border-l-[3px] h-6 border-gray-500 mx-4"></div>
           <span
@@ -25,7 +25,7 @@ const News = () => {
               activeTab === 'development' ? 'text-blue-500' : ''
             }`}
           >
-            농산물 육성 관련 뉴스
+            육성 관련 뉴스
           </span>
         </h2>
         {activeTab === 'price' ? <SaleNews /> : <TrainNews />}
