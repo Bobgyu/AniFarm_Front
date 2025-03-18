@@ -45,7 +45,7 @@ const TrainingDetail = () => {
         
         {/* 작물 선택 영역 */}
         <div className="mb-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-3xl mx-auto">
+          <div className="grid grid-cols-5 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
             {sortedCropEntries.map(([cropKey, crop], index) => (
               <button
                 key={cropKey}

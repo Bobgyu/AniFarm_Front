@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { FaSeedling, FaWater, FaSun, FaLeaf, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion } from "framer-motion"; 
@@ -22,16 +22,44 @@ import axios from 'axios';
 
 const TrainingMethod = () => {
   const [videos, setVideos] = useState([]);
+  const [videosLoading, setVideosLoading] = useState(true);
   const [startIndex, setStartIndex] = useState(0);
   const [news, setNews] = useState([]);
   const [newsPage, setNewsPage] = useState(0);
   const newsItemsPerPage = 3;
   const [[page, direction], setPage] = useState([0, 0]);
 
-  // 추가: 유튜브 영상 페이지 네비게이션을 위한 상태
+  // 유튜브 영상 페이지 네비게이션을 위한 상태
   const [videoPage, setVideoPage] = useState(0);
-  const videoItemsPerPage = 3;
+  // 화면크기에 따라 한 페이지에 보여질 영상의 개수를 동적으로 설정: 모바일은 1, 데스크탑은 3
+  const [videoItemsPerPage, setVideoItemsPerPage] = useState(() =>
+    window.innerWidth < 768 ? 1 : 3
+  );
   const totalVideoPages = Math.ceil(videos.length / videoItemsPerPage);
+
+  // 슬라이더 너비를 측정하기 위한 Ref와 상태
+  const sliderRef = useRef(null);
+  const [sliderWidth, setSliderWidth] = useState(0);
+
+  // 화면 리사이즈에 따라 videoItemsPerPage 업데이트
+  useEffect(() => {
+    const handleResize = () => {
+      const newItemsPerPage = window.innerWidth < 768 ? 1 : 3;
+      setVideoItemsPerPage(newItemsPerPage);
+      setVideoPage(0); // 리사이즈 시 페이지 초기화
+    };
+    window.addEventListener("resize", handleResize);
+    // 컴포넌트 마운트 시 한 번 실행
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // 모바일 슬라이더의 너비 측정 (videoItemsPerPage가 1일 경우)
+  useEffect(() => {
+    if (videoItemsPerPage === 1 && sliderRef.current) {
+      setSliderWidth(sliderRef.current.offsetWidth);
+    }
+  }, [videoItemsPerPage, videos.length]);
 
   const slideVariants = {
     enter: (direction) => ({
@@ -54,14 +82,17 @@ const TrainingMethod = () => {
 
   useEffect(() => {
     const fetchYoutubeVideos = async () => {
+      setVideosLoading(true);
       try {
         const response = await axios.get('http://localhost:8000/youtube-videos');
         setVideos(response.data || []);
       } catch (error) {
         console.error('YouTube 데이터 fetch 오류:', error);
         setVideos([]);
+      } finally {
+        setVideosLoading(false);
       }
-    }
+    };
 
     fetchYoutubeVideos();
   }, []);
@@ -139,7 +170,7 @@ const TrainingMethod = () => {
     });
   };
 
-  // 유튜브 영상 네비게이션 핸들러
+  // 데스크탑의 화살표 네비게이션 핸들러 (모바일은 아래 슬라이더로 대체)
   const handleVideoPrevious = () => {
     setVideoPage((prev) => (prev === 0 ? totalVideoPages - 1 : prev - 1));
   };
@@ -149,14 +180,6 @@ const TrainingMethod = () => {
   };
 
   const visibleImages = allImages.slice(startIndex, startIndex + 4);
-
-  const handleNewsPrevious = () => {
-    setNewsPage((prev) => (prev === 0 ? totalNewsPages - 1 : prev - 1));
-  };
-
-  const handleNewsNext = () => {
-    setNewsPage((prev) => (prev === totalNewsPages - 1 ? 0 : prev + 1));
-  };
 
   return (
     <div className="min-h-screen">
@@ -187,7 +210,7 @@ const TrainingMethod = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             <motion.div 
-              className="flex items-center justify-center gap-4 mb-8 px-4 sm:px-12"
+              className="grid grid-cols-2 gap-4 mb-8 px-4 sm:px-12 md:grid-cols-4"
               animate="center"
               initial="enter"
               exit="exit"
@@ -200,14 +223,14 @@ const TrainingMethod = () => {
             >
               <button
                 onClick={handlePrevious}
-                className="absolute left-[-1rem] sm:left-[-3rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+                className="absolute left-[8rem] sm:left-[-3rem] top-[110%] md:top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
                            hover:bg-white hover:scale-110
                            active:bg-white active:scale-95 
                            transition-all duration-300"
               >
                 <FaChevronLeft className="text-2xl text-green-600" />
               </button>
-
+              
               {visibleImages.map((image, index) => (
                 <Link key={image.cropId} to={`/trainingDetail?cropId=${image.cropId}`}>
                   <motion.div 
@@ -231,7 +254,7 @@ const TrainingMethod = () => {
 
               <button
                 onClick={handleNext}
-                className="absolute right-[-1rem] sm:right-[-3rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+                className="absolute right-[8rem] sm:right-[-3rem] top-[110%] md:top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
                            hover:bg-white hover:scale-110 
                            active:bg-white active:scale-95 
                            transition-all duration-300"
@@ -248,7 +271,7 @@ const TrainingMethod = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="w-full max-w-[1280px] mx-auto mt-16"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 px-4">
               {methods.map((method, index) => (
                 <motion.div
                   key={index}
@@ -270,77 +293,143 @@ const TrainingMethod = () => {
       </div>
 
       {/* Youtube 영상 섹션 */}
-      <div className="w-full max-w-[1280px] px-4 mx-auto pb-12">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
+      <div className="w-full max-w-[1280px] px-4 mx-auto pb-2 md:pb-12">
+        <h2 className="text-3xl font-bold text-center mt-4 mb-8 text-gray-800">
           추천 교육 영상
         </h2>
-        <div className="relative">
-          <button
-            onClick={handleVideoPrevious}
-            className="absolute left-[-1rem] sm:left-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
-                       hover:bg-white hover:scale-110
-                       active:bg-white active:scale-95 
-                       transition-all duration-300"
-          >
-            <FaChevronLeft className="text-2xl text-green-600" />
-          </button>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {videos
-              .slice(videoPage * videoItemsPerPage, (videoPage + 1) * videoItemsPerPage)
-              .map((video) => (
-                <div
-                  key={video.id.videoId}
-                  className="bg-white rounded-lg shadow-lg overflow-hidden"
-                >
-                  <div className="aspect-w-16 aspect-h-9">
-                    <img 
-                      src={video.snippet.thumbnails.high.url}
-                      alt={video.snippet.title}
-                      className="w-full h-[300px] object-cover cursor-pointer"
-                      onClick={() => window.open(`https://www.youtube.com/watch?v=${video.id.videoId}`, '_blank')}
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">
-                      {video.snippet.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm line-clamp-3">
-                      {video.snippet.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
+        {videosLoading ? (
+          <div className="flex justify-center items-center py-10">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65]"></div>
           </div>
-          <button
-            onClick={handleVideoNext}
-            className="absolute right-[-1rem] sm:right-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
-                       hover:bg-white hover:scale-110
-                       active:bg-white active:scale-95 
-                       transition-all duration-300"
-          >
-            <FaChevronRight className="text-2xl text-green-600" />
-          </button>
-        </div>
+        ) : (
+          <div className="relative">
+            {/* 데스크탑에서는 화살표 버튼을 표시 */}
+            {videoItemsPerPage !== 1 && (
+              <>
+                <button
+                  onClick={handleVideoPrevious}
+                  className="absolute left-[-1rem] sm:left-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+                             hover:bg-white hover:scale-110
+                             active:bg-white active:scale-95 
+                             transition-all duration-300"
+                >
+                  <FaChevronLeft className="text-2xl text-green-600" />
+                </button>
+                <button
+                  onClick={handleVideoNext}
+                  className="absolute right-[-1rem] sm:right-[-5rem] top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-3 rounded-full shadow-lg 
+                             hover:bg-white hover:scale-110
+                             active:bg-white active:scale-95 
+                             transition-all duration-300"
+                >
+                  <FaChevronRight className="text-2xl text-green-600" />
+                </button>
+              </>
+            )}
+            {videoItemsPerPage === 1 ? (
+              // 모바일 (반응형)일 때: 슬라이더 컨테이너를 추가하여 넘치는 콘텐츠를 숨기며,
+              // 각 슬라이드 항목에 grid와 place-items-center 클래스를 추가해 내부 콘텐츠를 중앙에 배치합니다.
+              <div className="overflow-hidden">
+                <motion.div
+                  ref={sliderRef}
+                  drag="x"
+                  dragConstraints={{ right: 0, left: -((videos.length - 1) * sliderWidth) }}
+                  onDragEnd={(event, info) => {
+                    const threshold = sliderWidth / 4;
+                    if (info.offset.x < -threshold && videoPage < videos.length - 1) {
+                      setVideoPage(videoPage + 1);
+                    } else if (info.offset.x > threshold && videoPage > 0) {
+                      setVideoPage(videoPage - 1);
+                    }
+                  }}
+                  animate={{ x: -videoPage * sliderWidth }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="flex"
+                >
+                  {videos.map((video) => (
+                    <div key={video.id.videoId} className="flex-shrink-0 w-full px-2 grid place-items-center">
+                      <div
+                        className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer"
+                        onClick={() =>
+                          window.open(`https://www.youtube.com/watch?v=${video.id.videoId}`, "_blank")
+                        }
+                      >
+                        <div className="aspect-w-16 aspect-h-9">
+                          <img
+                            src={video.snippet.thumbnails.high.url}
+                            alt={video.snippet.title}
+                            className="w-full h-[300px] object-cover"
+                          />
+                        </div>
+                        <div className="p-4">
+                          <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">
+                            {video.snippet.title}
+                          </h3>
+                          <p className="text-gray-600 text-sm line-clamp-3">
+                            {video.snippet.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              </div>
+            ) : (
+              // 데스크탑에서는 기존 그리드 방식 유지
+              <div className="grid gap-8 grid-cols-3">
+                {videos
+                  .slice(
+                    videoPage * videoItemsPerPage,
+                    (videoPage + 1) * videoItemsPerPage
+                  )
+                  .map((video) => (
+                    <div
+                      key={video.id.videoId}
+                      className="bg-white rounded-lg shadow-lg overflow-hidden"
+                    >
+                      <div className="aspect-w-16 aspect-h-9">
+                        <img
+                          src={video.snippet.thumbnails.high.url}
+                          alt={video.snippet.title}
+                          className="w-full h-[300px] object-cover cursor-pointer"
+                          onClick={() =>
+                            window.open(`https://www.youtube.com/watch?v=${video.id.videoId}`, "_blank")
+                          }
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">
+                          {video.snippet.title}
+                        </h3>
+                        <p className="text-gray-600 text-sm line-clamp-3">
+                          {video.snippet.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-    
-         {/* 기존 CTA 섹션 */}
-         <div className="text-black py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-4">
-              지금 바로 시작하세요
-            </h2>
-            <p className="text-xl mb-8">
-              전문가의 도움을 받아 더 나은 농작물을 기르세요
-            </p>
-            <Link to="/trainingDetail?cropId=crop1">
-              <button className="bg-[#3a9d1f] text-white px-8 py-3 rounded-full hover:bg-[#0aab65]">
-                육성 가이드 보기
-              </button>
-            </Link>
-          </div>
+      {/* 기존 CTA 섹션 */}
+      <div className="text-black py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">
+            지금 바로 시작하세요
+          </h2>
+          <p className="text-xl mb-8">
+            전문가의 도움을 받아 더 나은 농작물을 기르세요
+          </p>
+          <Link to="/trainingDetail?cropId=crop1">
+            <button className="bg-[#3a9d1f] text-white px-8 py-3 rounded-full hover:bg-[#0aab65]">
+              육성 가이드 보기
+            </button>
+          </Link>
         </div>
       </div>
+    </div>
   );
 };
 

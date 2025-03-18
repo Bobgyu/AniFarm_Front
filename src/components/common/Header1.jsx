@@ -227,17 +227,17 @@ const Header = () => {
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={() => setIsMenuOpen(false)}
-          >
-            <div
-              className="absolute right-0 top-0 w-80 h-40 bg-white shadow-lg rounded-l-lg  md:h-screen"
-              onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg md:text-xl font-bold">메뉴</h2>
-                  <button
-                    onClick={() => setIsMenuOpen(false)}
-                    className="p-2 hover:bg-gray-100 rounded-full"
+              <div
+                className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-[600px] md:h-screen overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold">메뉴</h2>
+                    <button
+                      onClick={() => setIsMenuOpen(false)}
+                      className="p-2 hover:bg-gray-100 rounded-full"
                   >
                     <svg
                       className="w-6 h-6"
