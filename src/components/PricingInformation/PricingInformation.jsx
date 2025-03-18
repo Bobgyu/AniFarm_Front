@@ -20,6 +20,35 @@ const PricingInformation = () => {
     setActiveChart(activeChart === "News" ? null : "News");
   };
 
+  const renderDataSource = () => {
+    if (activeChart === "top10" || activeChart === "race") {
+      return (
+        <div className="mt-2 text-sm text-gray-700 bg-gray-100 p-4 rounded-lg mb-3">
+          <p className="flex items-center">
+            <span className="text-red-500 font-bold mr-1">TIP</span>
+            <span className="mr-1">※ 데이터 출처</span>
+            <span className="text-gray-700">㈜마켓링크</span>
+          </p>
+          <p className="text-gray-700 mt-2">
+            - 부류별(곡임, 채소, 식량작물, 수산물)로 2021.1월부터 현재까지의 품목별 매출액 순위 변화를 애니메이션 기능으로 제공합니다.
+          </p>
+          <p className="text-gray-700 mt-1">
+            - 조사대상 : ('21.1.~'24.2.) 대형마트(롯데마트, 홈플러스, 하나로클럽, 이마트*), SSM(롯데슈퍼, 홈플러스 익스프레스, 이마트 에브리데이, GS슈퍼*)
+          </p>
+          <p className="text-gray-700 ml-[60px]">
+            ('24.3.~현재) 유통사 데이터 변경(롯데멤버스, 농협 멤버스)
+          </p>
+          <p className="text-gray-700 mt-1">
+            * 시장점유율을 고려한 추정치를 적용하였으니 자료 활용시 유의해주시기 바랍니다.
+          </p>
+          <p className="text-gray-700">
+            - 데이터 제공처의 데이터 수집 및 가공 상황에 따라 데이터 제공 일정이 변경될 수 있습니다.
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="container">
@@ -69,7 +98,7 @@ const PricingInformation = () => {
       {activeChart === "top10" && <Top10Chart />}
       {activeChart === "race" && <RaceChart />}
       {activeChart === "News" && <News />}
-
+      {renderDataSource()}
     </div>
   );
 };
