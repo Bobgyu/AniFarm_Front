@@ -140,7 +140,7 @@ const Header = () => {
           </div>
 
           <div className="flex-grow flex justify-center items-center mx-4">
-            <div className="flex gap-12 items-center">
+            <div className="flex gap-12 items-center mr-12">
               <Link
                 to="/culture"
                 className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${
@@ -151,7 +151,7 @@ const Header = () => {
               >
                 재배하기
               </Link>
-              <div className="border-l h-6 border-black hidden md:block"></div>
+              <div className="border-l-[3px] h-6 border-gray-700 hidden md:block"></div>
               <Link
                 to="/sale"
                 className={`inline-flex items-center justify-center h-[50px] px-5 py-0 text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${

@@ -38,7 +38,7 @@ const PriceCard = ({ title, current, tomorrow, weekly, color, emoji, id }) => {
 
   return (
     <div className="mb-8">
-      <h2 className={`text-2xl font-bold mb-6 text-center text-${color}-600`}>
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-900">
         <div className="flex flex-col items-center">
           <span className="text-3xl mb-2">{emoji}</span>
           <span>{title}</span>
@@ -49,7 +49,7 @@ const PriceCard = ({ title, current, tomorrow, weekly, color, emoji, id }) => {
         <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
           <h3 className="font-semibold mb-3 text-gray-700">현재 예측 가격</h3>
           <div className="text-center">
-            <p className={`text-3xl font-bold text-${color}-600 mb-2 flex items-center justify-center`}>
+            <p className="text-3xl font-bold text-[#4caf50] mb-2 flex items-center justify-center">
               <span>{formatPrice(current?.price)}</span>
               <span className="text-3xl">{getUnit(id)[0]}</span>
               <span className="text-base ml-1">{getUnit(id)[1]}</span>
@@ -64,7 +64,7 @@ const PriceCard = ({ title, current, tomorrow, weekly, color, emoji, id }) => {
         <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
           <h3 className="font-semibold mb-3 text-gray-700">내일 예측 가격</h3>
           <div className="text-center">
-            <p className={`text-3xl font-bold text-${color}-600 mb-2 flex items-center justify-center`}>
+            <p className="text-3xl font-bold text-[#4caf50] mb-2 flex items-center justify-center">
               <span>{formatPrice(tomorrow?.price)}</span>
               <span className="text-3xl">{getUnit(id)[0]}</span>
               <span className="text-base ml-1">{getUnit(id)[1]}</span>
@@ -81,7 +81,7 @@ const PriceCard = ({ title, current, tomorrow, weekly, color, emoji, id }) => {
           <div className="space-y-3">
             {weekly?.map((day, index) => (
               <div key={index} className="text-center py-2 border-b last:border-0">
-                <p className={`text-xl font-semibold text-${color}-600 flex items-center justify-center`}>
+                <p className="text-xl font-semibold text-[#4caf50] flex items-center justify-center">
                   <span>{formatPrice(day.price)}</span>
                   <span className="text-xl">{getUnit(id)[0]}</span>
                   <span className="text-sm ml-1">{getUnit(id)[1]}</span>
