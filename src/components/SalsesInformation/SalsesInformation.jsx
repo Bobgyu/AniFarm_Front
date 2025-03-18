@@ -53,8 +53,9 @@ const SalsesInformation = () => {
   }, []);
 
   if (loading) return (
-    <div className="text-center p-8">
-      <p className="text-lg text-gray-700">데이터를 불러오고 있습니다.</p>
+    <div className="flex flex-col items-center justify-center p-8">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65]" />
+      <p className="text-lg text-gray-700 mt-4">데이터를 불러오고 있습니다</p>
       <p className="text-sm text-gray-500 mt-2">잠시만 기다려주세요...</p>
     </div>
   );
