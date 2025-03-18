@@ -383,7 +383,7 @@ const Register = () => {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="flex-1 py-3 bg-[#3a9d1f] text-white rounded-xl hover:bg-[#0aab65] transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8bd05c] shadow-sm hover:shadow-md"
+              className="flex-1 py-3 bg-[#3a9d1f] text-white rounded-xl hover:bg-[#0aab65] transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0aab65] shadow-sm hover:shadow-md"
             >
               가입하기
             </button>

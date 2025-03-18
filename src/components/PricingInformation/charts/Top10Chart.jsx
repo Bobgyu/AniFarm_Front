@@ -53,14 +53,22 @@ const Top10Chart = () => {
     }
   }, [top10Data, loading]);
 
-  if (loading) return <div>로딩 중...</div>;
+  // 로딩 상태 표시 수정
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65] mt-[-100px]" />
+      </div>
+    );
+  }
+
   if (!top10Data || top10Data.length === 0) {
     return (
       <div
         id="top10Chart"
         className="w-full h-[500px] mt-5 mb-10 border-2 border-gray-300 rounded-lg flex items-center justify-center"
       >
-        데이터를 불러오는 중...
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65]" />
       </div>
     );
   }

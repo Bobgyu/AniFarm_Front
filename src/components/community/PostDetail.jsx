@@ -330,6 +330,31 @@ const PostDetail = () => {
     return currentUser && comment && comment.email === currentUser.sub;
   };
 
+  // 카테고리 옵션 함수 추가
+  const getCategoryOptions = (communityType) => {
+    switch (communityType) {
+      case 'gardening':
+        return [
+          { value: 'general', label: '일반 토론' },
+          { value: 'food', label: '식물 재배' },
+          { value: 'indoor', label: '실내 식물' },
+          { value: 'pests', label: '병충해 관리' },
+          { value: 'hydroponic', label: '수경 재배' }
+        ];
+      case 'marketplace':
+        return [
+          { value: 'sell', label: '판매하기' },
+          { value: 'buy', label: '구매하기' }
+        ];
+      case 'freeboard':
+        return [
+          { value: 'free', label: '자유' }
+        ];
+      default:
+        return [];
+    }
+  };
+
   if (loading || !post) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -345,7 +370,7 @@ const PostDetail = () => {
         onClick={() =>
           navigate(`/community/${post.community_type || "gardening"}`)
         }
-        className="mb-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 flex items-center"
+        className="mb-4 bg-[#3a9d1f] text-white px-6 py-2 rounded-lg hover:bg-[#0aab65] flex items-center mt-3"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -362,17 +387,34 @@ const PostDetail = () => {
         목록으로 돌아가기
       </button>
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           {isEditing ? (
-            <input
-              type="text"
-              value={post.title}
-              onChange={(e) => setPost({ ...post, title: e.target.value })}
-              className="text-2xl font-bold w-full p-2 border rounded"
-            />
+            <div className="w-full space-y-4">
+              <input
+                type="text"
+                value={post.title}
+                onChange={(e) => setPost({ ...post, title: e.target.value })}
+                className="text-2xl font-bold w-full p-2 border rounded"
+                placeholder="제목을 입력하세요"
+              />
+              {/* 카테고리 선택 추가 */}
+              <select
+                value={post.category}
+                onChange={(e) => setPost({ ...post, category: e.target.value })}
+                className="w-full p-2 border rounded text-gray-700"
+              >
+                {getCategoryOptions(post.community_type).map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           ) : (
-            <h1 className="text-2xl font-bold">{post.title}</h1>
+            <div className="flex flex-col gap-2">
+              <h1 className="text-2xl font-bold">{post.title}</h1>
+            </div>
           )}
           <span className="text-gray-500">
             {new Date(post.date).toLocaleDateString()}
@@ -402,7 +444,7 @@ const PostDetail = () => {
               <>
                 <button
                   onClick={handleEditPost}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                  className="px-4 py-2 bg-[#3a9d1f] text-white rounded hover:bg-[#0aab65]"
                 >
                   저장
                 </button>
@@ -433,7 +475,7 @@ const PostDetail = () => {
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
         <h2 className="text-xl font-bold mb-4">댓글</h2>
         <form onSubmit={handleCommentSubmit} className="mb-6">
           <textarea
@@ -445,7 +487,7 @@ const PostDetail = () => {
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="px-4 py-2 bg-[#3a9d1f] text-white rounded hover:bg-[#0aab65]"
             disabled={!newComment.trim()}
           >
             댓글 작성
