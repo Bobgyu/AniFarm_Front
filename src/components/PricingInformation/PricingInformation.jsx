@@ -36,7 +36,7 @@ const PricingInformation = () => {
         <button
           className={`px-4 py-2 rounded-full ${
             activeChart === "top10"
-              ? "bg-blue-500 text-white hover:bg-blue-600"
+              ? "bg-[#3a9d1f] text-white hover:bg-[#0aab65]"
               : "bg-gray-100 hover:bg-gray-200"
           }`}
           onClick={handleShowTop10Chart}
@@ -47,7 +47,7 @@ const PricingInformation = () => {
         <button
           className={`px-4 py-2 rounded-full ${
             activeChart === "race"
-              ? "bg-blue-500 text-white hover:bg-blue-600"
+              ? "bg-[#3a9d1f] text-white hover:bg-[#0aab65]"
               : "bg-gray-100 hover:bg-gray-200"
           }`}
           onClick={handleShowRaceChart}
@@ -58,7 +58,7 @@ const PricingInformation = () => {
         <button
           className={`px-4 py-2 rounded-full ${
             activeChart === "News"
-              ? "bg-blue-500 text-white hover:bg-blue-600"
+              ? "bg-[#3a9d1f] text-white hover:bg-[#0aab65]"
               : "bg-gray-100 hover:bg-gray-200"
           }`}
           onClick={handleShowNews}

@@ -55,7 +55,7 @@ const MyPosts = () => {
               <label class="block text-sm font-medium text-gray-700 text-left mb-1">제목</label>
               <input 
                 id="swal-title" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#3a9d1f] focus:border-[#3a9d1f]" 
                 value="${post.title}"
               >
             </div>
@@ -63,7 +63,7 @@ const MyPosts = () => {
               <label class="block text-sm font-medium text-gray-700 text-left mb-1">내용</label>
               <textarea 
                 id="swal-content" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#3a9d1f] focus:border-[#3a9d1f]"
                 rows="8"
                 style="min-height: 200px;"
               >${post.content}</textarea>
@@ -201,7 +201,7 @@ const MyPosts = () => {
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
       <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-200">
-        <FaPen className="text-green-500 text-xl" />
+        <FaPen className="text-[#3a9d1f] text-xl" />
         <h2 className="text-xl font-semibold text-gray-800">
           내 게시글 ({myPosts?.length || 0})
         </h2>
@@ -219,7 +219,7 @@ const MyPosts = () => {
             onClick={() => setSelectedCategory(button.id)}
             className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2
               ${selectedCategory === button.id
-                ? 'bg-green-600 text-white shadow-md transform scale-105'
+                ? 'bg-[#3a9d1f] text-white shadow-md transform scale-105'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
           >
             {button.icon}
@@ -331,7 +331,7 @@ const MyPosts = () => {
               onClick={() => setCurrentPage(i + 1)}
               className={`px-4 py-2 rounded-lg transition-all duration-200 
                 ${currentPage === i + 1
-                  ? 'bg-green-600 text-white font-medium transform scale-110'
+                  ? 'bg-[#3a9d1f] text-white font-medium transform scale-110'
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
             >
               {i + 1}

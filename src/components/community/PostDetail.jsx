@@ -345,7 +345,7 @@ const PostDetail = () => {
         onClick={() =>
           navigate(`/community/${post.community_type || "gardening"}`)
         }
-        className="mb-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 flex items-center"
+        className="mb-4 bg-[#3a9d1f] text-white px-6 py-2 rounded-lg hover:bg-[#0aab65] flex items-center mt-3"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -362,7 +362,7 @@ const PostDetail = () => {
         목록으로 돌아가기
       </button>
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           {isEditing ? (
             <input
@@ -433,7 +433,7 @@ const PostDetail = () => {
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
         <h2 className="text-xl font-bold mb-4">댓글</h2>
         <form onSubmit={handleCommentSubmit} className="mb-6">
           <textarea
@@ -445,7 +445,7 @@ const PostDetail = () => {
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="px-4 py-2 bg-[#3a9d1f] text-white rounded hover:bg-[#0aab65]"
             disabled={!newComment.trim()}
           >
             댓글 작성

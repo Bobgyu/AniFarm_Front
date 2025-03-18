@@ -52,7 +52,7 @@ body {
 }
 
 .swal2-confirm {
-  background-color: #4caf50 !important;
+  background-color: #3a9d1f !important;
   border-radius: 8px !important;
   font-weight: 500 !important;
   padding: 10px 24px !important;
@@ -81,12 +81,12 @@ body {
 
 /* 아이콘 색상 */
 .swal2-success-ring {
-  border-color: #4caf50 !important;
+  border-color: #3a9d1f !important;
 }
 
 .swal2-icon.swal2-success {
-  border-color: #4caf50 !important;
-  color: #4caf50 !important;
+  border-color: #3a9d1f !important;
+  color: #3a9d1f !important;
 }
 
 .swal2-icon.swal2-error {

@@ -56,7 +56,7 @@ const PasswordModal = ({ onClose }) => {
               type="password"
               value={passwords.current}
               onChange={(e) => setPasswords({...passwords, current: e.target.value})}
-              className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500"
+              className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-[#3a9d1f] focus:ring-[#3a9d1f]"
               required
             />
           </div>
@@ -66,7 +66,7 @@ const PasswordModal = ({ onClose }) => {
               type="password"
               value={passwords.new}
               onChange={(e) => setPasswords({...passwords, new: e.target.value})}
-              className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500"
+              className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-[#3a9d1f] focus:ring-[#3a9d1f]"
               required
             />
           </div>
@@ -76,7 +76,7 @@ const PasswordModal = ({ onClose }) => {
               type="password"
               value={passwords.confirm}
               onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
-              className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500"
+              className="mt-1 block w-full rounded-md border border-gray-400 shadow-sm focus:border-[#3a9d1f] focus:ring-[#3a9d1f]"
               required
             />
           </div>
@@ -90,7 +90,7 @@ const PasswordModal = ({ onClose }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              className="px-4 py-2 bg-[#3a9d1f] text-white rounded-lg hover:bg-[#0aab65]"
             >
               변경
             </button>
