@@ -36,7 +36,7 @@ const SaleNews = () => {
   return (
     <div className="w-full max-w-[1280px] px-4 mx-auto pb-12">
       <h2 className="text-3xl font-bold text-center mt-8 md:mt-16 mb-12 text-gray-800">
-        최신 농산물 관련 뉴스
+        농산물 가격 관련 뉴스
       </h2>
       {news.length > 0 ? (
         <>

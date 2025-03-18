@@ -14,7 +14,6 @@ import Footer from "./components/common/Footer";
 import Register from "./components/login/Register";
 import Login from "./components/login/details/Login";
 import Mypage from "./components/login/Mypage";
-import Test4 from "./components/test/Test4";
 import PricingInformation from "./components/PricingInformation/PricingInformation";
 import Weather from "./components/weather/Weather.jsx";
 import Community from "./components/community/Community";
@@ -24,7 +23,6 @@ import TrainingMethod from "./components/trainingMethod/TrainingMethod";
 import PostDetail from "./components/community/PostDetail";
 import Write from "./components/community/Write";
 import { useDispatch } from "react-redux";
-import AccordionItem from "./components/common/AccordionItem";
 import TrainingDetail from "./components/trainingMethod/TrainingDetail";
 import Today from "./components/Today/Today";
 import useAutoLogout from "./hooks/useAutoLogout";
@@ -115,8 +113,6 @@ function AppContent() {
         <Route path="/trainingMethod" element={<TrainingMethod />} />
         <Route path="/Today" element={<Today />} />
         <Route path="/trainingDetail" element={<TrainingDetail />} />
-        <Route path="/accordionitem" element={<AccordionItem />} />
-        <Route path="/test4" element={<Test4 />} />
       </Routes>
       <Footer />
 
