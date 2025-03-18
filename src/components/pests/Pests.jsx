@@ -43,6 +43,7 @@ const Pests = () => {
   }, [error]);
 
   const [selectedTab, setSelectedTab] = useState(0);
+  const [showExample, setShowExample] = useState(true);
 
   const crops = [
     { value: "chamoe", label: "🍋참외" },
@@ -55,6 +56,7 @@ const Pests = () => {
 
   const resetStateHandler = () => {
     dispatch(resetState());
+    setShowExample(true);
     const fileInput = document.getElementById("image-upload");
     if (fileInput) {
       fileInput.value = "";
@@ -102,6 +104,8 @@ const Pests = () => {
       alert("이미지를 먼저 업로드해주세요.");
       return;
     }
+
+    setShowExample(false);
 
     const fileInput = document.getElementById("image-upload");
     const file = fileInput.files[0];
@@ -160,6 +164,30 @@ const Pests = () => {
     } catch (err) {
       console.error("진단 중 오류 발생:", err);
       alert("진단 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  const getExampleResult = () => {
+    switch (crops[selectedTab].value) {
+      case "chamoe":
+        return {
+          status: "diseased",
+          disease: "ex) 흰가루병",
+          recommendation: "ex) 통풍이 잘 되도록 관리하고, 질소질 비료를 줄이세요."
+        };
+      case "strawberry":
+        return {
+          status: "diseased",
+          disease: "ex) 잎끝마름병",
+          recommendation: "ex) 습도 관리에 주의하고, 이병주는 즉시 제거하세요."
+        };
+      // ... 다른 작물들에 대한 예시 추가
+      default:
+        return {
+          status: "healthy",
+          disease: "ex) 정상",
+          recommendation: "ex) 현재 특별한 조치가 필요하지 않습니다."
+        };
     }
   };
 
@@ -457,48 +485,52 @@ const Pests = () => {
 
             <Box className="md:w-1/2 flex items-center justify-start mt-14">
               <Box className="w-[400px]">
-                {result && (
-                  <Box className="w-[400px] h-[340px] border-2 border-gray-300 rounded-lg p-4">
-                    <Typography
-                      variant="h6"
-                      className="mb-3 border-b border-gray-200 pb-2"
-                    >
-                      진단 결과
-                    </Typography>
-                    <Paper
-                      className={`p-3 ${
-                        result.status === "healthy"
-                          ? "bg-green-50"
-                          : result.status === "invalid"
-                          ? "bg-gray-50" // 비식물일 경우 회색 배경
-                          : "bg-red-50" // 병충해일 경우 빨간색 배경
-                      } transition-colors duration-300`}
-                      sx={{ boxShadow: "none" }}
-                    >
-                      <Box className="space-y-2 text-sm">
-                        <Typography variant="body2">
-                          <span className="font-semibold">상태: </span>
-                          {result.status === "invalid"
+                <Box className="w-[400px] h-[340px] border-2 border-gray-300 rounded-lg p-4">
+                  <Typography
+                    variant="h6"
+                    className="mb-3 border-b border-gray-200 pb-2"
+                  >
+                    {showExample ? "예상 진단 결과" : "진단 결과"}
+                  </Typography>
+                  <Paper
+                    className={`p-3 ${
+                      (showExample ? getExampleResult() : result)?.status === "healthy"
+                        ? "bg-green-50"
+                        : (showExample ? getExampleResult() : result)?.status === "invalid"
+                        ? "bg-gray-50"
+                        : "bg-red-50"
+                    } transition-colors duration-300`}
+                    sx={{ boxShadow: "none" }}
+                  >
+                    <Box className="space-y-2 text-sm">
+                      <Typography variant="body2">
+                        <span className="font-semibold">상태: </span>
+                        {showExample 
+                          ? getExampleResult().status === "invalid"
                             ? "유효하지 않은 이미지"
-                            : result.status === "healthy"
+                            : getExampleResult().status === "healthy"
                             ? "정상"
-                            : "병충해 감지"}
-                        </Typography>
-                        <Typography variant="body2">
-                          <span className="font-semibold">진단 결과: </span>
-                          {result.disease}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          className="whitespace-pre-wrap border-b border-gray-200 pb-2"
-                        >
-                          <span className="font-semibold">권장 조치: </span>
-                          {result.recommendation}
-                        </Typography>
-                      </Box>
-                    </Paper>
-                  </Box>
-                )}
+                            : "병충해 감지"
+                          : result?.status === "invalid"
+                          ? "유효하지 않은 이미지"
+                          : result?.status === "healthy"
+                          ? "정상"
+                          : "병충해 감지"}
+                      </Typography>
+                      <Typography variant="body2">
+                        <span className="font-semibold">진단 결과: </span>
+                        {showExample ? getExampleResult().disease : result?.disease}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        className="whitespace-pre-wrap border-b border-gray-200 pb-2"
+                      >
+                        <span className="font-semibold">권장 조치: </span>
+                        {showExample ? getExampleResult().recommendation : result?.recommendation}
+                      </Typography>
+                    </Box>
+                  </Paper>
+                </Box>
               </Box>
             </Box>
           </Box>
