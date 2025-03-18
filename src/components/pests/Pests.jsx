@@ -268,7 +268,7 @@ const Pests = () => {
                           </Typography>
                           <Box className="mt-2 flex justify-center gap-4">
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              잎끝마름병
+                              딸기 잎끝마름병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
                               정상
@@ -301,31 +301,31 @@ const Pests = () => {
                           </Typography>
                           <Box className="mt-2 flex flex-wrap justify-center gap-2">
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              박테리아성 반점병
+                              토마토 박테리아성 반점병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
                               잎마름병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              역병
+                              토마토 역병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              잎곰팡이병
+                              토마토 잎곰팡이병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              세프토리아 잎반점병
+                              토마토 세프토리아 잎반점병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              거미 진드기
+                              토마토 거미 진드기
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              표적 반점병
+                              토마토 표적 반점병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              황화 잎말림 바이러스
+                              토마토 황화 잎말림 바이러스
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              모자이크 바이러스
+                              토마토 모자이크 바이러스
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
                               정상
@@ -340,13 +340,13 @@ const Pests = () => {
                           </Typography>
                           <Box className="mt-2 flex flex-wrap justify-center gap-2">
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              검은무늬병
+                              사과 검은무늬병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              흑색부패병
+                              사과 흑색부패병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              삼나무 녹병
+                              사과 삼나무 녹병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
                               정상
@@ -361,10 +361,10 @@ const Pests = () => {
                           </Typography>
                           <Box className="mt-2 flex flex-wrap justify-center gap-2">
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              잎마름병
+                              감자 잎마름병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                              역병
+                              감자 역병
                             </span>
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
                               정상
