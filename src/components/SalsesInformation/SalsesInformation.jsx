@@ -65,16 +65,16 @@ const SalsesInformation = () => {
 
   // 탭 설정
   const tabs = [
-    { id: "cabbage", name: "🥬 배추", color: "green" },
-    { id: "apple", name: "🍎 사과", color: "red" },
-    { id: "onion", name: "🧅 양파", color: "yellow" },
-    { id: "potato", name: "🥔 감자", color: "brown" },
-    { id: "cucumber", name: "🥒 오이", color: "green" },
-    { id: "tomato", name: "🍅 토마토", color: "red" },
-    { id: "spinach", name: "🍃 시금치", color: "green" },
-    { id: "strawberry", name: "🍓 딸기", color: "red" },
-    { id: "broccoli", name: "🥦 브로콜리", color: "green" },
-    { id: "carrot", name: "🥕 당근", color: "orange" }
+    { id: "cabbage", name: "🥬 배추" },
+    { id: "apple", name: "🍎 사과" },
+    { id: "onion", name: "🧅 양파" },
+    { id: "potato", name: "🥔 감자" },
+    { id: "cucumber", name: "🥒 오이" },
+    { id: "tomato", name: "🍅 토마토" },
+    { id: "spinach", name: "🍃 시금치" },
+    { id: "strawberry", name: "🍓 딸기" },
+    { id: "broccoli", name: "🥦 브로콜리" },
+    { id: "carrot", name: "🥕 당근" }
   ];
 
   // 탭 컨텐츠 렌더링
@@ -93,7 +93,6 @@ const SalsesInformation = () => {
           current={predictions[activeTab].current}
           tomorrow={predictions[activeTab].tomorrow}
           weekly={predictions[activeTab].weekly}
-          color={tabs.find(tab => tab.id === activeTab)?.color}
           emoji={tabs.find(tab => tab.id === activeTab)?.name.split(" ")[0]}
           id={activeTab}
         />
@@ -114,8 +113,8 @@ const SalsesInformation = () => {
             key={tab.id}
             className={`px-3 py-2 font-medium rounded-lg transition-all duration-300 ${
               activeTab === tab.id
-                ? `bg-${tab.color}-100 text-${tab.color}-600 border-2 border-${tab.color}-600 transform hover:-translate-y-1`
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100 border-2 border-transparent"
+                ? 'bg-[#e8f5e9] text-[#4caf50] border-2 border-[#4caf50] transform hover:-translate-y-1'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border-2 border-transparent'
             }`}
             onClick={() => setActiveTab(tab.id)}
           >

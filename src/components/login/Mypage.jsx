@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchUserInfo, fetchDeleteAuthData, fetchUpdateAuthData } from "../../redux/slices/authslice";
 import { fetchMyPosts } from "../../redux/slices/writeSlice";
 import { fetchMyComments } from "../../redux/slices/commentSlice";
-import { FaUser, FaEnvelope, FaCalendar, FaComments, FaPen } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaCalendar, FaComments, FaPen, FaEllipsisV, FaList, FaSeedling, FaStore, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Swal from 'sweetalert2';
 
 const Mypage = () => {
@@ -25,6 +25,9 @@ const Mypage = () => {
 
   // 선택된 카테고리 상태 추가
   const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // 댓글 필터링을 위한 상태 추가
+  const [selectedCommentCategory, setSelectedCommentCategory] = useState('all');
 
   const [currentPostPage, setCurrentPostPage] = useState(1);
   const [currentCommentPage, setCurrentCommentPage] = useState(1);
@@ -62,14 +65,38 @@ const Mypage = () => {
     });
   }, [myPosts, selectedCategory]);
 
+  // 필터링된 댓글 목록
+  const filteredComments = useMemo(() => {
+    if (!myComments) return [];
+    if (selectedCommentCategory === 'all') return myComments;
+
+    return myComments.filter(comment => {
+      switch(selectedCommentCategory) {
+        case 'growing':
+          return comment.community_type === 'gardening';
+        case 'market':
+          return comment.community_type === 'marketplace';
+        case 'free':
+          return comment.community_type === 'freeboard';
+        default:
+          return true;
+      }
+    });
+  }, [myComments, selectedCommentCategory]);
+
   // 현재 페이지의 게시글/댓글
   const currentPosts = paginate(filteredPosts, currentPostPage);
-  const currentComments = paginate(myComments, currentCommentPage);
+  const currentComments = paginate(filteredComments, currentCommentPage);
 
   // 카테고리 변경 시 페이지 초기화
   useEffect(() => {
     setCurrentPostPage(1);
   }, [selectedCategory]);
+
+  // 카테고리 변경 시 댓글 페이지 초기화
+  useEffect(() => {
+    setCurrentCommentPage(1);
+  }, [selectedCommentCategory]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -185,16 +212,11 @@ const Mypage = () => {
     <div className="min-h-[calc(100vh-64px)] w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex gap-6">
-          {/* 프로필 섹션 */}
-          <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
+          {/* 프로필 섹션 수정 */}
+          <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-200 p-5 sticky top-[120px] h-fit max-h-[calc(100vh-120px)]">
             {userInfo && (
               <div className="space-y-6">
-                <div className="text-center mb-8">
-                  <div className="w-24 h-24 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center drop-shadow-[4px_4px_12px_rgba(34,197,94,0.4)]">
-                    <FaUser className="text-green-500 text-3xl" />
-                  </div>
-                  <h2 className="text-xl font-semibold text-green-600">내 정보</h2>
-                </div>
+                <h2 className="text-xl font-semibold text-green-600 border-b border-gray-200 pb-4">내 정보</h2>
 
                 <div className="bg-white/50 p-5 rounded-xl border border-gray-300">
                   <div className="flex items-center space-x-5 mb-3 border-b border-gray-300 pb-3">
@@ -254,103 +276,126 @@ const Mypage = () => {
                 </h2>
               </div>
 
-              {/* 카테고리 필터 버튼 */}
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                    selectedCategory === 'all'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  전체
-                </button>
-                <button
-                  onClick={() => setSelectedCategory('growing')}
-                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                    selectedCategory === 'growing'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  재배하기
-                </button>
-                <button
-                  onClick={() => setSelectedCategory('market')}
-                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                    selectedCategory === 'market'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  판매/구매
-                </button>
-                <button
-                  onClick={() => setSelectedCategory('free')}
-                  className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                    selectedCategory === 'free'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  자유게시판
-                </button>
+              {/* 게시글 카테고리 필터 버튼 */}
+              <div className="flex gap-3 mb-4">
+                {[
+                  { id: 'all', label: '전체', icon: <FaList /> },
+                  { id: 'growing', label: '재배하기', icon: <FaSeedling /> },
+                  { id: 'market', label: '판매/구매', icon: <FaStore /> },
+                  { id: 'free', label: '자유게시판', icon: <FaComments /> }
+                ].map(button => (
+                  <button
+                    key={button.id}
+                    onClick={() => setSelectedCategory(button.id)}
+                    className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2
+                      ${selectedCategory === button.id
+                        ? 'bg-green-600 text-white shadow-md transform scale-105'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                  >
+                    {button.icon}
+                    {button.label}
+                  </button>
+                ))}
               </div>
 
-              {/* 필터링된 게시글 목록 */}
-              <div className="max-h-[300px] overflow-y-auto">
-                {filteredPosts.length > 0 ? (
-                  <>
-                    <div className="space-y-3">
-                      {currentPosts.map((post) => (
-                        <div
-                          key={post.post_id}
-                          className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                          onClick={() => navigate(`/Community/${post.post_id}`)}
-                        >
-                          <h3 className="font-medium text-gray-900">{post.title}</h3>
-                          <div className="flex justify-between items-center mt-2">
-                            <span className="text-sm text-gray-500">
-                              {post.community_type === 'freeboard' 
-                                ? '자유게시판' 
-                                : getCategoryName(post.category)}
-                            </span>
-                            <p className="text-sm text-gray-500">
-                              {new Date(post.created_at || post.date).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
+              {/* 게시글 목록 */}
+              <div className="space-y-3">
+                {currentPosts.map((post) => (
+                  <div
+                    key={post.post_id}
+                    className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 relative group"
+                    onClick={() => navigate(`/Community/${post.post_id}`)}
+                  >
+                    {/* 더보기 버튼 추가 */}
+                    <button 
+                      className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // 더보기 메뉴 표시 로직
+                      }}
+                    >
+                      <FaEllipsisV className="text-gray-500 hover:text-gray-700" />
+                    </button>
+
+                    {/* 게시글 제목 */}
+                    <div className="mb-3">
+                      <h3 
+                        className="font-medium text-gray-900 truncate"
+                        title={post.title}
+                      >
+                        {post.title}
+                      </h3>
                     </div>
-                    
-                    {/* 게시글 페이지네이션 */}
-                    {getTotalPages(filteredPosts) > 1 && (
-                      <div className="flex justify-center gap-2 mt-4">
-                        {Array.from({ length: getTotalPages(filteredPosts) }, (_, i) => i + 1).map((pageNum) => (
-                          <button
-                            key={pageNum}
-                            onClick={() => setCurrentPostPage(pageNum)}
-                            className={`px-3 py-1 rounded-lg transition-all duration-200 ${
-                              currentPostPage === pageNum
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        ))}
+
+                    {/* 게시글 정보 */}
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        {/* 카테고리 태그 스타일 적용 */}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium
+                          ${post.community_type === 'gardening' ? 'bg-green-100 text-green-800' : 
+                            post.community_type === 'marketplace' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800'}`}
+                        >
+                          {post.community_type === 'freeboard' 
+                            ? '자유게시판' 
+                            : getCategoryName(post.category)}
+                        </span>
                       </div>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-gray-500 text-center py-4">
-                    {selectedCategory === 'all' 
-                      ? '작성한 게시글이 없습니다.' 
-                      : '해당 카테고리의 게시글이 없습니다.'}
-                  </p>
-                )}
+                      {/* 날짜를 하단에 오른쪽 정렬 */}
+                      <p className="text-xs text-gray-500 text-right">
+                        {new Date(post.created_at || post.date).toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit'
+                        }).replace(/\./g, '.').slice(0, -1)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
+
+              {/* 게시글 페이지네이션 */}
+              {getTotalPages(filteredPosts) > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-6">
+                  <button
+                    onClick={() => setCurrentPostPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPostPage === 1}
+                    className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  {Array.from({ length: getTotalPages(filteredPosts) }, (_, i) => i + 1)
+                    .filter(num => {
+                      const distance = Math.abs(num - currentPostPage);
+                      return distance <= 2 || num === 1 || num === getTotalPages(filteredPosts);
+                    })
+                    .map((pageNum, index, array) => (
+                      <React.Fragment key={pageNum}>
+                        {index > 0 && array[index - 1] !== pageNum - 1 && (
+                          <span className="text-gray-400">...</span>
+                        )}
+                        <button
+                          onClick={() => setCurrentPostPage(pageNum)}
+                          className={`px-4 py-2 rounded-lg transition-all duration-200 
+                            ${currentPostPage === pageNum
+                              ? 'bg-green-600 text-white font-medium transform scale-110'
+                              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                        >
+                          {pageNum}
+                        </button>
+                      </React.Fragment>
+                    ))}
+                  <button
+                    onClick={() => setCurrentPostPage(prev => 
+                      Math.min(prev + 1, getTotalPages(filteredPosts))
+                    )}
+                    disabled={currentPostPage === getTotalPages(filteredPosts)}
+                    className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                  >
+                    <FaChevronRight />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* 내 댓글 */}
@@ -361,59 +406,137 @@ const Mypage = () => {
                   내 댓글 ({myComments?.length || 0})
                 </h2>
               </div>
-              <div className="max-h-[300px] overflow-y-auto">
-                {myComments?.length > 0 ? (
-                  <>
-                    <div className="space-y-3">
-                      {currentComments.map((comment) => (
-                        <div
-                          key={comment.comment_id}
-                          className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                          onClick={() => navigate(`/Community/${comment.post_id}`)}
+
+              {/* 댓글 카테고리 필터 버튼 */}
+              <div className="flex gap-3 mb-4">
+                {[
+                  { id: 'all', label: '전체', icon: <FaList /> },
+                  { id: 'growing', label: '재배하기', icon: <FaSeedling /> },
+                  { id: 'market', label: '판매/구매', icon: <FaStore /> },
+                  { id: 'free', label: '자유게시판', icon: <FaComments /> }
+                ].map(button => (
+                  <button
+                    key={button.id}
+                    onClick={() => setSelectedCommentCategory(button.id)}
+                    className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2
+                      ${selectedCommentCategory === button.id
+                        ? 'bg-green-600 text-white shadow-md transform scale-105'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                  >
+                    {button.icon}
+                    {button.label}
+                  </button>
+                ))}
+              </div>
+
+              {filteredComments.length > 0 ? (
+                <>
+                  <div className="space-y-3">
+                    {currentComments.map((comment) => (
+                      <div
+                        key={comment.comment_id}
+                        className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200 relative group"
+                        onClick={() => navigate(`/Community/${comment.post_id}`)}
+                      >
+                        {/* 더보기 버튼 추가 */}
+                        <button 
+                          className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // 더보기 메뉴 표시 로직
+                          }}
                         >
-                          <div className="flex justify-between items-center mb-2">
-                            <h3 className="font-medium text-gray-900 truncate flex-1">
-                              게시글: {comment.post_title}
-                            </h3>
-                            <span className="text-sm text-gray-500 ml-2">
-                              {comment.community_type === 'freeboard' 
-                                ? '자유게시판' 
-                                : getCategoryName(comment.category)}
+                          <FaEllipsisV className="text-gray-500 hover:text-gray-700" />
+                        </button>
+
+                        {/* 댓글 내용 */}
+                        <div className="mb-3">
+                          <h3 
+                            className="font-medium text-gray-900 truncate"
+                            title={comment.content}
+                          >
+                            {comment.content}
+                          </h3>
+                        </div>
+
+                        {/* 게시글 정보 */}
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            {/* 카테고리 태그 스타일 적용 */}
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium
+                              ${comment.community_type === 'gardening' ? 'bg-green-100 text-green-800' : 
+                                comment.community_type === 'marketplace' ? 'bg-blue-100 text-blue-800' :
+                                'bg-gray-100 text-gray-800'}`}
+                            >
+                              {getCommunityTypeName(comment.community_type)}
+                            </span>
+                            <span className="text-sm text-gray-900 truncate flex-1" title={comment.post_title}>
+                              {comment.post_title}
                             </span>
                           </div>
-                          <p className="text-gray-700 break-words">
-                            {comment.content}
-                          </p>
-                          <p className="text-sm text-gray-500 mt-2">
-                            {new Date(comment.created_at || comment.date).toLocaleDateString()}
+                          {/* 날짜를 하단에 오른쪽 정렬 */}
+                          <p className="text-xs text-gray-500 text-right">
+                            {new Date(comment.created_at || comment.date).toLocaleDateString('ko-KR', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit'
+                            }).replace(/\./g, '.').slice(0, -1)}
                           </p>
                         </div>
-                      ))}
-                    </div>
-
-                    {/* 댓글 페이지네이션 */}
-                    {getTotalPages(myComments) > 1 && (
-                      <div className="flex justify-center gap-2 mt-4">
-                        {Array.from({ length: getTotalPages(myComments) }, (_, i) => i + 1).map((pageNum) => (
-                          <button
-                            key={pageNum}
-                            onClick={() => setCurrentCommentPage(pageNum)}
-                            className={`px-3 py-1 rounded-lg transition-all duration-200 ${
-                              currentCommentPage === pageNum
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        ))}
                       </div>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-gray-500 text-center py-4">작성한 댓글이 없습니다.</p>
-                )}
-              </div>
+                    ))}
+                  </div>
+
+                  {/* 페이지네이션 개선 */}
+                  {getTotalPages(filteredComments) > 1 && (
+                    <div className="flex justify-center items-center gap-2 mt-6">
+                      <button
+                        onClick={() => setCurrentCommentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentCommentPage === 1}
+                        className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                      >
+                        <FaChevronLeft />
+                      </button>
+                      {Array.from({ length: getTotalPages(filteredComments) }, (_, i) => i + 1)
+                        .filter(num => {
+                          const distance = Math.abs(num - currentCommentPage);
+                          return distance <= 2 || num === 1 || num === getTotalPages(filteredComments);
+                        })
+                        .map((pageNum, index, array) => (
+                          <React.Fragment key={pageNum}>
+                            {index > 0 && array[index - 1] !== pageNum - 1 && (
+                              <span className="text-gray-400">...</span>
+                            )}
+                            <button
+                              onClick={() => setCurrentCommentPage(pageNum)}
+                              className={`px-4 py-2 rounded-lg transition-all duration-200 
+                                ${currentCommentPage === pageNum
+                                  ? 'bg-green-600 text-white font-medium transform scale-110'
+                                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                            >
+                              {pageNum}
+                            </button>
+                          </React.Fragment>
+                        ))}
+                      <button
+                        onClick={() => setCurrentCommentPage(prev => 
+                          Math.min(prev + 1, getTotalPages(filteredComments))
+                        )}
+                        disabled={currentCommentPage === getTotalPages(filteredComments)}
+                        className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                      >
+                        <FaChevronRight />
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-gray-500 text-center py-4">
+                  {selectedCommentCategory === 'all' 
+                    ? '작성한 댓글이 없습니다.' 
+                    : '해당 카테고리의 댓글이 없습니다.'}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -491,6 +614,16 @@ const getCategoryName = (category) => {
     buy: "구매하기"
   };
   return categories[category] || category;
+};
+
+// community_type에 따른 이름 반환 함수 추가
+const getCommunityTypeName = (type) => {
+  const types = {
+    marketplace: "판매하기",
+    gardening: "재배하기",
+    freeboard: "자유게시판"
+  };
+  return types[type] || type;
 };
 
 export default Mypage;
