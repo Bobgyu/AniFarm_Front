@@ -5,7 +5,7 @@ const CommunityNavigation = () => {
   const location = useLocation();
 
   const isActive = (path) => {
-    return location.pathname.includes(path) ? "bg-green-700" : "bg-green-600";
+    return location.pathname.includes(path) ? "bg-[#0aab65]" : "bg-[#3a9d1f]";
   };
 
   return (
@@ -22,7 +22,7 @@ const CommunityNavigation = () => {
           to="/community/gardening"
           className={`${isActive("/gardening")} 
             text-white px-8 py-3 rounded-lg 
-            hover:bg-green-700 transition-colors
+            hover:bg-[#0aab65] transition-colors
             font-semibold text-lg`}
         >
           재배하기
@@ -31,7 +31,7 @@ const CommunityNavigation = () => {
           to="/community/marketplace"
           className={`${isActive("/marketplace")} 
             text-white px-8 py-3 rounded-lg 
-            hover:bg-green-700 transition-colors
+            hover:bg-[#0aab65] transition-colors
             font-semibold text-lg`}
         >
           판매하기
@@ -40,7 +40,7 @@ const CommunityNavigation = () => {
           to="/community/freeboard"
           className={`${isActive("/freeboard")} 
             text-white px-8 py-3 rounded-lg 
-            hover:bg-green-700 transition-colors
+            hover:bg-[#0aab65] transition-colors
             font-semibold text-lg`}
         >
           자유게시판

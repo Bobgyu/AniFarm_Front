@@ -27,7 +27,7 @@ const Pests = () => {
 
   // 상태 변화 추적을 위한 useEffect들
   useEffect(() => {
-    console.log("이미지 상태:", selectedImage);
+    // console.log("이미지 상태:", selectedImage);
   }, [selectedImage]);
 
   useEffect(() => {
@@ -496,20 +496,7 @@ const Pests = () => {
                     sx={{ boxShadow: "none" }}
                   >
                     <Box className="space-y-2 text-sm">
-                      <Typography variant="body2">
-                        <span className="font-semibold">상태: </span>
-                        {showExample 
-                          ? getExampleResult().status === "invalid"
-                            ? "유효하지 않은 이미지"
-                            : getExampleResult().status === "healthy"
-                            ? "정상"
-                            : "병충해 감지"
-                          : result?.status === "invalid"
-                          ? "유효하지 않은 이미지"
-                          : result?.status === "healthy"
-                          ? "정상"
-                          : "병충해 감지"}
-                      </Typography>
+                      
                       <Typography variant="body2">
                         <span className="font-semibold">진단 결과: </span>
                         {showExample ? getExampleResult().disease : result?.disease}

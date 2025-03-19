@@ -417,8 +417,8 @@ const PostDetail = () => {
   // 이메일을 사용자명으로 변환하는 함수 추가
   const formatUserEmail = (email) => {
     if (!email) return '';
-    const [username] = email.split('@');
-    return `${username.slice(0, 5)}***`;
+    const [username, domain] = email.split('@');
+    return `${username.slice(0, 2)}***@${domain}`;
   };
 
   // 댓글 렌더링 함수 수정
@@ -433,36 +433,38 @@ const PostDetail = () => {
         >
           <div className="flex flex-col space-y-2 py-4">
             {/* 댓글 헤더 */}
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                  <svg 
-                    className="w-5 h-5 text-gray-500"
-                    fill="currentColor" 
-                    viewBox="0 0 20 20"
-                  >
-                    <path 
-                      fillRule="evenodd" 
-                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" 
-                      clipRule="evenodd" 
-                    />
-                  </svg>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <svg 
+                      className="w-5 h-5 text-gray-500"
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path 
+                        fillRule="evenodd" 
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" 
+                        clipRule="evenodd" 
+                      />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900">
-                  {formatUserEmail(comment.email)}
-                </span>
-                {depth > 0 && (
-                  <span className="text-xs text-gray-500">
-                    답글
+                <div className="flex items-center space-x-2">
+                  <span className="font-medium text-gray-900">
+                    {formatUserEmail(comment.email)}
                   </span>
-                )}
-                {comment.is_edited && (
-                  <span className="text-xs text-gray-500">
-                    (수정됨)
-                  </span>
-                )}
+                  {depth > 0 && (
+                    <span className="text-xs text-gray-500">
+                      답글
+                    </span>
+                  )}
+                  {comment.is_edited && (
+                    <span className="text-xs text-gray-500">
+                      (수정됨)
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -501,7 +503,7 @@ const PostDetail = () => {
                 <div className="pl-11">
                   <p className="text-gray-800 break-words">{comment.content}</p>
                 </div>
-                <div className="flex items-center space-x-4 pl-11">
+                <div className="flex justify-end items-center space-x-4 pl-11">
                   <span className="text-sm text-gray-500">
                     {new Date(comment.created_at).toLocaleDateString()}
                   </span>
