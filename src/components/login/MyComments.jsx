@@ -172,7 +172,7 @@ const MyComments = () => {
         </h2>
       </div>
 
-      <div className="flex gap-3 mb-4">
+      <div className="flex gap-3 mb-4 flex-col md:flex-row">
         {[
           { id: 'all', label: '전체', icon: <FaList /> },
           { id: 'growing', label: '재배하기', icon: <FaSeedling /> },
