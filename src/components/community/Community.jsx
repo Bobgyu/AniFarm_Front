@@ -129,7 +129,7 @@ const Community = () => {
     <div className="container mx-auto p-4">
       <CommunityNavigation />
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
         {communityType !== "freeboard" && (
           <div ref={dropdownRef} className="flex items-center space-x-2">
             <span className="text-gray-600">카테고리:</span>
