@@ -1,66 +1,83 @@
 import Highcharts from "highcharts";
 
-const createTop10Chart = (containerId, rawData) => {
-  // 데이터 형식 변환
-  const formattedData = {
-    categories: rawData.map((item) => item.category),
-    previousYearData: rawData.map(
-      (item) => parseInt(item.previous_year) / 1000
-    ), // 백만원 단위로 변환
-    currentYearData: rawData.map((item) => parseInt(item.base_date) / 1000), // 백만원 단위로 변환
-  };
-
-  // console.log("변환된 데이터:", formattedData); // 디버깅용
-
+const createTop10Chart = (containerId, data) => {
   return Highcharts.chart(containerId, {
     chart: {
       type: "column",
     },
     title: {
-      text: "[2024년 1월 1주차 ~ 2024년 12월 4주차] 매출 TOP 10입니다.]",
-      align: "center",
+      text: "[2024년 1월 1주차 ~ 2025년 3월 1주차] 매출 TOP 10",
+      style: {
+        fontSize: "16px",
+        fontWeight: "bold",
+      },
     },
     xAxis: {
-      categories: formattedData.categories,
-      crosshair: true,
+      categories: data.map(item => item.crop_name),
+      labels: {
+        style: {
+          fontSize: "13px",
+        },
+      },
     },
     yAxis: {
-      min: 0,
       title: {
-        text: "매출액(백만원)",
+        text: "매출액(천원)",
+        style: {
+          fontSize: "13px",
+        },
+      },
+      labels: {
+        formatter: function() {
+          return Highcharts.numberFormat(this.value, 0, "", ",");
+        },
       },
     },
     tooltip: {
-      headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-      pointFormat:
-        '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-        '<td style="padding:0"><b>{point.y:.1f}백만원</b></td></tr>',
-      footerFormat: "</table>",
-      shared: true,
-      useHTML: true,
+      formatter: function() {
+        return `<b>${this.x}</b><br/>
+                ${this.series.name}: ${Highcharts.numberFormat(this.y, 0, "", ",")}천원`;
+      },
     },
     plotOptions: {
       column: {
-        pointPadding: 0.2,
-        borderWidth: 0,
-      },
-      bar: {
         dataLabels: {
           enabled: true,
-          format: "{point.y:.1f}",
+          formatter: function() {
+            return Highcharts.numberFormat(this.y, 0, "", ",");
+          },
+          style: {
+            fontSize: "12px",
+          },
         },
+      },
+      series: {
+        pointWidth: 40,
+      },
+    },
+    legend: {
+      align: "center",
+      verticalAlign: "bottom",
+      layout: "horizontal",
+      itemStyle: {
+        fontSize: "13px",
       },
     },
     series: [
       {
         name: "전년동기",
-        data: formattedData.previousYearData,
+        data: data.map(item => item.previous_year),
+        color: "#7CB5EC",
       },
       {
         name: "기준일",
-        data: formattedData.currentYearData,
+        data: data.map(item => item.current_year),
+        color: "#0aab65",
       },
     ],
+    credits: {
+      enabled: false,
+    },
   });
 };
 

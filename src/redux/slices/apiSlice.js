@@ -9,8 +9,10 @@ export const fetchMarketData = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${BASE_URL}/api/sales`);
-      return response.data.data;
+      console.log("Raw API response:", response.data);
+      return response.data;  // success 체크 제거
     } catch (error) {
+      console.error("Market data fetch error:", error);
       return rejectWithValue(error.response?.data?.detail || error.message);
     }
   }
@@ -22,7 +24,9 @@ export const fetchTop10Data = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${BASE_URL}/api/top10`);
-      return response.data.data;
+      // 데이터 구조 확인 및 정렬
+      const data = response.data.data.sort((a, b) => b.current_year - a.current_year);
+      return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.detail || error.message);
     }

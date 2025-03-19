@@ -131,13 +131,7 @@ const Login = () => {
         </form>
 
         <div className="text-center text-sm text-emerald-600">
-          <Link
-            to="/findpwd"
-            className="hover:text-emerald-800 transition-colors duration-200"
-          >
-            비밀번호 찾기
-          </Link>
-          <span className="mx-2">|</span>
+          
           <Link
             to="/register"
             className="hover:text-emerald-800 transition-colors duration-200"
