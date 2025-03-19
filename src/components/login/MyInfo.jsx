@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 
 const MyInfo = ({ userInfo, onPasswordChange, onDeleteAccount }) => {
   return (
-    <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-200 p-5 sticky top-[88px] h-fit max-h-[calc(100vh-120px)]">
+    <div className="w-80 bg-white rounded-2xl shadow-lg border border-gray-200 p-5 sticky top-[88px] h-fit max-h-[calc(100vh-120px)] mx-auto">
       {userInfo && (
         <div className="space-y-6">
           <h2 className="text-xl font-semibold text-[#3a9d1f] border-b border-gray-200 pb-4">내 정보</h2>
