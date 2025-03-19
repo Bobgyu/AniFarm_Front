@@ -232,12 +232,12 @@ const MyPosts = () => {
       <div className="space-y-3">
         {currentPosts.length > 0 ? (
           currentPosts.map((post) => {
-            // 디버깅을 위한 로그 추가
-            console.log('게시글 날짜 데이터:', {
-              postId: post.post_id,
-              rawDate: post.created_at,
-              type: typeof post.created_at
-            });
+            // // 디버깅을 위한 로그 추가
+            // console.log('게시글 날짜 데이터:', {
+            //   postId: post.post_id,
+            //   rawDate: post.created_at,
+            //   type: typeof post.created_at
+            // });
 
             return (
               <div

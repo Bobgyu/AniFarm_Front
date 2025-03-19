@@ -226,7 +226,8 @@ export const createComment = createAsyncThunk(
       const requestData = {
         post_id: parseInt(commentData.post_id),
         content: commentData.content.trim(),
-        user_email: userEmail
+        user_email: userEmail,
+        parent_id: commentData.parent_id || null
       };
 
       console.log("[댓글 생성] 시작:", {
