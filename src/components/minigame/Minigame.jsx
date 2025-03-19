@@ -207,9 +207,15 @@ const Minigame = () => {
   }, [season]);
 
   const checkGameOver = () => {
-    if (crops.length === 0) {
-      const canAffordAnyCrop = Object.values(cropTypes).some(crop => money >= crop.price);
-      if (!canAffordAnyCrop) {
+    if (crops.length === 0) {  // 농장에 작물이 없을 때
+      // 현재 돈 + 인벤토리에 있는 작물들의 판매 가능 금액의 총합
+      const totalPotentialMoney = money + inventory.reduce((sum, crop) => sum + cropTypes[crop].sellPrice, 0);
+      
+      // 가장 저렴한 작물의 가격
+      const cheapestCropPrice = Math.min(...Object.values(cropTypes).map(crop => crop.price));
+      
+      // 보유 현금과 판매 가능한 작물의 가치를 모두 합해도 가장 저렴한 작물을 살 수 없는 경우에만 게임오버
+      if (totalPotentialMoney < cheapestCropPrice) {
         setIsGameOver(true);
         return true;
       }
