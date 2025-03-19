@@ -14,7 +14,7 @@ const TrainNews = () => {
     const fetchNews = async () => {
       try {
         // list=20 을 쿼리 파라미터로 전달 (TrainNews용 크롤링 링크)
-        const response = await axios.get('http://localhost:8000/api/crawler/news-links?list=20');
+        const response = await axios.get('http://localhost:8000/api/crawler/news-links?list=20&pages=2');
         // response.data.news_links 가 기사 배열로 구성되어 있다고 가정합니다.
         setNews(response.data.news_links || []);
       } catch (error) {
