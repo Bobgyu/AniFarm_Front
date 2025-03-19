@@ -6,7 +6,9 @@ const TrainNews = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 6;
+  // 초기 값을 6으로 설정 (화면 크기에 따라 추후 업데이트됩니다.)
+  const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -23,6 +25,33 @@ const TrainNews = () => {
     };
 
     fetchNews();
+  }, []);
+
+  // 화면 크기에 따라 itemsPerPage 값을 업데이트합니다.
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth < 768) {
+        setItemsPerPage(4);
+      } else {
+        setItemsPerPage(6);
+      }
+    };
+
+    // 초기 실행 및 리사이즈 이벤트 등록
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
+
+  // 모바일 환경 여부를 업데이트합니다.
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   if (loading) {
@@ -42,7 +71,7 @@ const TrainNews = () => {
       
       {news.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             {visibleNews.map((article, index) => (
               <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
                 {/* 이미지 URL이 존재하면 이미지 표시 (클릭 시 기사 링크로 이동) */}
@@ -56,13 +85,13 @@ const TrainNews = () => {
                   </a>
                 )}
                 {/* 뉴스 제목 */}
-                <div className="p-3 md:p-4">
+                <div className="p-1 md:p-4">
                   <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-1 md:p-3">
                     <a
                       className="block"
                       style={{
                         display: "-webkit-box",
-                        WebkitLineClamp: 1,
+                        WebkitLineClamp: isMobile ? 2 : 1,
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden"
                       }}

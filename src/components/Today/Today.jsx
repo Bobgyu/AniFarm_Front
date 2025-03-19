@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import {
   Container,
   Typography,
@@ -17,17 +18,219 @@ const Today = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('200');
-  const [frozenData, setFrozenData] = useState(() => {
-    const saved = localStorage.getItem('frozenPriceData');
-    return saved ? JSON.parse(saved) : null;
-  });
-  const [lastUpdateTime, setLastUpdateTime] = useState(() => {
-    const saved = localStorage.getItem('lastUpdateTime');
-    return saved ? new Date(saved) : null;
-  });
+  const [frozenData, setFrozenData] = useState(null);
+  const [lastUpdateTime, setLastUpdateTime] = useState(null);
 
   const handleCategoryChange = (event, newValue) => {
     setSelectedCategory(newValue);
+  };
+
+  // 쿠키 저장 함수
+  const saveToJsonFile = async (data, time) => {
+    try {
+      // 데이터를 더 작은 단위로 분할
+      const chunks = {};
+      let currentChunk = {};
+      let currentSize = 0;
+      let chunkIndex = 0;
+      
+      Object.entries(data).forEach(([key, value]) => {
+        const itemData = { [key]: value };
+        const itemSize = JSON.stringify(itemData).length;
+        
+        // 각 청크를 2KB 이하로 유지
+        if (currentSize + itemSize > 2000) {
+          chunks[chunkIndex] = currentChunk;
+          currentChunk = {};
+          currentSize = 0;
+          chunkIndex++;
+        }
+        
+        currentChunk[key] = value;
+        currentSize += itemSize;
+      });
+      
+      // 마지막 청크 저장
+      if (Object.keys(currentChunk).length > 0) {
+        chunks[chunkIndex] = currentChunk;
+      }
+      
+      // 청크 정보 저장 후 저장된 값 확인
+      Cookies.set('frozen_price_chunks', JSON.stringify({
+        count: chunkIndex + 1,
+        lastUpdateTime: time.toISOString()
+      }), {
+        expires: 30,
+        sameSite: 'lax',
+        path: '/'
+      });
+      
+      // 저장된 쿠키 값 확인
+      const savedChunkInfo = Cookies.get('frozen_price_chunks');
+      console.log('저장된 쿠키 원본:', savedChunkInfo);
+      console.log('디코딩된 쿠키:', decodeURIComponent(savedChunkInfo));
+      
+      // 각 청크 저장
+      let savedCount = 0;
+      Object.entries(chunks).forEach(([index, chunkData]) => {
+        try {
+          Cookies.set(`frozen_price_chunk_${index}`, JSON.stringify(chunkData), {
+            expires: 30,
+            sameSite: 'lax',
+            path: '/'
+          });
+          
+          // 각 청크의 저장된 값 확인
+          const savedChunk = Cookies.get(`frozen_price_chunk_${index}`);
+          console.log(`청크 ${index} 원본:`, savedChunk);
+          console.log(`청크 ${index} 디코딩:`, decodeURIComponent(savedChunk));
+          
+          savedCount++;
+        } catch (e) {
+          console.error(`청크 ${index} 저장 실패:`, e);
+        }
+      });
+      
+      // 모든 청크가 저장되었는지 확인
+      if (savedCount === Object.keys(chunks).length) {
+        setFrozenData(data);
+        setLastUpdateTime(time);
+        console.log('데이터 저장 완료:', {
+          totalChunks: Object.keys(chunks).length,
+          savedChunks: savedCount,
+          timestamp: time.toISOString()
+        });
+      } else {
+        throw new Error(`${Object.keys(chunks).length}개 중 ${savedCount}개의 청크만 저장됨`);
+      }
+      
+    } catch (error) {
+      console.error('쿠키 저장 중 오류:', error);
+      console.error('오류 상세:', {
+        errorMessage: error.message,
+        cookieEnabled: navigator.cookieEnabled,
+        currentCookies: document.cookie,
+        decodedCookies: decodeURIComponent(document.cookie)
+      });
+    }
+  };
+
+  // 쿠키 로드 함수
+  const loadFromJsonFile = async () => {
+    try {
+      const chunkInfo = Cookies.get('frozen_price_chunks');
+      console.log('로드된 쿠키 원본:', chunkInfo);
+      if (chunkInfo) {
+        console.log('디코딩된 쿠키:', decodeURIComponent(chunkInfo));
+        const { count, lastUpdateTime } = JSON.parse(decodeURIComponent(chunkInfo));
+        console.log('파싱된 쿠키 데이터:', { count, lastUpdateTime });
+        
+        const allData = {};
+        
+        // 모든 청크 로드
+        for (let i = 0; i < count; i++) {
+          const chunkData = Cookies.get(`frozen_price_chunk_${i}`);
+          if (chunkData) {
+            console.log(`청크 ${i} 원본:`, chunkData);
+            console.log(`청크 ${i} 디코딩:`, decodeURIComponent(chunkData));
+            Object.assign(allData, JSON.parse(decodeURIComponent(chunkData)));
+          }
+        }
+        
+        if (Object.keys(allData).length > 0) {
+          setFrozenData(allData);
+          setLastUpdateTime(new Date(lastUpdateTime));
+          console.log('데이터 로드 완료:', {
+            itemCount: Object.keys(allData).length,
+            lastUpdateTime
+          });
+        }
+      }
+    } catch (error) {
+      console.error('쿠키 로드 중 오류:', error);
+      console.error('디코딩 시도:', {
+        originalCookies: document.cookie,
+        decodedCookies: decodeURIComponent(document.cookie)
+      });
+      // 에러 발생 시 모든 관련 쿠키 삭제
+      const chunkInfo = Cookies.get('frozen_price_chunks');
+      if (chunkInfo) {
+        const { count } = JSON.parse(chunkInfo);
+        for (let i = 0; i < count; i++) {
+          Cookies.remove(`frozen_price_chunk_${i}`);
+        }
+        Cookies.remove('frozen_price_chunks');
+      }
+    }
+  };
+
+  // 데이터 업데이트 함수
+  const updateData = (latestValidData, now, isWeekend, hasValidDpr1Data) => {
+    const updateTime = new Date(now);
+    updateTime.setHours(15, 0, 0, 0);
+
+    console.log('updateData 호출:', {
+      hasLatestData: !!latestValidData,
+      isWeekend,
+      hasValidDpr1Data,
+      currentTime: now.toLocaleString(),
+      updateTime: updateTime.toLocaleString()
+    });
+
+    if (isWeekend) {
+      if (frozenData && lastUpdateTime) {
+        console.log('주말: 프리징된 데이터 사용');
+        setPriceData(frozenData);
+      } else {
+        console.log('주말: 새로운 데이터 프리징');
+        setPriceData(latestValidData);
+        // 저장 시점 확인
+        console.log('데이터 저장 시도:', {
+          hasData: !!latestValidData,
+          dataKeys: Object.keys(latestValidData)
+        });
+        saveToJsonFile(latestValidData, now);
+      }
+    } else if (now >= updateTime) {
+      if (!hasValidDpr1Data) {
+        if (frozenData && lastUpdateTime) {
+          console.log('평일 오후 3시 이후: 프리징된 데이터 사용 (유효한 당일 데이터 없음)');
+          setPriceData(frozenData);
+        } else {
+          console.log('평일 오후 3시 이후: 새로운 데이터 프리징 (유효한 당일 데이터 없음)');
+          setPriceData(latestValidData);
+          // 저장 시점 확인
+          console.log('데이터 저장 시도:', {
+            hasData: !!latestValidData,
+            dataKeys: Object.keys(latestValidData)
+          });
+          saveToJsonFile(latestValidData, now);
+        }
+      } else {
+        console.log('평일 오후 3시 이후: 새로운 데이터로 업데이트 및 프리징');
+        setPriceData(latestValidData);
+        // 저장 시점 확인
+        console.log('데이터 저장 시도:', {
+          hasData: !!latestValidData,
+          dataKeys: Object.keys(latestValidData)
+        });
+        saveToJsonFile(latestValidData, now);
+      }
+    } else {
+      if (frozenData && lastUpdateTime) {
+        console.log('평일 오후 3시 이전: 프리징된 데이터 사용');
+        setPriceData(frozenData);
+      } else {
+        console.log('평일 오후 3시 이전: 새로운 데이터 프리징');
+        setPriceData(latestValidData);
+        // 저장 시점 확인
+        console.log('데이터 저장 시도:', {
+          hasData: !!latestValidData,
+          dataKeys: Object.keys(latestValidData)
+        });
+        saveToJsonFile(latestValidData, now);
+      }
+    }
   };
 
   useEffect(() => {
@@ -39,7 +242,7 @@ const Today = () => {
 
         // 현재 시간이 오후 3시 이전인지 확인
         const now = new Date();
-        const updateTime = new Date();
+        const updateTime = new Date(now);
         updateTime.setHours(15, 0, 0, 0);
         
         // 주말 체크 (0: 일요일, 6: 토요일)
@@ -89,43 +292,23 @@ const Today = () => {
               }
             });
 
+          console.log('프리징 상태 체크:', {
+            isWeekend,
+            currentTime: now.toLocaleTimeString(),
+            hasValidDpr1Data,
+            hasFrozenData: !!frozenData,
+            hasLastUpdateTime: !!lastUpdateTime,
+            latestValidDataKeys: Object.keys(latestValidData),
+            frozenDataKeys: frozenData ? Object.keys(frozenData) : []
+          });
+
           // 데이터 업데이트 및 프리징 로직
-          if (isWeekend) {
-            // 주말인 경우
-            if (frozenData && lastUpdateTime) {
-              console.log('Using frozen data during weekend');
-              setPriceData(frozenData);
-            } else {
-              // 프리징된 데이터가 없는 경우 현재 데이터를 프리징
-              setPriceData(latestValidData);
-              setFrozenData(latestValidData);
-              setLastUpdateTime(now);
-              localStorage.setItem('frozenPriceData', JSON.stringify(latestValidData));
-              localStorage.setItem('lastUpdateTime', now.toISOString());
-            }
-          } else if (now >= updateTime) {
-            // 평일 오후 3시 이후
-            if (!hasValidDpr1Data && frozenData && lastUpdateTime) {
-              console.log('Using frozen data due to missing dpr1 data');
-              setPriceData(frozenData);
-            } else if (hasValidDpr1Data) {
-              setPriceData(latestValidData);
-              setFrozenData(latestValidData);
-              setLastUpdateTime(now);
-              localStorage.setItem('frozenPriceData', JSON.stringify(latestValidData));
-              localStorage.setItem('lastUpdateTime', now.toISOString());
-            }
+          if (Object.keys(latestValidData).length > 0) {
+            updateData(latestValidData, now, isWeekend, hasValidDpr1Data);
           } else {
-            // 평일 오후 3시 이전
-            if (frozenData && lastUpdateTime) {
-              console.log('Using frozen data before 3 PM');
+            console.log('유효한 데이터가 없어 프리징된 데이터 사용');
+            if (frozenData) {
               setPriceData(frozenData);
-            } else {
-              setPriceData(latestValidData);
-              setFrozenData(latestValidData);
-              setLastUpdateTime(now);
-              localStorage.setItem('frozenPriceData', JSON.stringify(latestValidData));
-              localStorage.setItem('lastUpdateTime', now.toISOString());
             }
           }
         } else {
@@ -140,6 +323,8 @@ const Today = () => {
       }
     };
 
+    // 초기 데이터 로드
+    loadFromJsonFile();
     fetchPriceData();
 
     // 매일 오후 3시에 데이터 업데이트 (주말 제외)
@@ -156,13 +341,22 @@ const Today = () => {
       }
       timeUntilUpdate = updateTime.getTime() - now.getTime();
 
+      console.log('다음 업데이트 시간:', {
+        updateTime: updateTime.toLocaleString(),
+        timeUntilUpdate: Math.floor(timeUntilUpdate / 1000 / 60) + '분'
+      });
+
       const updateTimer = setTimeout(() => {
+        console.log('자동 업데이트 실행');
         fetchPriceData();
       }, timeUntilUpdate);
 
-      return () => clearTimeout(updateTimer);
+      return () => {
+        console.log('타이머 정리');
+        clearTimeout(updateTimer);
+      };
     }
-  }, []);
+  }, []); // 의존성 배열을 비워서 컴포넌트 마운트 시에만 실행
 
   if (loading) {
     return (

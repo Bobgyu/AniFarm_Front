@@ -20,6 +20,26 @@ const TrainingDetail = () => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex !== -1 ? initialIndex : 0);
   const [isVisible, setIsVisible] = useState(true);
 
+  // Responsive 상태: 창 너비가 768px 미만이면 반응형 환경으로 간주
+  const [isResponsive, setIsResponsive] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsResponsive(window.innerWidth < 768);
+    };
+
+    // 초기 상태 설정
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // 모바일 환경에서 전체 작물 목록을 보여줄지 여부를 결정할 상태
+  const [showAll, setShowAll] = useState(false);
+
+  // 반응형 환경일 경우, showAll이 false이면 작물 카드 8개만, true이면 전체를 보여줌
+  const displayedCropEntries =
+    isResponsive && !showAll ? sortedCropEntries.slice(0, 8) : sortedCropEntries;
+
   // URL이 변경될 때마다 currentIndex 업데이트
   useEffect(() => {
     console.log('Current cropId:', cropId);
@@ -45,23 +65,45 @@ const TrainingDetail = () => {
         
         {/* 작물 선택 영역 */}
         <div className="mb-8">
-          <div className="grid grid-cols-5 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-            {sortedCropEntries.map(([cropKey, crop], index) => (
-              <button
-                key={cropKey}
-                className={`w-full px-4 py-3 rounded-lg text-base sm:text-lg font-semibold 
-                  ${index === currentIndex 
-                    ? 'bg-green-600 text-white' 
+          <div className="grid grid-cols-4 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+            {displayedCropEntries.map(([cropKey, crop]) => {
+              // 전체 목록(sortedCropEntries)에서 현재 선택된 작물의 키와 비교하여 스타일링
+              const isSelected =
+                cropKey === sortedCropEntries[currentIndex][0];
+              return (
+                <button
+                  key={cropKey}
+                  className={`w-full px-4 py-3 rounded-lg text-base sm:text-lg font-semibold 
+                  ${isSelected
+                    ? 'bg-green-600 text-white'
                     : 'bg-white text-green-600 border border-green-200'} 
                   cursor-pointer hover:bg-green-700 hover:text-white 
                   transition-colors duration-200 shadow-md
                   flex items-center justify-center text-center min-h-[48px]`}
-                onClick={() => handleCropChange(index)}
-              >
-                {crop.name}
-              </button>
-            ))}
+                  onClick={() =>
+                    handleCropChange(
+                      sortedCropEntries.findIndex(
+                        ([key]) => key === cropKey
+                      )
+                    )
+                  }
+                >
+                  {crop.name}
+                </button>
+              );
+            })}
           </div>
+          {/* 모바일 환경에서 추가 작물 보기 토글 버튼 */}
+          {isResponsive && sortedCropEntries.length > 8 && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+              >
+                {showAll ? '접기' : '더보기'}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 선택된 작물 정보 */}

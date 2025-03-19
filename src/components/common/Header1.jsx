@@ -159,7 +159,7 @@ const Header = () => {
           </div>
 
           <div className="flex-grow flex justify-center items-center mx-4">
-            <div className="flex gap-4 md:gap-12 items-center mr-0 md:mr-12">
+            <div className="flex gap-1 md:gap-12 items-center mr-0 md:mr-12">
               <Link
                 to="/culture"
                 className={`inline-flex items-center justify-center h-[40px] md:h-[50px] px-3 md:px-5 py-0 text-base md:text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${
