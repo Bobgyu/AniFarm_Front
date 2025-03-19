@@ -6,6 +6,8 @@ import trend from "../../assets/images/trend.jpg"; // 소비트렌드 이미지
 import prediction from "../../assets/images/prediction.jpg"; // 가격예측 이미지
 import community from "../../assets/images/community.png"; // 커뮤니티 이미지
 import market from "../../assets/images/market.jpg"; // 오늘의 가격 이미지 추가
+import minigame from "../../assets/images/minigame.jpg"; // 미니게임 이미지 추가 필요
+
 
 const Sale = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
@@ -23,6 +25,9 @@ const Sale = () => {
     },
     community: {
       image: community,
+    },
+    minigame: {      // 미니게임 추가
+      image: minigame,
     },
   }), []);
 
@@ -113,13 +118,15 @@ const Sale = () => {
                   ? "AI 기반 농산물 가격 예측으로 최적의 판매 시기를 찾아보세요"
                   : hoveredContent === "community"
                   ? "농산물 판매 커뮤니티에서 직거래를 시작해보세요"
+                  : hoveredContent === "minigame"
+                  ? "미니게임을 통해 농산물 판매 경험을 더욱 풍성하게 해보세요"
                   : "판매하기에 관한 내용"}
               </h2>
             </div>
 
             {/* 하단 버튼 그룹 */}
             <div className="absolute bottom-24 left-0 right-0">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 max-w-4xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 px-4 max-w-5xl mx-auto">
                 {/* 오늘의 가격 카드 */}
                 <Link to="/Today">
                   <motion.div
@@ -183,6 +190,23 @@ const Sale = () => {
                       <div className="text-2xl mb-2 text-center">👥</div>
                       <h3 className="text-lg font-semibold text-gray-900 text-center">
                         커뮤니티
+                      </h3>
+                    </div>
+                  </motion.div>
+                </Link>
+
+                 {/* 미니게임 카드 추가 */}
+                 <Link to="/minigame">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    onMouseEnter={() => handleMouseEnter("minigame")}
+                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-full"
+                  >
+                    <div className="p-4">
+                      <div className="text-2xl mb-2 text-center">🎮</div>
+                      <h3 className="text-lg font-semibold text-gray-900 text-center">
+                        미니게임
                       </h3>
                     </div>
                   </motion.div>

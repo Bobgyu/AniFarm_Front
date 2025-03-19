@@ -29,6 +29,7 @@ import useAutoLogout from "./hooks/useAutoLogout";
 import { ChatIcon } from "./components/chatbot/ChatIcon";
 import { ChatMsg } from "./components/chatbot/ChatMsg";
 import ChatForm from "./components/chatbot/ChatForm";
+import Minigame from "./components/minigame/Minigame";
 
 function App() {
   return (
@@ -113,6 +114,7 @@ function AppContent() {
         <Route path="/trainingMethod" element={<TrainingMethod />} />
         <Route path="/Today" element={<Today />} />
         <Route path="/trainingDetail" element={<TrainingDetail />} />
+        <Route path="/minigame" element={<Minigame />} />
       </Routes>
       <Footer />
 
