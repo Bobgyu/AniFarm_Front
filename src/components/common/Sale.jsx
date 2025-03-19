@@ -7,6 +7,7 @@ import prediction from "../../assets/images/prediction.jpg"; // 가격예측 이
 import community from "../../assets/images/community.png"; // 커뮤니티 이미지
 import market from "../../assets/images/market.jpg"; // 오늘의 가격 이미지 추가
 
+
 const Sale = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -23,7 +24,7 @@ const Sale = () => {
     },
     community: {
       image: community,
-    },
+    }
   }), []);
 
   const handleMouseEnter = (content) => {
@@ -119,7 +120,7 @@ const Sale = () => {
 
             {/* 하단 버튼 그룹 */}
             <div className="absolute bottom-24 left-0 right-0">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 max-w-4xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 max-w-5xl mx-auto">
                 {/* 오늘의 가격 카드 */}
                 <Link to="/Today">
                   <motion.div
