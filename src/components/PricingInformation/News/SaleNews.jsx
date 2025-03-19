@@ -39,8 +39,6 @@ const SaleNews = () => {
 
   return (
     <div className="w-full max-w-[1280px] px-4 mx-auto pb-12">
-      
-     
       {news.length > 0 ? (
         <>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
