@@ -17,6 +17,7 @@ import strawberry from '../../assets/images/strawberry.jpg';
 import kiwi from '../../assets/images/kiwi.jpg';
 import chamoe from '../../assets/images/chamoe.jpg';
 import rice from '../../assets/images/rice2.jpg';
+import green_onion from '../../assets/images/green_onion.jpg';
 
 import axios from 'axios';
 
@@ -151,7 +152,8 @@ const TrainingMethod = () => {
     { src: strawberry, alt: '딸기', cropId: 'crop12' },
     { src: kiwi, alt: '키위', cropId: 'crop13' },
     { src: chamoe, alt: '참외', cropId: 'crop14' },
-    { src: rice, alt: '벼', cropId: 'crop15' }
+    { src: rice, alt: '벼', cropId: 'crop15' },
+    { src: green_onion, alt: '대파', cropId: 'crop16' }
   ].sort((a, b) => a.alt.localeCompare(b.alt, 'ko'));
 
   const handlePrevious = () => {

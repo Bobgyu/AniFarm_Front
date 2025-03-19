@@ -192,13 +192,13 @@ const Pests = () => {
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" className="px-4">
       <Box className="py-8">
         <Typography variant="h5" className="text-center mb-4">
           병충해 진단
         </Typography>
 
-        <Paper className="p-6 mt-6 flex flex-col items-center border-2 border-gray-200 min-h-[600px]">
+        <Paper className="p-4 md:p-6 mt-6 flex flex-col items-center border-2 border-gray-200 min-h-[400px] md:min-h-[600px]">
           <Box className="w-full border-b border-gray-200">
             <Tabs
               value={selectedTab}
@@ -206,7 +206,7 @@ const Pests = () => {
               variant="fullWidth"
               className="min-h-[48px]"
             >
-              {crops.map((crop, index) => (
+              {crops.map((crop) => (
                 <Tab
                   key={crop.value}
                   label={crop.label}
@@ -225,7 +225,8 @@ const Pests = () => {
           </Box>
 
           <Box className="w-full mt-8 flex flex-col md:flex-row gap-2">
-            <Box className="md:w-1/2 flex flex-col items-center">
+            {/* 좌측 - 이미지 업로드 및 진단 가능 병해충 정보 */}
+            <Box className="w-full md:w-1/2 flex flex-col items-center">
               <input
                 type="file"
                 accept="image/*"
@@ -237,7 +238,7 @@ const Pests = () => {
                 <Box className="w-full">
                   <Box className="flex justify-center flex-col items-center">
                     <label htmlFor="image-upload">
-                      <Box className="w-[400px] h-[330px] bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
+                      <Box className="w-full sm:w-[400px] h-[330px] bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
                         <Box className="text-center">
                           <CloudUploadIcon
                             sx={{ fontSize: 60 }}
@@ -246,10 +247,7 @@ const Pests = () => {
                           <Typography variant="body1" className="text-gray-500">
                             이미지를 업로드해주세요
                           </Typography>
-                          <Typography
-                            variant="body2"
-                            className="text-gray-400 mt-1"
-                          >
+                          <Typography variant="body2" className="text-gray-400 mt-1">
                             (최대 5MB)
                           </Typography>
                           <Button
@@ -264,7 +262,7 @@ const Pests = () => {
                       </Box>
                     </label>
 
-                    <Box className="mt-4 p-4 w-[400px] border-2 border-gray-300 rounded-lg">
+                    <Box className="mt-4 p-4 w-full sm:w-[400px] border-2 border-gray-300 rounded-lg">
                       <Typography
                         variant="subtitle1"
                         className="font-semibold mb-2 text-center"
@@ -410,7 +408,7 @@ const Pests = () => {
                   <Box className="w-full">
                     <Typography variant="h6" className="mb-4 pb-2"></Typography>
                     <Box className="flex justify-center">
-                      <Box className="w-[400px] h-[330px] bg-white">
+                      <Box className="w-full sm:w-[400px] h-[330px] bg-white">
                         <img
                           src={selectedImage}
                           alt="선택된 이미지"
@@ -420,10 +418,7 @@ const Pests = () => {
                     </Box>
                     {!selectedImage && (
                       <Box className="mt-4 p-4 border-2 border-gray-300 rounded-lg">
-                        <Typography
-                          variant="subtitle1"
-                          className="font-semibold mb-2"
-                        >
+                        <Typography variant="subtitle1" className="font-semibold mb-2">
                           진단 가능한 병해충
                         </Typography>
                         {selectedTab === 0 && (
@@ -483,13 +478,11 @@ const Pests = () => {
               )}
             </Box>
 
-            <Box className="md:w-1/2 flex items-center justify-start mt-14">
-              <Box className="w-[400px]">
-                <Box className="w-[400px] h-[340px] border-2 border-gray-300 rounded-lg p-4">
-                  <Typography
-                    variant="h6"
-                    className="mb-3 border-b border-gray-200 pb-2"
-                  >
+            {/* 우측 - 진단 결과 카드 */}
+            <Box className="w-full md:w-1/2 flex items-center justify-start mt-8 md:mt-14">
+              <Box className="w-full sm:w-[400px]">
+                <Box className="w-full sm:w-[400px] h-auto sm:h-[340px] border-2 border-gray-300 rounded-lg p-4">
+                  <Typography variant="h6" className="mb-3 border-b border-gray-200 pb-2">
                     {showExample ? "예상 진단 결과" : "진단 결과"}
                   </Typography>
                   <Paper
