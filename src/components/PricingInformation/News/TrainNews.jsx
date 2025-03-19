@@ -108,7 +108,9 @@ const TrainNews = () => {
                       display: '-webkit-box',
                       WebkitLineClamp: 3,
                       WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden'
+                      overflow: 'hidden',
+                      lineHeight: '1.5em',
+                      maxHeight: '4.5em'
                     }}
                   >
                     {article.content}
