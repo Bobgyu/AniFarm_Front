@@ -131,12 +131,21 @@ const Community = () => {
 
       <div className="flex justify-between items-center mb-6">
         {communityType !== "freeboard" && (
-          <div ref={dropdownRef}>
+          <div ref={dropdownRef} className="flex items-center space-x-2">
+            <span className="text-gray-600">카테고리:</span>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="text-gray-600 cursor-pointer hover:text-gray-800 border border-gray-300 rounded-lg px-4 py-2 flex items-center"
+              className="text-gray-600 cursor-pointer hover:text-gray-800 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2"
             >
-              {getCategoryName(selectedCategory)}
+              <span>{getCategoryName(selectedCategory)}</span>
+              <svg 
+                className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'transform rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
             </button>
 
             {isDropdownOpen && (
@@ -159,16 +168,33 @@ const Community = () => {
         )}
 
         <div className="flex items-center space-x-4">
-          <input
-            type="search"
-            placeholder="검색"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-4 py-2 border rounded-lg"
-          />
+          <div className="relative">
+            <input
+              type="search"
+              placeholder="검색"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-4 pr-10 py-2 border rounded-lg w-64"
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg 
+                className="w-5 h-5 text-gray-400" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth="2" 
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
+                />
+              </svg>
+            </div>
+          </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+            className="bg-[#3a9d1f] text-white px-6 py-2 rounded-lg hover:bg-[#0aab65]"
           >
             글쓰기
           </button>

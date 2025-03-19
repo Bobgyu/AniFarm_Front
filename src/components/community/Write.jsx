@@ -50,6 +50,13 @@ const Write = ({ posts }) => {
     return categories[category] || category;
   };
 
+  // 이메일을 마스킹하는 함수 수정 (첫 글자만 보여주는 버전)
+  const formatUserEmail = (email) => {
+    if (!email) return '';
+    const [username, domain] = email.split('@');
+    return `${username.slice(0, 2)}***@${domain}`;
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -67,16 +74,16 @@ const Write = ({ posts }) => {
       <table className="min-w-full">
         <thead>
           <tr className="bg-gray-100">
-            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+            <th className="w-1/2 px-4 py-3 text-left text-sm font-semibold text-gray-600">
               제목
             </th>
-            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+            <th className="w-1/6 px-4 py-3 text-left text-sm font-semibold text-gray-600">
               카테고리
             </th>
-            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+            <th className="w-1/6 px-4 py-3 text-left text-sm font-semibold text-gray-600">
               작성자
             </th>
-            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+            <th className="w-1/6 px-4 py-3 text-left text-sm font-semibold text-gray-600">
               작성일
             </th>
           </tr>
@@ -88,10 +95,18 @@ const Write = ({ posts }) => {
               onClick={() => handlePostClick(post.post_id)}
               className="border-b hover:bg-gray-50 cursor-pointer"
             >
-              <td className="px-6 py-4">{post.title}</td>
-              <td className="px-6 py-4">{getCategoryName(post.category)}</td>
-              <td className="px-6 py-4">{post.email}</td>
-              <td className="px-6 py-4">
+              <td className="px-4 py-4 text-left">
+                <div className="flex items-center">
+                  <span className="text-gray-900">{post.title}</span>
+                </div>
+              </td>
+              <td className="px-4 py-4 text-left text-sm text-gray-600">
+                {getCategoryName(post.category)}
+              </td>
+              <td className="px-4 py-4 text-left text-sm text-gray-600">
+                {formatUserEmail(post.email)}
+              </td>
+              <td className="px-4 py-4 text-left text-sm text-gray-600">
                 {new Date(post.date).toLocaleDateString()}
               </td>
             </tr>
@@ -106,7 +121,7 @@ const Write = ({ posts }) => {
             onClick={() => handlePageChange(pageNum)}
             className={`px-3 py-1 rounded ${
               currentPage === pageNum
-                ? 'bg-green-500 text-white'
+                ? 'bg-[#3a9d1f] text-white'
                 : 'bg-gray-200 hover:bg-gray-300'
             }`}
           >
