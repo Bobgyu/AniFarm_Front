@@ -55,9 +55,17 @@ const TrainNews = () => {
                     />
                   </a>
                 )}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-3">
+                {/* 뉴스 제목 */}
+                <div className="p-3 md:p-4">
+                  <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-1 md:p-3">
                     <a
+                      className="block"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 1,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden"
+                      }}
                       href={article.link}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -67,7 +75,7 @@ const TrainNews = () => {
                   </h3>
                   {/* 뉴스 본문(content) 3줄까지만 표시 */}
                   <p 
-                    className="text-gray-600 text-sm mt-2"
+                    className="text-gray-600 text-sm mt-2 p-1"
                     style={{
                       display: '-webkit-box',
                       WebkitLineClamp: 3,
