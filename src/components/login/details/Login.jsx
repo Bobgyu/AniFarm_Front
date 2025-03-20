@@ -63,7 +63,7 @@ const Login = () => {
       await Swal.fire({
         icon: "error",
         title: "오류 발생",
-        text: error?.message || "로그인 처리 중 오류가 발생했습니다.",
+        text: error?.message || "비밀번호를 확인해주세요.",
       });
     }
   };

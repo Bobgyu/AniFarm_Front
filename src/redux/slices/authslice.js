@@ -212,27 +212,18 @@ export const fetchUserInfo = createAsyncThunk(
 // 비동기 로그아웃 처리를 위한 thunk
 export const logoutWithAlert = createAsyncThunk(
   'auth/logoutWithAlert',
-  async (message) => {
-    const result = await Swal.fire({
+  async (_, { dispatch }) => {
+    await Swal.fire({
       icon: 'warning',
       title: '자동 로그아웃',
       text: '장시간 활동이 없어 자동 로그아웃되었습니다.',
       confirmButtonText: '확인',
       allowOutsideClick: false,
       timer: 3000,
-      timerProgressBar: true,
-      showClass: {
-        popup: 'animate__animated animate__fadeInDown'
-      },
-      hideClass: {
-        popup: 'animate__animated animate__fadeOutUp'
-      }
+      timerProgressBar: true
     });
-
-    if (result.isConfirmed || result.dismiss === Swal.DismissReason.timer) {
-      performLogout();
-      window.location.href = '/login';
-    }
+    
+    dispatch(logout());
     return true;
   }
 );
@@ -240,70 +231,19 @@ export const logoutWithAlert = createAsyncThunk(
 // 토큰 체크 로직 수정
 export const checkLoginStatusThunk = createAsyncThunk(
   'auth/checkLoginStatusThunk',
-  async (_, { dispatch, getState }) => {
-    const state = getState().auth;
+  async (_, { dispatch }) => {
     const token = localStorage.getItem("token");
     const tokenExpiry = localStorage.getItem("tokenExpiry");
-    const now = new Date().getTime();
-
+    
     if (!token || !tokenExpiry) {
-      await Swal.fire({
-        icon: 'warning',
-        title: '로그인이 필요합니다',
-        text: '다시 로그인해주세요.',
-        confirmButtonText: '확인',
-        timer: 3000,
-        timerProgressBar: true,
-      });
       dispatch(logout());
       return;
     }
 
-    if (parseInt(tokenExpiry) - now < 30 * 60 * 1000) {
-      try {
-        await dispatch(refreshToken()).unwrap();
-        return;
-      } catch (error) {
-        if (parseInt(tokenExpiry) < now) {
-          await Swal.fire({
-            icon: 'warning',
-            title: '토큰 만료',
-            text: '다시 로그인해주세요.',
-            confirmButtonText: '확인',
-            timer: 3000,
-            timerProgressBar: true,
-            showClass: {
-              popup: 'animate__animated animate__fadeInDown'
-            },
-            hideClass: {
-              popup: 'animate__animated animate__fadeOutUp'
-            }
-          });
-          await dispatch(logoutWithAlert());
-        }
-        return;
-      }
-    }
-
-    const lastActivity = state.lastActivity || now;
-    const inactivityLimit = 4 * 60 * 60 * 1000;
-
-    if (now - lastActivity > inactivityLimit) {
-      await Swal.fire({
-        icon: 'warning',
-        title: '자동 로그아웃',
-        text: '장시간 활동이 없어 자동 로그아웃됩니다.',
-        confirmButtonText: '확인',
-        timer: 3000,
-        timerProgressBar: true,
-        showClass: {
-          popup: 'animate__animated animate__fadeInDown'
-        },
-        hideClass: {
-          popup: 'animate__animated animate__fadeOutUp'
-        }
-      });
-      await dispatch(logoutWithAlert());
+    const now = new Date().getTime();
+    if (parseInt(tokenExpiry) < now) {
+      dispatch(logout());
+      return;
     }
   }
 );
@@ -322,20 +262,10 @@ export const checkTokenExpiration = createAsyncThunk(
   }
 );
 
-const performLogout = async () => {
+const performLogout = () => {
   localStorage.clear();
   sessionStorage.clear();
-  
-  await Swal.fire({
-    icon: 'info',
-    title: '로그아웃',
-    text: '로그아웃되었습니다.',
-    showConfirmButton: false,
-    timer: 1500,
-    timerProgressBar: true
-  });
-  
-  window.location.href = '/login';
+  // window.location.href 제거 - 리다이렉션은 컴포넌트에서 처리
 };
 
 // handleFulfilled 함수 정의 : 요청 성공 시 상태 업데이트 로직을 별도의 함수로 분리
@@ -409,6 +339,9 @@ const authSlice = createSlice({
     userInfoLoading: false,
     userInfoError: null,
     lastActivity: new Date().getTime(),
+    hasShownExpiryAlert: false,
+    hasShownInactivityAlert: false,
+    redirectToLogin: false
   },
   reducers: {
     verifyEmail: (state, action) => {
@@ -427,18 +360,20 @@ const authSlice = createSlice({
       localStorage.removeItem("user");
     },
     logout: (state) => {
-      // Redux 상태 초기화
-      state.postLoginData = null;
-      state.loginExpireTime = null;
-      state.isEmailVerified = false;
-      state.verificationCode = null;
-      state.deleteAuthData = null;
-      state.updateAuthData = null;
-      state.isError = false;
-      state.errorMessage = null;
-      state.lastActivity = null;
-      state.isAuthenticated = false;
-      state.user = null;
+      Object.assign(state, {
+        postLoginData: null,
+        loginExpireTime: null,
+        isEmailVerified: false,
+        verificationCode: null,
+        deleteAuthData: null,
+        updateAuthData: null,
+        isError: false,
+        errorMessage: null,
+        lastActivity: null,
+        isAuthenticated: false,
+        user: null,
+        redirectToLogin: true
+      });
       
       performLogout();
     },
@@ -447,6 +382,9 @@ const authSlice = createSlice({
       state.lastActivity = now;
       // console.log('활동 시간 업데이트:', new Date(now).toLocaleTimeString());
     },
+    clearRedirectFlag: (state) => {
+      state.redirectToLogin = false;
+    }
   },
 
   extraReducers: (builder) => {
@@ -535,6 +473,7 @@ export const {
   cancelMembership,
   logout,
   updateLastActivity,
+  clearRedirectFlag
 } = authSlice.actions;
 
 export default authSlice.reducer;
