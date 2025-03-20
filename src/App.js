@@ -5,6 +5,7 @@ import {
   Routes,
   Route,
   useLocation,
+  Link,
 } from "react-router-dom";
 import Home from "./components/common/Home";
 import Culture from "./components/common/Culture";
@@ -29,6 +30,7 @@ import useAutoLogout from "./hooks/useAutoLogout";
 import { ChatIcon } from "./components/chatbot/ChatIcon";
 import { ChatMsg } from "./components/chatbot/ChatMsg";
 import ChatForm from "./components/chatbot/ChatForm";
+import Minigame from "./components/minigame/Minigame";
 
 function App() {
   return (
@@ -113,23 +115,48 @@ function AppContent() {
         <Route path="/trainingMethod" element={<TrainingMethod />} />
         <Route path="/Today" element={<Today />} />
         <Route path="/trainingDetail" element={<TrainingDetail />} />
+        <Route path="/minigame" element={<Minigame />} />
       </Routes>
       <Footer />
 
-      {/* 챗봇 UI */}
-      <div className={`container ${showChatbot ? "show-chatbot" : ""}`}>
-        <button id="cb-toggler" onClick={() => setShowChatbot((prev) => !prev)}>
-          <span className="material-symbols-outlined">mode_comment</span>
-          <span className="material-symbols-outlined">close</span>
-        </button>
+      {/* 버튼 컨테이너 - 챗봇 컨테이너와 별도로 분리 */}
+      <div className="fixed bottom-8 right-8 z-50 flex flex-row items-center gap-4">
+        {/* 미니게임 버튼 */}
+        <Link to="/minigame">
+          <button 
+            className="w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>
+              sports_esports
+            </span>
+          </button>
+        </Link>
 
-        <div className="cb-popup">
+        {/* 챗봇 토글 버튼 - 배경색 초록색으로 변경 */}
+        <button 
+          onClick={() => setShowChatbot((prev) => !prev)}
+          className="w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center"
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>
+            {showChatbot ? 'close' : 'mode_comment'}
+          </span>
+        </button>
+      </div>
+
+      {/* 챗봇 UI - 완전히 별도로 분리 */}
+      {showChatbot && (
+        <div className="fixed bottom-28 right-8 z-50 w-96 bg-white rounded-lg shadow-xl">
           <div className="cb-header">
             <div className="header-info">
               <ChatIcon />
               <h2 className="logo-text">Farming Agent Chatbot</h2>
             </div>
-            <button className="material-symbols-outlined" onClick={() => setShowChatbot((prev) => !prev)}>keyboard_arrow_down</button>
+            <button 
+              className="material-symbols-outlined" 
+              onClick={() => setShowChatbot(false)}
+            >
+              keyboard_arrow_down
+            </button>
           </div>
           <div className="cb-body" ref={chatBodyRef}>
             <div className="message bot-message">
@@ -141,10 +168,14 @@ function AppContent() {
             ))}
           </div>
           <div className="cb-footer">
-            <ChatForm chatHistory={chatHistory} setChatHistory={setChatHistory} generateChatResponse={generateChatResponse} />
+            <ChatForm 
+              chatHistory={chatHistory} 
+              setChatHistory={setChatHistory} 
+              generateChatResponse={generateChatResponse} 
+            />
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

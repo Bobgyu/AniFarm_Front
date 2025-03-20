@@ -95,20 +95,16 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (userData, { rejectWithValue }) => {
     try {
-      // console.log("로그인 시도:", userData);
       const response = await loginRequest(userData);
-      // console.log("로그인 응답:", response);
       
       if (response.success && response.data.access_token) {
-        // 토큰 저장 및 만료 시간 설정
         localStorage.setItem("token", response.data.access_token);
-        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000; // 24시간
+        const expiry = new Date().getTime() + 12 * 60 * 60 * 1000; // 12시간으로 연장
         localStorage.setItem("tokenExpiry", expiry.toString());
         return response.data;
       }
       return rejectWithValue(response.data?.message || "로그인 실패");
     } catch (error) {
-      console.error("로그인 에러:", error);
       return rejectWithValue(error.response?.data?.message || "로그인 실패");
     }
   }
@@ -216,60 +212,38 @@ export const fetchUserInfo = createAsyncThunk(
 // 비동기 로그아웃 처리를 위한 thunk
 export const logoutWithAlert = createAsyncThunk(
   'auth/logoutWithAlert',
-  async (message) => {
-    const result = await Swal.fire({
+  async (_, { dispatch }) => {
+    await Swal.fire({
       icon: 'warning',
-      title: message.title || '자동 로그아웃',
-      text: message.text || '장시간 활동이 없어 자동 로그아웃됩니다.',
+      title: '자동 로그아웃',
+      text: '장시간 활동이 없어 자동 로그아웃되었습니다.',
       confirmButtonText: '확인',
-      allowOutsideClick: false
+      allowOutsideClick: false,
+      timer: 3000,
+      timerProgressBar: true
     });
-
-    if (result.isConfirmed) {
-      performLogout();
-      window.location.href = '/login';
-    }
-    return result.isConfirmed;
+    
+    dispatch(logout());
+    return true;
   }
 );
 
-// 토큰 만료 체크 로직 수정
+// 토큰 체크 로직 수정
 export const checkLoginStatusThunk = createAsyncThunk(
   'auth/checkLoginStatusThunk',
-  async (_, { dispatch, getState }) => {
-    const state = getState().auth;
+  async (_, { dispatch }) => {
     const token = localStorage.getItem("token");
     const tokenExpiry = localStorage.getItem("tokenExpiry");
-    const now = new Date().getTime();
-
+    
     if (!token || !tokenExpiry) {
       dispatch(logout());
       return;
     }
 
-    // 토큰 만료 15분 전에 자동으로 갱신 시도
-    if (parseInt(tokenExpiry) - now < 15 * 60 * 1000) {
-      try {
-        await dispatch(refreshToken()).unwrap();
-        return;
-      } catch (error) {
-        await dispatch(logoutWithAlert({
-          title: '토큰 갱신 실패',
-          text: '다시 로그인해주세요.'
-        }));
-        return;
-      }
-    }
-
-    // 활동 시간 체크
-    const lastActivity = state.lastActivity || now;
-    const inactivityLimit = 2 * 60 * 60 * 1000; // 2시간
-
-    if (now - lastActivity > inactivityLimit) {
-      await dispatch(logoutWithAlert({
-        title: '자동 로그아웃',
-        text: '장시간 활동이 없어 자동 로그아웃됩니다.'
-      }));
+    const now = new Date().getTime();
+    if (parseInt(tokenExpiry) < now) {
+      dispatch(logout());
+      return;
     }
   }
 );
@@ -291,6 +265,7 @@ export const checkTokenExpiration = createAsyncThunk(
 const performLogout = () => {
   localStorage.clear();
   sessionStorage.clear();
+  // window.location.href 제거 - 리다이렉션은 컴포넌트에서 처리
 };
 
 // handleFulfilled 함수 정의 : 요청 성공 시 상태 업데이트 로직을 별도의 함수로 분리
@@ -317,13 +292,29 @@ export const refreshToken = createAsyncThunk(
       
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
-        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000; // 24시간
+        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000;
         localStorage.setItem('tokenExpiry', expiry.toString());
+        
+        await Swal.fire({
+          icon: 'success',
+          title: '토큰이 갱신되었습니다',
+          showConfirmButton: false,
+          timer: 1500
+        });
+        
         return response.data;
       }
       
       throw new Error('토큰 갱신 실패');
     } catch (error) {
+      await Swal.fire({
+        icon: 'error',
+        title: '토큰 갱신 실패',
+        text: error.response?.data?.message || '토큰 갱신에 실패했습니다.',
+        confirmButtonText: '확인',
+        timer: 3000,
+        timerProgressBar: true
+      });
       return rejectWithValue(error.response?.data || '토큰 갱신 실패');
     }
   }
@@ -348,6 +339,9 @@ const authSlice = createSlice({
     userInfoLoading: false,
     userInfoError: null,
     lastActivity: new Date().getTime(),
+    hasShownExpiryAlert: false,
+    hasShownInactivityAlert: false,
+    redirectToLogin: false
   },
   reducers: {
     verifyEmail: (state, action) => {
@@ -366,18 +360,20 @@ const authSlice = createSlice({
       localStorage.removeItem("user");
     },
     logout: (state) => {
-      // Redux 상태 초기화
-      state.postLoginData = null;
-      state.loginExpireTime = null;
-      state.isEmailVerified = false;
-      state.verificationCode = null;
-      state.deleteAuthData = null;
-      state.updateAuthData = null;
-      state.isError = false;
-      state.errorMessage = null;
-      state.lastActivity = null;
-      state.isAuthenticated = false;
-      state.user = null;
+      Object.assign(state, {
+        postLoginData: null,
+        loginExpireTime: null,
+        isEmailVerified: false,
+        verificationCode: null,
+        deleteAuthData: null,
+        updateAuthData: null,
+        isError: false,
+        errorMessage: null,
+        lastActivity: null,
+        isAuthenticated: false,
+        user: null,
+        redirectToLogin: true
+      });
       
       performLogout();
     },
@@ -386,6 +382,9 @@ const authSlice = createSlice({
       state.lastActivity = now;
       // console.log('활동 시간 업데이트:', new Date(now).toLocaleTimeString());
     },
+    clearRedirectFlag: (state) => {
+      state.redirectToLogin = false;
+    }
   },
 
   extraReducers: (builder) => {
@@ -409,10 +408,21 @@ const authSlice = createSlice({
         state.error = action.payload;
         if (action.payload?.status === 401) {
           state.errorMessage = "인증이 만료되었습니다. 다시 로그인해주세요.";
-          return logoutWithAlert({
+          Swal.fire({
+            icon: 'error',
             title: '인증 만료',
-            text: '다시 로그인해주세요.'
+            text: '다시 로그인해주세요.',
+            confirmButtonText: '확인',
+            timer: 3000,
+            timerProgressBar: true,
+            showClass: {
+              popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+              popup: 'animate__animated animate__fadeOutUp'
+            }
           });
+          return logoutWithAlert();
         }
       })
 
@@ -463,6 +473,7 @@ export const {
   cancelMembership,
   logout,
   updateLastActivity,
+  clearRedirectFlag
 } = authSlice.actions;
 
 export default authSlice.reducer;

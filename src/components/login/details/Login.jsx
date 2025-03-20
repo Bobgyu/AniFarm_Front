@@ -63,7 +63,7 @@ const Login = () => {
       await Swal.fire({
         icon: "error",
         title: "오류 발생",
-        text: error?.message || "로그인 처리 중 오류가 발생했습니다.",
+        text: error?.message || "비밀번호를 확인해주세요.",
       });
     }
   };
@@ -131,13 +131,7 @@ const Login = () => {
         </form>
 
         <div className="text-center text-sm text-emerald-600">
-          <Link
-            to="/findpwd"
-            className="hover:text-emerald-800 transition-colors duration-200"
-          >
-            비밀번호 찾기
-          </Link>
-          <span className="mx-2">|</span>
+          
           <Link
             to="/register"
             className="hover:text-emerald-800 transition-colors duration-200"
