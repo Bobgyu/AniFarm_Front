@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const Minigame = () => {
   const [money, setMoney] = useState(1000);
-  const [inventory, setInventory] = useState([]);
+  const [inventory, setInventory] = useState({});
   const [crops, setCrops] = useState([]);
   const [message, setMessage] = useState('');
   const [season, setSeason] = useState('봄');
@@ -18,38 +18,40 @@ const Minigame = () => {
     특급비료: 0
   });
   const [isGameOver, setIsGameOver] = useState(false);
+  const [marketPrices, setMarketPrices] = useState({});
 
   const cropTypes = {
-    당근: {
-      growthTime: 30,
-      price: 80,
-      sellPrice: 120,
-      growthStages: ['🌱', '🥕'],
-      season: ['봄', '가을'],
-      fertilizerEffects: {
-        일반비료: 0.7,
-        고급비료: 0.5,
-        특급비료: 0.3
-      }
-    },
-    배추: {
-      growthTime: 45,
-      price: 100,
-      sellPrice: 150,
-      growthStages: ['🌱', '🥬'],
-      season: ['봄', '가을'],
-      fertilizerEffects: {
-        일반비료: 0.7,
-        고급비료: 0.5,
-        특급비료: 0.3
-      }
-    },
+    // 봄 작물
     딸기: {
       growthTime: 60,
       price: 180,
-      sellPrice: 300,
+      basePrice: 300,
       growthStages: ['🌱', '🍓'],
       season: ['봄'],
+      fertilizerEffects: {
+        일반비료: 0.7,
+        고급비료: 0.5,
+        특급비료: 0.3
+      }
+    },
+    당근: {
+      growthTime: 30,
+      price: 80,
+      basePrice: 120,
+      growthStages: ['🌱', '🥕'],
+      season: ['봄'],
+      fertilizerEffects: {
+        일반비료: 0.7,
+        고급비료: 0.5,
+        특급비료: 0.3
+      }
+    },
+    양파: {
+      growthTime: 45,
+      price: 100,
+      basePrice: 160,
+      growthStages: ['🌱', '🧅'],
+      season: ['봄', '겨울'],  // 봄, 겨울 모두 재배 가능
       fertilizerEffects: {
         일반비료: 0.7,
         고급비료: 0.5,
@@ -59,21 +61,23 @@ const Minigame = () => {
     토마토: {
       growthTime: 90,
       price: 120,
-      sellPrice: 200,
+      basePrice: 200,
       growthStages: ['🌱', '🍅'],
-      season: ['여름'],
+      season: ['봄', '여름'],  // 봄, 여름 모두 재배 가능
       fertilizerEffects: {
         일반비료: 0.7,
         고급비료: 0.5,
         특급비료: 0.3
       }
     },
-    고구마: {
-      growthTime: 120,
-      price: 150,
-      sellPrice: 250,
-      growthStages: ['🌱', '🍠'],
-      season: ['여름', '가을'],
+
+    // 여름 작물
+    오이: {
+      growthTime: 40,
+      price: 90,
+      basePrice: 150,
+      growthStages: ['🌱', '🥒'],
+      season: ['여름'],
       fertilizerEffects: {
         일반비료: 0.7,
         고급비료: 0.5,
@@ -83,7 +87,7 @@ const Minigame = () => {
     옥수수: {
       growthTime: 180,
       price: 200,
-      sellPrice: 350,
+      basePrice: 350,
       growthStages: ['🌱', '🌽'],
       season: ['여름'],
       fertilizerEffects: {
@@ -92,11 +96,63 @@ const Minigame = () => {
         특급비료: 0.3
       }
     },
-    무: {
+    레몬: {
+      growthTime: 150,
+      price: 220,
+      basePrice: 380,
+      growthStages: ['🌱', '🍋'],
+      season: ['여름'],
+      fertilizerEffects: {
+        일반비료: 0.7,
+        고급비료: 0.5,
+        특급비료: 0.3
+      }
+    },
+
+    // 가을 작물
+    고구마: {
+      growthTime: 120,
+      price: 150,
+      basePrice: 250,
+      growthStages: ['🌱', '🍠'],
+      season: ['가을'],
+      fertilizerEffects: {
+        일반비료: 0.7,
+        고급비료: 0.5,
+        특급비료: 0.3
+      }
+    },
+    사과: {
+      growthTime: 150,
+      price: 200,
+      basePrice: 400,
+      growthStages: ['🌱', '🍎'],
+      season: ['가을'],
+      fertilizerEffects: {
+        일반비료: 0.7,
+        고급비료: 0.5,
+        특급비료: 0.3
+      }
+    },
+    키위: {
+      growthTime: 130,
+      price: 180,
+      basePrice: 320,
+      growthStages: ['🌱', '🥝'],
+      season: ['가을'],
+      fertilizerEffects: {
+        일반비료: 0.7,
+        고급비료: 0.5,
+        특급비료: 0.3
+      }
+    },
+
+    // 겨울 작물
+    브로콜리: {
       growthTime: 40,
       price: 90,
-      sellPrice: 140,
-      growthStages: ['🌱', '🥗'],
+      basePrice: 140,
+      growthStages: ['🌱', '🥦'],
       season: ['겨울'],
       fertilizerEffects: {
         일반비료: 0.7,
@@ -104,11 +160,11 @@ const Minigame = () => {
         특급비료: 0.3
       }
     },
-    양배추: {
+    감자: {
       growthTime: 70,
       price: 160,
-      sellPrice: 280,
-      growthStages: ['🌱', '🥬'],
+      basePrice: 280,
+      growthStages: ['🌱', '🥔'],
       season: ['겨울'],
       fertilizerEffects: {
         일반비료: 0.7,
@@ -118,17 +174,33 @@ const Minigame = () => {
     }
   };
 
+  const weatherIcons = {
+    맑음: '☀️',
+    비: '🌧️',
+    흐림: '☁️',
+    폭염: '🌡️',
+    한파: '❄️'
+  };
+
+  const weatherDescriptions = {
+    맑음: '작물의 성장 속도가 10% 증가합니다.',
+    비: '작물이 정상적으로 자랍니다.',
+    흐림: '작물이 정상적으로 자랍니다.',
+    폭염: '작물의 성장 속도가 20% 감소합니다.',
+    한파: '작물의 성장 속도가 20% 감소합니다.'
+  };
+
   const weatherEffects = {
-    맑음: { growthSpeed: 0.9, qualityBonus: 1 },
-    비: { growthSpeed: 1, qualityBonus: 1.1 },
-    흐림: { growthSpeed: 1, qualityBonus: 0.9 },
-    폭염: { growthSpeed: 1.1, qualityBonus: 0.7 },
-    한파: { growthSpeed: 1.1, qualityBonus: 0.8 }
+    맑음: 0.9,    // 10% 빠르게
+    비: 1,        // 정상
+    흐림: 1,      // 정상
+    폭염: 1.2,    // 20% 느리게
+    한파: 1.2     // 20% 느리게
   };
 
   const shopItems = {
     호미: {
-      price: 500,
+      price: 1000,
       durability: 100
     },
     일반비료: {
@@ -148,23 +220,14 @@ const Minigame = () => {
     }
   };
 
-  const weatherDescriptions = {
-    맑음: '재배시간 10% 감소',
-    비: '기본 재배시간',
-    흐림: '기본 재배시간',
-    폭염: '재배시간 10% 증가 (여름 한정)',
-    한파: '재배시간 10% 증가 (겨울 한정)'
-  };
-
   useEffect(() => {
     const seasonInterval = setInterval(() => {
       setSeason(prev => {
-        const nextSeason = {
-          '봄': '여름',
-          '여름': '가을',
-          '가을': '겨울',
-          '겨울': '봄'
-        }[prev] || '봄';
+        const seasons = ['봄', '여름', '가을', '겨울'];
+        let nextSeason;
+        do {
+          nextSeason = seasons[Math.floor(Math.random() * seasons.length)];
+        } while (nextSeason === prev);  // 현재 계절과 다른 계절이 선택될 때까지 반복
 
         // 계절이 바뀔 때 날씨도 적절하게 변경
         if (nextSeason === '여름') {
@@ -206,10 +269,35 @@ const Minigame = () => {
     return () => clearInterval(weatherInterval);
   }, [season]);
 
+  useEffect(() => {
+    // 초기 시장 가격 설정
+    const initialPrices = {};
+    Object.entries(cropTypes).forEach(([crop, info]) => {
+      initialPrices[crop] = info.basePrice;
+    });
+    setMarketPrices(initialPrices);
+
+    // 10분마다 가격 변동
+    const priceInterval = setInterval(() => {
+      setMarketPrices(prev => {
+        const newPrices = { ...prev };
+        Object.entries(cropTypes).forEach(([crop, info]) => {
+          // 5% 단위로 -20% ~ +20% 사이의 랜덤 변동
+          const randomMultiplier = Math.floor(Math.random() * 9) * 5 - 20; // -20, -15, -10, -5, 0, 5, 10, 15, 20
+          const priceChange = info.basePrice * (1 + randomMultiplier / 100);
+          newPrices[crop] = Math.round(priceChange);
+        });
+        return newPrices;
+      });
+    }, 600000); // 10분 = 600000ms
+
+    return () => clearInterval(priceInterval);
+  }, []);
+
   const checkGameOver = () => {
     if (crops.length === 0) {  // 농장에 작물이 없을 때
       // 현재 돈 + 인벤토리에 있는 작물들의 판매 가능 금액의 총합
-      const totalPotentialMoney = money + inventory.reduce((sum, crop) => sum + cropTypes[crop].sellPrice, 0);
+      const totalPotentialMoney = money + Object.values(cropTypes).reduce((sum, crop) => sum + crop.price, 0);
       
       // 가장 저렴한 작물의 가격
       const cheapestCropPrice = Math.min(...Object.values(cropTypes).map(crop => crop.price));
@@ -262,7 +350,7 @@ const Minigame = () => {
       }
 
       // 수확 실패 확률 계산
-      const baseFailureRate = 0.03; // 기본 3% 실패 확률
+      const baseFailureRate = 0.03;
       const weatherMultiplier = (weather === '한파' || weather === '폭염') ? 2 : 1;
       const failureRate = baseFailureRate * weatherMultiplier;
       
@@ -273,25 +361,29 @@ const Minigame = () => {
           ...prev,
           호미: {
             ...prev.호미,
-            durability: prev.호미.durability - 5
+            durability: prev.호미.durability - 2.5
           }
         }));
         setMessage(`${crop.type} 수확에 실패했습니다! ${weather === '한파' || weather === '폭염' ? '(악천후로 인한 실패 확률 증가)' : ''}`);
         return;
       }
 
-      setInventory(prev => [...prev, crop.type]);
+      // 인벤토리에 작물 추가 수정
+      setInventory(prev => ({
+        ...prev,
+        [crop.type]: (prev[crop.type] || 0) + 1
+      }));
+
       setCrops(prev => prev.filter((_, i) => i !== index));
       setTools(prev => ({
         ...prev,
         호미: {
           ...prev.호미,
-          durability: prev.호미.durability - 5
+          durability: prev.호미.durability - 2.5
         }
       }));
       setMessage(`${crop.type}을(를) 수확했습니다!`);
 
-      // 수확 후 게임 오버 체크
       setTimeout(() => {
         checkGameOver();
       }, 0);
@@ -300,18 +392,23 @@ const Minigame = () => {
 
   const sellCrop = (type) => {
     setInventory(prev => {
-      const newInventory = [...prev];
-      const index = newInventory.indexOf(type);
-      if (index > -1) {
-        newInventory.splice(index, 1);
-        setMoney(prev => prev + cropTypes[type].sellPrice);
-        setMessage(`${type}을(를) ${cropTypes[type].sellPrice}원에 판매했습니다!`);
-        
-        // 판매 후 게임 오버 체크
-        setTimeout(() => {
-          checkGameOver();
-        }, 0);
+      if (!prev[type] || prev[type] <= 0) return prev;
+      
+      const newInventory = { ...prev };
+      newInventory[type] = prev[type] - 1;
+      
+      if (newInventory[type] <= 0) {
+        delete newInventory[type];
       }
+      
+      const currentPrice = marketPrices[type];
+      setMoney(prevMoney => prevMoney + currentPrice);
+      setMessage(`${type}을(를) ${currentPrice}원에 판매했습니다! (기준가: ${cropTypes[type].basePrice}원)`);
+      
+      setTimeout(() => {
+        checkGameOver();
+      }, 0);
+      
       return newInventory;
     });
   };
@@ -361,6 +458,10 @@ const Minigame = () => {
 
   const expandFarm = () => {
     const expansionCost = farmSize * 1000;
+    if (farmSize >= 100) {
+      setMessage('농장이 이미 최대 크기입니다!');
+      return;
+    }
     if (money >= expansionCost) {
       setMoney(prev => {
         const newMoney = prev - expansionCost;
@@ -372,8 +473,8 @@ const Minigame = () => {
         }, 0);
         return newMoney;
       });
-      setFarmSize(prev => prev + 5);
-      setMessage(`농장이 확장되었습니다! (${farmSize} → ${farmSize + 5})`);
+      setFarmSize(prev => Math.min(prev + 5, 100));  // 최대 100칸으로 제한
+      setMessage(`농장이 확장되었습니다! (${farmSize} → ${Math.min(farmSize + 5, 100)})`);
     } else {
       setMessage(`농장 확장을 위해 ${expansionCost}원이 필요합니다.`);
     }
@@ -448,7 +549,7 @@ const Minigame = () => {
 
   const restartGame = () => {
     setMoney(1000);
-    setInventory([]);
+    setInventory({});
     setCrops([]);
     setFarmSize(10);
     setTools({
@@ -465,20 +566,34 @@ const Minigame = () => {
     setMessage('');
   };
 
+  const calculateTotalGrowthTime = (crop) => {
+    const baseTime = cropTypes[crop.type].growthTime * 1000; // 기본 성장 시간
+    let totalTime = baseTime;
+
+    // 비료 효과 적용
+    if (crop.fertilized) {
+      totalTime *= cropTypes[crop.type].fertilizerEffects[crop.fertilizerType];
+    }
+
+    // 날씨 효과 적용
+    totalTime *= weatherEffects[weather];
+
+    // 계절 효과 적용 (현재 계절이 작물의 계절이 아닌 경우 30% 더 느리게)
+    if (!cropTypes[crop.type].season.includes(season)) {
+      totalTime *= 1.3;
+    }
+
+    return totalTime;
+  };
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCrops(prev => prev.map(crop => {
-        const baseGrowthTime = cropTypes[crop.type].growthTime * 1000;
-        const fertilizerMultiplier = crop.fertilized ? 
-          cropTypes[crop.type].fertilizerEffects[crop.fertilizerType] : 1;
-        const seasonMultiplier = cropTypes[crop.type].season.includes(season) ? 1 : 0.5;
-        const weatherMultiplier = weatherEffects[weather].growthSpeed;
+        const totalGrowthTime = calculateTotalGrowthTime(crop);
         const timePassed = Date.now() - crop.plantedAt;
         
-        const totalGrowthTime = baseGrowthTime * fertilizerMultiplier * weatherMultiplier / seasonMultiplier;
-        
         if (timePassed >= totalGrowthTime && !crop.isGrown) {
-          const qualityBonus = weatherEffects[weather].qualityBonus;
+          const qualityBonus = weatherEffects[weather];
           const finalQuality = crop.quality * qualityBonus * (crop.fertilized ? 1.2 : 1);
           
           setMessage(`${crop.type}이(가) 다 자랐습니다! (품질: ${finalQuality.toFixed(1)})`);
@@ -492,231 +607,209 @@ const Minigame = () => {
   }, [weather, season]);
 
   return (
-    <div className="min-h-screen bg-green-50 p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-xl p-6">
-        <h2 className="text-3xl font-bold text-center mb-6">🌾 농작물 미니게임 🌾</h2>
-        
-        <div className="text-xl text-center mb-4">
-          보유 금액: <span className="font-bold text-green-600">{money}원</span>
-        </div>
-        
-        {message && (
-          <div className="text-center mb-4 text-blue-600">{message}</div>
-        )}
-
-        <div className="flex justify-between mb-4">
-          <div className="text-lg">
-            계절: {season} {season === '봄' ? '🌸' : season === '여름' ? '☀️' : season === '가을' ? '🍁' : '❄️'}
-          </div>
-          <div className="text-lg relative group">
-            <div className="cursor-help">
-              날씨: {weather} {
-                weather === '맑음' ? '☀️' : 
-                weather === '비' ? '🌧️' : 
-                weather === '흐림' ? '☁️' : 
-                weather === '폭염' ? '🌡️' : '❄️'
-              }
+    <div className="p-8 min-h-screen">
+      {/* 상단 정보 섹션 */}
+      <div className="mb-6 flex justify-between items-center">
+        <div className="flex gap-4">
+          <div className="text-xl">💰 {money}원</div>
+          <div className="text-xl">🌞 {season}</div>
+          <div className="text-xl relative group">
+            <div className="flex items-center gap-2 cursor-help">
+              <span>{weatherIcons[weather]}</span>
+              <span>{weather}</span>
             </div>
-            <div className="absolute hidden group-hover:block bg-black text-white text-sm p-2 rounded-lg -bottom-12 right-0 whitespace-nowrap z-10">
-              {weatherDescriptions[weather]}
+            <div className="absolute hidden group-hover:block bg-white border border-gray-200 p-4 rounded-lg shadow-lg z-10 w-64 mt-2 right-0">
+              <div className="flex flex-col gap-2">
+                <div className="text-lg font-semibold border-b pb-2 mb-2 flex items-center gap-2">
+                  {weatherIcons[weather]} {weather}
+                </div>
+                <div className="text-base text-gray-600">
+                  {weatherDescriptions[weather]}
+                </div>
+                <div className="text-sm text-gray-500 mt-2">
+                  {weather === '맑음' && '🌱 성장 속도 10% 증가 ⬆️'}
+                  {weather === '비' && '🌱 정상 성장'}
+                  {weather === '흐림' && '🌱 정상 성장'}
+                  {weather === '폭염' && '🌱 성장 속도 20% 감소 ⬇️'}
+                  {weather === '한파' && '🌱 성장 속도 20% 감소 ⬇️'}
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <h3 className="text-xl font-bold mb-2">도구 상태</h3>
-            {Object.entries(tools).map(([name, tool]) => (
-              <div key={name} className="flex justify-between">
-                <span>{name}</span>
-                <span>내구도: {tool.durability}%</span>
-              </div>
-            ))}
-          </div>
-          <div>
-            <h3 className="text-xl font-bold mb-2">보유 비료</h3>
-            {Object.entries(fertilizers).map(([name, amount]) => (
-              <div key={name} className="flex justify-between">
-                <span>{name}</span>
-                <span>{amount}개</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-8">
-          <h3 className="text-xl font-bold mb-4">씨앗 구매</h3>
-          <div className="grid grid-cols-3 gap-4">
-            {Object.entries(cropTypes).map(([type, info]) => (
-              <motion.button
-                key={type}
-                whileHover={{ scale: 1.05 }}
-                className={`p-3 rounded-lg ${
-                  money >= info.price 
-                    ? 'bg-green-500 hover:bg-green-600' 
-                    : 'bg-gray-300'
-                } text-white transition-colors`}
-                onClick={() => plantCrop(type)}
-                disabled={money < info.price}
-              >
-                {type} 심기 ({info.price}원)
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-8">
-          <h3 className="text-xl font-bold mb-4">농장 ({crops.length}/{farmSize}칸)</h3>
-          <div className="grid grid-cols-5 gap-4">
-            {crops.slice(0, farmSize).map((crop, index) => {
-              const baseGrowthTime = cropTypes[crop.type].growthTime * 1000;
-              const fertilizerMultiplier = crop.fertilized ? 
-                cropTypes[crop.type].fertilizerEffects[crop.fertilizerType] : 1;
-              const seasonMultiplier = cropTypes[crop.type].season.includes(season) ? 1 : 0.5;
-              const weatherMultiplier = weatherEffects[weather].growthSpeed;
-              const timePassed = Date.now() - crop.plantedAt;
-              
-              const totalGrowthTime = baseGrowthTime * fertilizerMultiplier * weatherMultiplier / seasonMultiplier;
-              const timeLeft = Math.max(0, totalGrowthTime - timePassed);
-              const secondsLeft = Math.ceil(timeLeft / 1000);
-
-              return (
-                <motion.div
-                  key={index}
-                  whileHover={{ scale: 1.1 }}
-                  className="relative text-4xl cursor-pointer p-4 bg-green-100 rounded-lg flex flex-col items-center justify-center"
-                  onClick={() => harvestCrop(index)}
-                >
-                  <div>{cropTypes[crop.type].growthStages[crop.stage]}</div>
-                  {!crop.isGrown && (
-                    <div className="absolute bottom-1 text-sm font-bold text-gray-700">
-                      {secondsLeft}초
-                    </div>
-                  )}
-                  {!crop.fertilized && !crop.isGrown && (
-                    <div className="absolute top-0 right-0 flex flex-col gap-1">
-                      {Object.keys(fertilizers).map(type => (
-                        fertilizers[type] > 0 && (
-                          <button
-                            key={type}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              manageCrop(index, `fertilize_${type}`);
-                            }}
-                            className="text-xs bg-yellow-500 text-white px-2 py-1 rounded"
-                          >
-                            {type.charAt(0)}
-                          </button>
-                        )
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
-            {[...Array(Math.max(0, farmSize - crops.length))].map((_, index) => (
-              <div
-                key={`empty-${index}`}
-                className="text-4xl p-4 bg-gray-100 rounded-lg flex items-center justify-center"
-              >
-                🟫
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-xl font-bold mb-4">인벤토리</h3>
-          <div className="grid grid-cols-5 gap-4">
-            {inventory.map((type, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.1 }}
-                className="text-4xl cursor-pointer p-4 bg-yellow-100 hover:bg-yellow-200 rounded-lg flex flex-col items-center"
-                onClick={() => sellCrop(type)}
-              >
-                <div>{cropTypes[type].growthStages[1]}</div>
-                <div className="text-sm mt-2">{cropTypes[type].sellPrice}원</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-8">
-          <h3 className="text-xl font-bold mb-4">상점</h3>
-          <div className="grid grid-cols-3 gap-4">
-            {Object.entries(shopItems).map(([itemName, info]) => (
-              <motion.button
-                key={itemName}
-                whileHover={{ scale: 1.05 }}
-                className={`p-3 rounded-lg ${
-                  money >= info.price && (itemName !== '호미' || tools.호미.durability <= 0)
-                    ? 'bg-blue-500 hover:bg-blue-600' 
-                    : 'bg-gray-300'
-                } text-white transition-colors flex flex-col items-center`}
-                onClick={() => buyItem(itemName)}
-                disabled={money < info.price || (itemName === '호미' && tools.호미.durability > 0)}
-              >
-                <div>{itemName} ({info.price}원)</div>
-                {info.description && (
-                  <div className="text-xs mt-1">{info.description}</div>
-                )}
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          className="w-full mb-4 p-2 bg-blue-500 text-white rounded-lg"
-          onClick={expandFarm}
+        <button 
+          onClick={saveGame} 
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
         >
-          농장 확장 ({farmSize * 1000}원)
-        </motion.button>
+          저장하기
+        </button>
+      </div>
 
-        <div className="flex gap-4 mb-4">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            className="flex-1 p-2 bg-green-500 text-white rounded-lg"
-            onClick={saveGame}
-          >
-            게임 저장
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            className="flex-1 p-2 bg-yellow-500 text-white rounded-lg"
-            onClick={loadGame}
-          >
-            게임 불러오기
-          </motion.button>
+      {/* 메인 컨텐츠 영역 */}
+      <div className="grid grid-cols-2 gap-8">
+        {/* 왼쪽 열 - 상점 */}
+        <div>
+          {/* 씨앗 구매 섹션 */}
+          <div className="mb-6">
+            <h3 className="text-xl font-bold mb-4">씨앗 구매</h3>
+            {['봄', '여름', '가을', '겨울'].map((seasonType) => (
+              <div key={seasonType} className="mb-4">
+                <h4 className={`text-lg font-semibold mb-2 ${
+                  seasonType === '봄' ? 'text-green-600' :
+                  seasonType === '여름' ? 'text-yellow-600' :
+                  seasonType === '가을' ? 'text-orange-600' :
+                  'text-blue-600'
+                }`}>{seasonType} 작물</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(cropTypes)
+                    .filter(([_, info]) => info.season.includes(seasonType))
+                    .map(([type, info]) => (
+                      <motion.button
+                        key={type}
+                        whileHover={{ scale: 1.05 }}
+                        className={`p-2 rounded-lg ${
+                          money >= info.price && season === seasonType
+                            ? 'bg-green-500 hover:bg-green-600' 
+                            : 'bg-gray-300'
+                        } text-white text-sm transition-colors`}
+                        onClick={() => plantCrop(type)}
+                        disabled={money < info.price || season !== seasonType}
+                        title={season !== seasonType ? `${seasonType}에만 심을 수 있습니다` : ''}
+                      >
+                        {type} ({info.price}원)
+                      </motion.button>
+                    ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* 도구 및 비료 구매 섹션 */}
+          <div className="mb-6">
+            <h3 className="text-xl font-bold mb-4">도구 및 비료 구매</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {Object.entries(shopItems).map(([item, info]) => (
+                <motion.button
+                  key={item}
+                  whileHover={{ scale: 1.05 }}
+                  className={`p-3 rounded-lg ${
+                    money >= info.price ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300'
+                  } text-white transition-colors`}
+                  onClick={() => buyItem(item)}
+                  disabled={money < info.price}
+                >
+                  {item} ({info.price}원)
+                </motion.button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {isGameOver && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4">
-              <h2 className="text-2xl font-bold text-center mb-4">게임 오버</h2>
-              <p className="text-center mb-6">
-                씨앗을 구매할 수 없습니다.
-              </p>
-              <div className="flex justify-center gap-4">
+        {/* 오른쪽 열 - 농장 */}
+        <div>
+          <div className="sticky top-4">
+            <h3 className="text-xl font-bold mb-4">농장 ({crops.length}/{farmSize}칸)</h3>
+            <div className="grid grid-cols-5 gap-4">
+              {crops.slice(0, farmSize).map((crop, index) => {
+                const elapsedTime = Date.now() - crop.plantedAt;
+                const totalGrowthTime = calculateTotalGrowthTime(crop);
+                const secondsLeft = Math.max(0, Math.ceil((totalGrowthTime - elapsedTime) / 1000));
+                const isGrown = elapsedTime >= totalGrowthTime;
+
+                return (
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.1 }}
+                    className="relative text-4xl cursor-pointer p-4 bg-green-100 rounded-lg flex flex-col items-center justify-center min-h-[100px]"
+                    onClick={() => harvestCrop(index)}
+                  >
+                    <div>{cropTypes[crop.type].growthStages[isGrown ? 1 : 0]}</div>
+                    {!isGrown && (
+                      <div className="absolute left-2 bottom-2 text-sm font-bold text-gray-700">
+                        {secondsLeft}초
+                      </div>
+                    )}
+                    {crop.fertilizer && (
+                      <div className="absolute right-2 top-2 text-xs">💊</div>
+                    )}
+                  </motion.div>
+                );
+              })}
+              {[...Array(farmSize - crops.length)].map((_, index) => (
+                <div
+                  key={`empty-${index}`}
+                  className="text-4xl p-4 bg-gray-100 rounded-lg flex items-center justify-center min-h-[100px]"
+                >
+                  🟫
+                </div>
+              ))}
+            </div>
+
+            {/* 인벤토리 */}
+            <div className="mt-6">
+              <h3 className="text-xl font-bold mb-4">인벤토리</h3>
+              <div className="flex flex-wrap gap-4">
+                {Object.entries(inventory).map(([type, count]) => {
+                  const currentPrice = marketPrices[type];
+                  const basePrice = cropTypes[type].basePrice;
+                  const priceChange = ((currentPrice - basePrice) / basePrice * 100).toFixed(1);
+                  const priceColor = priceChange > 0 ? 'text-green-600' : priceChange < 0 ? 'text-red-600' : 'text-gray-600';
+                  
+                  return (
+                    <motion.button
+                      key={type}
+                      whileHover={{ scale: 1.05 }}
+                      className="bg-gray-100 p-3 rounded-lg hover:bg-gray-200"
+                      onClick={() => sellCrop(type)}
+                    >
+                      <div>
+                        {cropTypes[type].growthStages[1]} {type}: {count}개
+                      </div>
+                      <div className={priceColor}>
+                        판매가: {currentPrice}원
+                        {priceChange !== '0.0' && (
+                          <span> ({priceChange > 0 ? '+' : ''}{priceChange}%)</span>
+                        )}
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 도구 상태 */}
+            <div className="mt-6">
+              <h3 className="text-xl font-bold mb-4">도구 상태</h3>
+              <div className="flex flex-wrap gap-4">
+                {Object.entries(tools).map(([tool, info]) => (
+                  <div key={tool} className="bg-gray-100 p-3 rounded-lg">
+                    {tool} 내구도: {Math.floor(info.durability)}%
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 농장 확장 */}
+            <div className="mt-6">
+              <h3 className="text-xl font-bold mb-4">농장 확장</h3>
+              <div className="flex flex-wrap gap-4">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-                  onClick={restartGame}
+                  className={`p-3 rounded-lg ${
+                    money >= farmSize * 1000 && farmSize < 100
+                      ? 'bg-green-500 hover:bg-green-600'
+                      : 'bg-gray-300'
+                  } text-white transition-colors`}
+                  onClick={expandFarm}
+                  disabled={money < farmSize * 1000 || farmSize >= 100}
+                  title={farmSize >= 100 ? '농장이 최대 크기입니다' : `확장 비용: ${farmSize * 1000}원`}
                 >
-                  다시 시작
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="px-4 py-2 bg-yellow-500 text-white rounded-lg"
-                  onClick={loadGame}
-                >
-                  저장된 게임 불러오기
+                  농장 확장 ({farmSize}/100칸) - {farmSize * 1000}원
                 </motion.button>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
