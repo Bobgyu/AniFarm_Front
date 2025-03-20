@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectLoading,
@@ -11,18 +11,30 @@ import { useNavigate } from "react-router-dom";
 const Write = ({ posts }) => {
   const dispatch = useDispatch();
   const loading = useSelector(selectLoading);
-  const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 10;
-
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [modalMode, setModalMode] = useState(null);
   const navigate = useNavigate();
+
+  // 화면 크기에 따라 postsPerPage를 달리 설정 (모바일: 5, 데스크탑: 10)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const postsPerPage = isMobile ? 5 : 10;
+  const [currentPage, setCurrentPage] = useState(1);
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
   const totalPages = Math.ceil(posts.length / postsPerPage);
+
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [modalMode, setModalMode] = useState(null);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -50,7 +62,7 @@ const Write = ({ posts }) => {
     return categories[category] || category;
   };
 
-  // 이메일을 마스킹하는 함수 수정 (첫 글자만 보여주는 버전)
+  // 이메일 마스킹 (첫 두 글자만 보여줌)
   const formatUserEmail = (email) => {
     if (!email) return '';
     const [username, domain] = email.split('@');
@@ -71,7 +83,38 @@ const Write = ({ posts }) => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="overflow-x-auto">
+      {/* 모바일 환경: md 미만에서 카드 형태로 렌더링 */}
+      <div className="md:hidden">
+        {currentPosts.map((post, index) => (
+          <div
+            key={`post-mobile-${post.post_id || index}`}
+            className="border p-4 mb-4 cursor-pointer hover:bg-gray-50"
+            onClick={() => handlePostClick(post.post_id)}
+          >
+            <div className="flex mb-2">
+              <div className="w-1/3 text-sm font-semibold text-gray-600">제목</div>
+              <div className="w-2/3 text-sm text-gray-900">{post.title}</div>
+            </div>
+            <div className="flex mb-2">
+              <div className="w-1/3 text-sm font-semibold text-gray-600">카테고리</div>
+              <div className="w-2/3 text-sm text-gray-600">{getCategoryName(post.category)}</div>
+            </div>
+            <div className="flex mb-2">
+              <div className="w-1/3 text-sm font-semibold text-gray-600">작성자</div>
+              <div className="w-2/3 text-sm text-gray-600">{formatUserEmail(post.email)}</div>
+            </div>
+            <div className="flex">
+              <div className="w-1/3 text-sm font-semibold text-gray-600">작성일</div>
+              <div className="w-2/3 text-sm text-gray-600">
+                {new Date(post.date).toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 데스크탑 등 md 이상: 기존 테이블 형태 */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full table-fixed">
           <thead>
             <tr className="bg-gray-100">
@@ -116,6 +159,7 @@ const Write = ({ posts }) => {
         </table>
       </div>
 
+      {/* 페이지 네비게이션 (모바일/데스크탑 모두 동일) */}
       <div className="flex justify-center mt-4 gap-2 mb-3">
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
           <button
