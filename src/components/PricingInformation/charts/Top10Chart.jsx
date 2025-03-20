@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchTop10Data } from "../../../redux/slices/apiSlice";
-import createTop5Chart from "../../../data/createTop10Chart";
+import createTop10Chart from "../../../data/createTop10Chart";
 
 const Top10Chart = () => {
   const dispatch = useDispatch();
@@ -35,10 +35,8 @@ const Top10Chart = () => {
   // 데이터가 있을 때만 차트 생성
   useEffect(() => {
     if (!loading && top10Data && top10Data.length > 0) {
-      // 이전 차트 정리
       cleanupChart();
 
-      // 컨테이너가 존재하는지 확인
       const container = document.getElementById("top10Chart");
       if (!container) {
         console.error("차트 컨테이너를 찾을 수 없습니다.");
@@ -46,7 +44,9 @@ const Top10Chart = () => {
       }
 
       try {
-        chartRef.current = createTop5Chart("top10Chart", top10Data);
+        // 데이터를 current_year 기준으로 정렬
+        const sortedData = [...top10Data].sort((a, b) => b.current_year - a.current_year);
+        chartRef.current = createTop10Chart("top10Chart", sortedData);
       } catch (error) {
         console.error("차트 생성 중 오류 발생:", error);
       }

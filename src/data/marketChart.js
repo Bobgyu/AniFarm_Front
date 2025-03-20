@@ -29,43 +29,55 @@ import cabbage from "../assets/images/cabbage.jpg";
 import oyster from "../assets/images/oyster.jpg";
 import tomato2 from "../assets/images/tomatoes2.jpg";
 import tomato1 from "../assets/images/tomatoes.jpg";
+import anchovies from "../assets/images/anchovies.jpg";
+import cherry from "../assets/images/cherry.jpg";
+import cayenne from "../assets/images/cayenne-pepper.jpg";
+import vegetable from "../assets/images/vegetable.jpg";
+import radish from "../assets/images/radish.jpg";
+import Cutlassfish from "../assets/images/Cutlassfish.jpg";
 
 export const createMarketChart = (rootElement, marketData) => {
-  let period = "202401";
+  console.log("Creating chart with market data:", marketData);
+  let period = "202101";
   let root = am5.Root.new(rootElement);
-  const stepDuration = 3000;
+  const stepDuration = 2500;
   let interval;
   let sortInterval;
 
   // 이미지 매핑 객체 생성
   const itemImages = {
-    딸기: strawberry,
-    쌀: rice,
-    오렌지: orange2,
-    사과: apple,
-    바나나: banana,
-    포도: grape,
-    감귤: orange1,
-    마늘: garlic,
-    양파: onion,
-    토마토: tomato2,
-    수박: watermelon,
-    복숭아: peach,
-    배: pear,
-    고구마: sweetPotato,
-    대파: greenOnion,
-    시금치: spinach,
-    참외: melon,
-    오이: cucumber,
-    김: seaweed,
-    참다래: kiwi,
-    물오징어: squid,
-    전복: abalone,
-    새우: shrimp,
-    배추: cabbage,
-    굴: oyster,
-    방울토마토: tomato1,
+    갈치: Cutlassfish,  
     감: apple,
+    감귤: orange1,
+    건고추: cayenne,  
+    건멸치: anchovies,  
+    고구마: sweetPotato,
+    굴: oyster,
+    김: seaweed,
+    대파: greenOnion,
+    딸기: strawberry,
+    무: radish,  
+    물오징어: squid,
+    바나나: banana,
+    방울토마토: tomato1,
+    배: pear,
+    배추: cabbage,
+    복숭아: peach,
+    사과: apple,
+    상추: vegetable,  
+    새우: shrimp,
+    수박: watermelon,
+    시금치: spinach,
+    쌀: rice,
+    양파: onion,
+    오렌지: orange2,
+    오이: cucumber,
+    전복: abalone,
+    참다래: kiwi,
+    찹쌀: rice,
+    체리: cherry,  
+    토마토: tomato2,
+    포도: grape
   };
 
   root.setThemes([am5themes_Animated.new(root)]);
@@ -131,6 +143,11 @@ export const createMarketChart = (rootElement, marketData) => {
       yAxis: yAxis,
       valueXField: "value",
       categoryYField: "network",
+      sequencedInterpolation: true,
+      sequencedDelay: 100,
+      tooltip: am5.Tooltip.new(root, {
+        labelText: "{categoryY}: {valueX}"
+      })
     })
   );
 
@@ -140,6 +157,11 @@ export const createMarketChart = (rootElement, marketData) => {
     strokeOpacity: 0,
     fillOpacity: 0.8,
     width: am5.percent(100),
+    templateField: "columnSettings",
+    bounceStiffness: 600,
+    bounceDuration: 500,
+    tension: 1,
+    friction: 0.5
   });
 
   series.columns.template.adapters.add("fill", function (fill, target) {
@@ -190,8 +212,8 @@ export const createMarketChart = (rootElement, marketData) => {
 
   let label = chart.plotContainer.children.push(
     am5.Label.new(root, {
-      text: "2024년 1월 1주",
-      fontSize: "2em",
+      text: "2021년 1월",
+      fontSize: "1.5em",
       fontWeight: "bold",
       fill: am5.color("#2B2B2B"),
       opacity: 0.8,
@@ -204,12 +226,12 @@ export const createMarketChart = (rootElement, marketData) => {
       fontFamily: "Pretendard",
     })
   );
-
+  
   let playButton = chart.plotContainer.children.push(
     am5.Button.new(root, {
       x: am5.p100,
-      y: am5.percent(94),
-      centerY: am5.percent(94),
+      y: am5.percent(98),
+      centerY: am5.percent(98),
       centerX: am5.p100,
       paddingRight: 15,
       paddingBottom: 20,
@@ -218,16 +240,19 @@ export const createMarketChart = (rootElement, marketData) => {
       icon: am5.Picture.new(root, {
         width: 10,
         height: 15,
-        src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTggNXYxNGwxMS03eiIvPjwvc3ZnPg==",
+        src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTYgNGgydjE2SDZ6TTEzIDR2MTZoMlY0eiIvPjwvc3ZnPg==",
       }),
     })
   );
-
   let isPlaying = true;
 
   playButton.events.on("click", function () {
     if (isPlaying) {
+      // 즉시 정지
       clearInterval(interval);
+      interval = null;
+      
+      // 버튼 아이콘 즉시 변경
       playButton.set(
         "icon",
         am5.Picture.new(root, {
@@ -236,17 +261,12 @@ export const createMarketChart = (rootElement, marketData) => {
           src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTYgNGgydjE2SDZ6TTEzIDR2MTZoMlY0eiIvPjwvc3ZnPg==",
         })
       );
+      isPlaying = false;
     } else {
-      interval = setInterval(function () {
-        let week = parseInt(period.substring(4));
-        week++;
-        if (week > 52) {
-          week = 1;
-        }
-        period = `2024${week.toString().padStart(2, "0")}`;
-        updateData();
-      }, stepDuration);
-
+      // 즉시 재생 시작
+      isPlaying = true;
+      
+      // 버튼 아이콘 즉시 변경
       playButton.set(
         "icon",
         am5.Picture.new(root, {
@@ -255,8 +275,25 @@ export const createMarketChart = (rootElement, marketData) => {
           src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTggNXYxNGwxMS03eiIvPjwvc3ZnPg==",
         })
       );
+
+      // interval 즉시 시작
+      interval = setInterval(function () {
+        let year = parseInt(period.substring(0, 4));
+        let week = parseInt(period.substring(4));
+        week++;
+
+        if (year === 2025 && week > 13) {
+          year = 2021;
+          week = 1;
+        } else if (week > 52) {
+          week = 1;
+          year++;
+        }
+
+        period = `${year}${week.toString().padStart(2, "0")}`;
+        updateData();
+      }, stepDuration);
     }
-    isPlaying = !isPlaying;
   });
 
   function getSeriesItem(category) {
@@ -304,18 +341,29 @@ export const createMarketChart = (rootElement, marketData) => {
   }, 150);
 
   function setInitialData() {
+    console.log("Setting initial data for period:", period);
     if (marketData && marketData[period]) {
+      console.log("Initial data:", marketData[period]);
       let d = marketData[period];
+      let addedItems = new Set();
+      
       for (let n in d) {
-        series.data.push({
-          network: n,
-          value: d[n],
-          image: {
-            src: itemImages[n],
-          },
-        });
-        yAxis.data.push({ network: n });
+        // 중복 항목 방지 및 유효한 이미지가 있는 항목만 추가
+        if (!addedItems.has(n) && (itemImages[n] !== undefined)) {
+          series.data.push({
+            network: n,
+            value: d[n],
+            image: {
+              src: itemImages[n] || null
+            },
+          });
+          yAxis.data.push({ network: n });
+          addedItems.add(n);
+        }
       }
+    } else {
+      // console.log("No data found for period:", period);
+      // console.log("Available periods:", Object.keys(marketData || {}));
     }
   }
 
@@ -323,8 +371,9 @@ export const createMarketChart = (rootElement, marketData) => {
     let itemsWithNonZero = 0;
 
     if (marketData && marketData[period]) {
-      const year = period.substring(0, 4);
-      const month = Math.ceil(parseInt(period.substring(4)) / 4.345);
+      const year = parseInt(period.substring(0, 4));
+      const week = parseInt(period.substring(4));
+      const month = Math.ceil(week / 4);
 
       label.set("text", `${year}년 ${month}월`);
 
@@ -332,11 +381,13 @@ export const createMarketChart = (rootElement, marketData) => {
         let category = dataItem.get("categoryY");
         let value = marketData[period][category] || 0;
 
-        dataItem.set("bullet", {
-          sprite: {
-            src: itemImages[category],
-          },
-        });
+        if (itemImages[category]) {
+          dataItem.set("bullet", {
+            sprite: {
+              src: itemImages[category]
+            },
+          });
+        }
 
         if (value > 0) {
           itemsWithNonZero++;
@@ -346,42 +397,55 @@ export const createMarketChart = (rootElement, marketData) => {
           key: "valueX",
           to: value,
           duration: stepDuration,
-          easing: am5.ease.cubic,
+          easing: am5.ease.linear
         });
 
         dataItem.animate({
           key: "valueXWorking",
           to: value,
           duration: stepDuration,
-          easing: am5.ease.cubic,
+          easing: am5.ease.linear
         });
       });
 
-      yAxis.zoom(0, itemsWithNonZero / yAxis.dataItems.length);
+      yAxis.zoom(0, itemsWithNonZero / yAxis.dataItems.length, stepDuration);
     }
   }
 
   interval = setInterval(function () {
+    let year = parseInt(period.substring(0, 4));
     let week = parseInt(period.substring(4));
     week++;
 
-    if (week > 52) {
+    if (year === 2025 && week > 13) {
+      year = 2021;
       week = 1;
+    } else if (week > 52) {
+      week = 1;
+      year++;
     }
 
-    period = `2024${week.toString().padStart(2, "0")}`;
+    period = `${year}${week.toString().padStart(2, "0")}`;
     updateData();
-  }, stepDuration);
+  }, stepDuration + 100);
 
   setInitialData();
 
   setTimeout(function () {
-    period = "202402";
+    period = "202101";
     updateData();
   }, 50);
 
   series.appear(1000);
   chart.appear(1000, 100);
+
+  // 차트 자체의 pan 기능 비활성화
+  chart.set("panY", false);
+  chart.set("panX", false);
+
+  // 차트 클릭/드래그 이벤트 비활성화
+  chart.plotContainer.set("wheelable", false);
+  chart.plotContainer.set("pannnable", false);
 
   const dispose = () => {
     root.dispose();
