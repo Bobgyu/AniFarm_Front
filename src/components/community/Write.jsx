@@ -71,48 +71,50 @@ const Write = ({ posts }) => {
 
   return (
     <div className="container mx-auto p-4">
-      <table className="min-w-full">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="w-1/2 px-4 py-3 text-left text-sm font-semibold text-gray-600">
-              제목
-            </th>
-            <th className="w-1/6 px-4 py-3 text-left text-sm font-semibold text-gray-600">
-              카테고리
-            </th>
-            <th className="w-1/6 px-4 py-3 text-left text-sm font-semibold text-gray-600">
-              작성자
-            </th>
-            <th className="w-1/6 px-4 py-3 text-left text-sm font-semibold text-gray-600">
-              작성일
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentPosts.map((post, index) => (
-            <tr
-              key={`post-${post.post_id || index}`}
-              onClick={() => handlePostClick(post.post_id)}
-              className="border-b hover:bg-gray-50 cursor-pointer"
-            >
-              <td className="px-4 py-4 text-left">
-                <div className="flex items-center">
-                  <span className="text-gray-900">{post.title}</span>
-                </div>
-              </td>
-              <td className="px-4 py-4 text-left text-sm text-gray-600">
-                {getCategoryName(post.category)}
-              </td>
-              <td className="px-4 py-4 text-left text-sm text-gray-600">
-                {formatUserEmail(post.email)}
-              </td>
-              <td className="px-4 py-4 text-left text-sm text-gray-600">
-                {new Date(post.date).toLocaleDateString()}
-              </td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-fixed">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="w-1/6 md:w-1/2 px-4 py-3 text-center md:text-left whitespace-nowrap text-sm font-semibold text-gray-600">
+                제목
+              </th>
+              <th className="w-1/6 md:w-1/6 px-4 py-3 text-center md:text-left whitespace-nowrap text-sm font-semibold text-gray-600">
+                카테고리
+              </th>
+              <th className="w-1/6 md:w-1/6 px-4 py-3 text-center md:text-left whitespace-nowrap text-sm font-semibold text-gray-600">
+                작성자
+              </th>
+              <th className="w-1/6 md:w-1/6 px-4 py-3 text-center md:text-left whitespace-nowrap text-sm font-semibold text-gray-600">
+                작성일
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {currentPosts.map((post, index) => (
+              <tr
+                key={`post-${post.post_id || index}`}
+                onClick={() => handlePostClick(post.post_id)}
+                className="border-b hover:bg-gray-50 cursor-pointer"
+              >
+                <td className="px-4 py-4 text-left">
+                  <div className="flex items-center">
+                    <span className="text-gray-900">{post.title}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-4 text-left text-sm text-gray-600">
+                  {getCategoryName(post.category)}
+                </td>
+                <td className="px-4 py-4 text-left text-sm text-gray-600">
+                  {formatUserEmail(post.email)}
+                </td>
+                <td className="px-4 py-4 text-left text-sm text-gray-600">
+                  {new Date(post.date).toLocaleDateString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <div className="flex justify-center mt-4 gap-2 mb-3">
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
