@@ -678,7 +678,7 @@ const PostDetail = () => {
       </div>
 
       {/* 댓글 섹션 */}
-      <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
+      <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-2 md:mb-6">
         <h2 className="text-xl font-bold mb-6">댓글</h2>
         {isWritingComment && !replyTo && (
           <CommentInputContainer
@@ -687,7 +687,7 @@ const PostDetail = () => {
             buttonText="댓글 작성"
           />
         )}
-        <div className="space-y-6 mt-8">
+        <div className="mt-0 space-y-6 mb:mt-8">
           {comments && comments.length > 0 ? (
             renderComments(comments)
           ) : (
