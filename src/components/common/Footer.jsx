@@ -1,13 +1,8 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import AnifarmLogo from "../../assets/main/aniform.png";
 
 const Footer = () => {
-  const navigate = useNavigate();
 
-  const handleTest4 = () => {
-    navigate("/test4");
-  };
 
   return (
     <footer className="flex items-center border-t w-full h-32 md:h-24">
