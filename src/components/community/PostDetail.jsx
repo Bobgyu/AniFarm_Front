@@ -575,7 +575,7 @@ const PostDetail = () => {
   return (
     <div className="container mx-auto p-4 md:p-6 max-w-4xl">
       {/* 상단 네비게이션 */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mt-6 mb-6 md:mb:6">
         <button
           onClick={() => navigate(`/community/${post.community_type || "gardening"}`)}
           className={buttonStyles.primary}
@@ -678,7 +678,7 @@ const PostDetail = () => {
       </div>
 
       {/* 댓글 섹션 */}
-      <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
+      <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-2 md:mb-6">
         <h2 className="text-xl font-bold mb-6">댓글</h2>
         {isWritingComment && !replyTo && (
           <CommentInputContainer
@@ -687,7 +687,7 @@ const PostDetail = () => {
             buttonText="댓글 작성"
           />
         )}
-        <div className="space-y-6 mt-8">
+        <div className="mt-0 space-y-6 mb:mt-8">
           {comments && comments.length > 0 ? (
             renderComments(comments)
           ) : (
@@ -699,7 +699,7 @@ const PostDetail = () => {
       </div>
 
       {/* 하단 네비게이션 */}
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-center mb-6 md:mb-0 mt-6">
         <button
           onClick={() => navigate(`/community/${post.community_type || "gardening"}`)}
           className={buttonStyles.primary}
