@@ -92,45 +92,64 @@ const Header = () => {
 
     // 상세 경로 매핑
     if (category === "재배 하기") {
-      switch (item) {
-        case "육성법":
-          path = "/TrainingMethod";
-          break;
-        case "병충해":
-          path = "/Pests";
-          break;
-        case "날씨":
-          path = "/weather";
-          break;
-        case "재배 커뮤니티":
-          path = "/community/gardening";
-          break;
-        default:
-          path = "/culture";
-      }
+        switch (item) {
+            case "육성법":
+                path = "/TrainingMethod";
+                break;
+            case "병충해":
+                path = "/Pests";
+                break;
+            case "날씨":
+                path = "/weather";
+                break;
+            case "재배 커뮤니티":
+                path = "/community/gardening";
+                break;
+            default:
+                path = "/culture";
+        }
     } else if (category === "판매 하기") {
-      switch (item) {
-        case "오늘의 가격":
-          path = "/Today";
-          break;
-        case "소비 트렌드":
-          path = "/pricinginformation";
-          break;
-        case "가격 예측":
-          path = "/SalsesInformation";
-          break;
-        case "판매 커뮤니티":
-          path = "/community/marketplace";
-          break;
-        default:
-          path = "/sale";
-      }
+        switch (item) {
+            case "오늘의 가격":
+                path = "/Today";
+                break;
+            case "소비 트렌드":
+                path = "/pricinginformation";
+                break;
+            case "가격 예측":
+                path = "/SalsesInformation";
+                break;
+            case "판매 커뮤니티":
+                path = "/community/marketplace";
+                break;
+            default:
+                path = "/sale";
+        }
+    } else if (category === "기능/엔터") {
+        switch (item) {
+            case "챗봇":
+                // 챗봇 안내 메시지 표시
+                Swal.fire({
+                    title: '챗봇 이용 안내',
+                    text: '우측 하단의 토글 버튼을 누르면 챗봇을 이용하실 수 있습니다. 챗봇은 농산물 재배 방법과 병충해 치료법을 안내해 드립니다.',
+                    icon: 'info',
+                    confirmButtonText: '확인',
+                    confirmButtonColor: '#3a9d1f'
+                });
+                setIsMenuOpen(false);  // 메뉴 닫기
+                return;  // 여기서 함수 종료
+            case "미니게임":
+                path = "/minigame";
+                break;
+            default:
+                path = "/";
+        }
     }
 
     // 카테고리와 아이템 모두 파라미터로 전달
     const queryParams = new URLSearchParams({
-      category: category,
-      type: item,
+        category: category,
+        type: item,
     });
 
     // 경로 이동
@@ -141,6 +160,7 @@ const Header = () => {
   const menuStructure = {
     "재배 하기": ["육성법", "병충해", "날씨", "재배 커뮤니티"],
     "판매 하기": ["오늘의 가격", "소비 트렌드", "가격 예측", "판매 커뮤니티"],
+    "기능/엔터": ["챗봇", "미니게임"]
   };
 
   return (

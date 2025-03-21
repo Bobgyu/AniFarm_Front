@@ -19,7 +19,7 @@ const Minigame = () => {
   });
   const [isGameOver, setIsGameOver] = useState(false);
   const [marketPrices, setMarketPrices] = useState({});
-
+  
   const cropTypes = {
     // 봄 작물
     딸기: {
@@ -341,11 +341,11 @@ const Minigame = () => {
     const crop = crops[index];
     if (crop.isGrown) {
       if (tools.호미.durability <= 0) {
+        setMessage('호미의 내구도가 없습니다. 새로 호미를 구매하세요!');
         if (money < shopItems.호미.price) {
           setIsGameOver(true);
           return;
         }
-        setMessage('호미의 내구도가 다 떨어졌습니다. 새 호미가 필요합니다!');
         return;
       }
 
@@ -607,205 +607,209 @@ const Minigame = () => {
   }, [weather, season]);
 
   return (
-    <div className="p-8 min-h-screen">
-      {/* 상단 정보 섹션 */}
-      <div className="mb-6 flex justify-between items-center">
-        <div className="flex gap-4">
-          <div className="text-xl">💰 {money}원</div>
-          <div className="text-xl">🌞 {season}</div>
-          <div className="text-xl relative group">
-            <div className="flex items-center gap-2 cursor-help">
-              <span>{weatherIcons[weather]}</span>
-              <span>{weather}</span>
-            </div>
-            <div className="absolute hidden group-hover:block bg-white border border-gray-200 p-4 rounded-lg shadow-lg z-10 w-64 mt-2 right-0">
-              <div className="flex flex-col gap-2">
-                <div className="text-lg font-semibold border-b pb-2 mb-2 flex items-center gap-2">
-                  {weatherIcons[weather]} {weather}
-                </div>
-                <div className="text-base text-gray-600">
-                  {weatherDescriptions[weather]}
-                </div>
-                <div className="text-sm text-gray-500 mt-2">
-                  {weather === '맑음' && '🌱 성장 속도 10% 증가 ⬆️'}
-                  {weather === '비' && '🌱 정상 성장'}
-                  {weather === '흐림' && '🌱 정상 성장'}
-                  {weather === '폭염' && '🌱 성장 속도 20% 감소 ⬇️'}
-                  {weather === '한파' && '🌱 성장 속도 20% 감소 ⬇️'}
+    <div className="p-8 min-h-screen flex justify-center">
+      <div className="max-w-6xl w-full">
+        {/* 상단 정보 섹션 */}
+        <div className="mb-6 flex justify-between items-center">
+          <div className="flex gap-4 items-center">
+            <div className="text-xl">💰 {money}원</div>
+            <div className="text-xl">🌞 {season}</div>
+            <div className="text-xl relative group">
+              <div className="flex items-center gap-2 cursor-help">
+                <span>{weatherIcons[weather]}</span>
+                <span>{weather}</span>
+              </div>
+              <div className="absolute hidden group-hover:block bg-white border border-gray-200 p-4 rounded-lg shadow-lg z-10 w-64 mt-2 right-0">
+                <div className="flex flex-col gap-2">
+                  <div className="text-lg font-semibold border-b pb-2 mb-2 flex items-center gap-2">
+                    {weatherIcons[weather]} {weather}
+                  </div>
+                  <div className="text-base text-gray-600">
+                    {weatherDescriptions[weather]}
+                  </div>
+                  <div className="text-sm text-gray-500 mt-2">
+                    {weather === '맑음' && '🌱 성장 속도 10% 증가 ⬆️'}
+                    {weather === '비' && '🌱 정상 성장'}
+                    {weather === '흐림' && '🌱 정상 성장'}
+                    {weather === '폭염' && '🌱 성장 속도 20% 감소 ⬇️'}
+                    {weather === '한파' && '🌱 성장 속도 20% 감소 ⬇️'}
+                  </div>
                 </div>
               </div>
             </div>
+            <div className="text-xl border-l-2 border-gray-300 pl-4">
+              호미 내구도: {Math.floor(tools.호미.durability)}%
+            </div>
+          </div>
+          <button 
+            onClick={saveGame} 
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            저장하기
+          </button>
+        </div>
+        
+        {/* 메인 컨텐츠 영역 */}
+        <div className="grid grid-cols-3 gap-8">
+          {/* 왼쪽 열 - 상점 */}
+          <div className="w-64 bg-white p-4 rounded-lg shadow-md">
+            {/* 씨앗 구매 섹션 */}
+        <div className="mb-8">
+              <h3 className="text-xl font-bold mb-6">씨앗 구매</h3>
+              {['봄', '여름', '가을', '겨울'].map((seasonType) => (
+                <div key={seasonType} className="mb-6">
+                  <h4 className={`text-lg font-semibold mb-4 ${
+                    seasonType === '봄' ? 'text-green-600' :
+                    seasonType === '여름' ? 'text-yellow-600' :
+                    seasonType === '가을' ? 'text-orange-600' :
+                    'text-blue-600'
+                  }`}>{seasonType} 작물</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.entries(cropTypes)
+                      .filter(([_, info]) => info.season.includes(seasonType))
+                      .map(([type, info]) => (
+              <motion.button
+                key={type}
+                whileHover={{ scale: 1.05 }}
+                          className={`h-14 px-2 py-2 rounded-lg flex flex-col items-center justify-center ${
+                            money >= info.price && season === seasonType
+                    ? 'bg-green-500 hover:bg-green-600' 
+                    : 'bg-gray-300'
+                } text-white transition-colors`}
+                onClick={() => plantCrop(type)}
+                          disabled={money < info.price || season !== seasonType}
+                          title={season !== seasonType ? `${seasonType}에만 심을 수 있습니다` : ''}
+                        >
+                          <span className="text-base font-medium leading-tight">{type}</span>
+                          <span className="text-sm leading-tight">({info.price}원)</span>
+                        </motion.button>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* 도구 및 비료 구매 섹션 */}
+            <div className="mb-8">
+              <h3 className="text-xl font-bold mb-6">도구 및 비료 구매</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {Object.entries(shopItems).map(([item, info]) => (
+                  <motion.button
+                    key={item}
+                    whileHover={{ scale: 1.05 }}
+                    className={`relative h-14 px-2 py-2 rounded-lg flex flex-col items-center justify-center ${
+                      money >= info.price ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300'
+                    } text-white transition-colors group`}
+                    onClick={() => buyItem(item)}
+                disabled={money < info.price}
+              >
+                    <span className="text-base font-medium leading-tight">{item}</span>
+                    <span className="text-sm leading-tight">({info.price}원)</span>
+                    
+                    {/* 비료 설명 툴팁 */}
+                    {item.includes('비료') && (
+                      <div className="absolute hidden group-hover:block bg-white border border-gray-200 p-3 rounded-lg shadow-lg z-10 w-48 -top-16 left-1/2 transform -translate-x-1/2">
+                        <div className="text-gray-700 text-sm">
+                          {info.description}
+                        </div>
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-white border-r border-b border-gray-200"></div>
+                      </div>
+                    )}
+              </motion.button>
+            ))}
           </div>
         </div>
-        <button 
-          onClick={saveGame} 
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          저장하기
-        </button>
-      </div>
 
-      {/* 메인 컨텐츠 영역 */}
-      <div className="grid grid-cols-2 gap-8">
-        {/* 왼쪽 열 - 상점 */}
-        <div>
-          {/* 씨앗 구매 섹션 */}
-          <div className="mb-6">
-            <h3 className="text-xl font-bold mb-4">씨앗 구매</h3>
-            {['봄', '여름', '가을', '겨울'].map((seasonType) => (
-              <div key={seasonType} className="mb-4">
-                <h4 className={`text-lg font-semibold mb-2 ${
-                  seasonType === '봄' ? 'text-green-600' :
-                  seasonType === '여름' ? 'text-yellow-600' :
-                  seasonType === '가을' ? 'text-orange-600' :
-                  'text-blue-600'
-                }`}>{seasonType} 작물</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(cropTypes)
-                    .filter(([_, info]) => info.season.includes(seasonType))
-                    .map(([type, info]) => (
+            {/* 농장 확장 섹션 */}
+        <div className="mb-8">
+              <h3 className="text-xl font-bold mb-6">농장 확장</h3>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                className={`w-full h-14 rounded-lg flex flex-col items-center justify-center ${
+                  money >= farmSize * 1000 && farmSize < 100
+                    ? 'bg-green-500 hover:bg-green-600'
+                    : 'bg-gray-300'
+                } text-white transition-colors`}
+                onClick={expandFarm}
+                disabled={money < farmSize * 1000 || farmSize >= 100}
+                title={farmSize >= 100 ? '농장이 최대 크기입니다' : `확장 비용: ${farmSize * 1000}원`}
+              >
+                <span className="text-base font-medium leading-tight">농장 확장</span>
+                <span className="text-sm leading-tight">({farmSize}/100칸) - {farmSize * 1000}원</span>
+              </motion.button>
+            </div>
+          </div>
+
+          {/* 오른쪽 열 - 농장 */}
+          <div className="col-span-2">
+            <div className="sticky top-4">
+              <h3 className="text-xl font-bold mb-4">농장 ({crops.length}/{farmSize}칸)</h3>
+          <div className="grid grid-cols-5 gap-4">
+                {crops.slice(0, farmSize).map((crop, index) => {
+                  const elapsedTime = Date.now() - crop.plantedAt;
+                  const totalGrowthTime = calculateTotalGrowthTime(crop);
+                  const secondsLeft = Math.max(0, Math.ceil((totalGrowthTime - elapsedTime) / 1000));
+                  const isGrown = elapsedTime >= totalGrowthTime;
+
+                  return (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.1 }}
+                      className="relative text-4xl cursor-pointer p-4 bg-green-100 rounded-lg flex flex-col items-center justify-center min-h-[100px]"
+                onClick={() => harvestCrop(index)}
+              >
+                      <div>{cropTypes[crop.type].growthStages[isGrown ? 1 : 0]}</div>
+                      {!isGrown && (
+                        <div className="absolute left-2 bottom-2 text-sm font-bold text-gray-700">
+                          {secondsLeft}초
+                        </div>
+                      )}
+                      {crop.fertilizer && (
+                        <div className="absolute right-2 top-2 text-xs">💊</div>
+                      )}
+              </motion.div>
+                  );
+                })}
+                {[...Array(farmSize - crops.length)].map((_, index) => (
+                  <div
+                    key={`empty-${index}`}
+                    className="text-4xl p-4 bg-gray-100 rounded-lg flex items-center justify-center min-h-[100px]"
+                  >
+                    🟫
+                  </div>
+                ))}
+        </div>
+
+              {/* 인벤토리 */}
+              <div className="mt-6">
+          <h3 className="text-xl font-bold mb-4">인벤토리</h3>
+                <div className="flex flex-wrap gap-4">
+                  {Object.entries(inventory).map(([type, count]) => {
+                    const currentPrice = marketPrices[type];
+                    const basePrice = cropTypes[type].basePrice;
+                    const priceChange = ((currentPrice - basePrice) / basePrice * 100).toFixed(1);
+                    const priceColor = priceChange > 0 ? 'text-green-600' : priceChange < 0 ? 'text-red-600' : 'text-gray-600';
+                    
+                    return (
                       <motion.button
                         key={type}
                         whileHover={{ scale: 1.05 }}
-                        className={`p-2 rounded-lg ${
-                          money >= info.price && season === seasonType
-                            ? 'bg-green-500 hover:bg-green-600' 
-                            : 'bg-gray-300'
-                        } text-white text-sm transition-colors`}
-                        onClick={() => plantCrop(type)}
-                        disabled={money < info.price || season !== seasonType}
-                        title={season !== seasonType ? `${seasonType}에만 심을 수 있습니다` : ''}
-                      >
-                        {type} ({info.price}원)
+                        className="bg-gray-100 p-3 rounded-lg hover:bg-gray-200"
+                onClick={() => sellCrop(type)}
+              >
+                        <div>
+                          {cropTypes[type].growthStages[1]} {type}: {count}개
+                        </div>
+                        <div className={priceColor}>
+                          판매가: {currentPrice}원
+                          {priceChange !== '0.0' && (
+                            <span> ({priceChange > 0 ? '+' : ''}{priceChange}%)</span>
+                          )}
+                        </div>
                       </motion.button>
-                    ))}
+                    );
+                  })}
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* 도구 및 비료 구매 섹션 */}
-          <div className="mb-6">
-            <h3 className="text-xl font-bold mb-4">도구 및 비료 구매</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {Object.entries(shopItems).map(([item, info]) => (
-                <motion.button
-                  key={item}
-                  whileHover={{ scale: 1.05 }}
-                  className={`p-3 rounded-lg ${
-                    money >= info.price ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300'
-                  } text-white transition-colors`}
-                  onClick={() => buyItem(item)}
-                  disabled={money < info.price}
-                >
-                  {item} ({info.price}원)
-                </motion.button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* 오른쪽 열 - 농장 */}
-        <div>
-          <div className="sticky top-4">
-            <h3 className="text-xl font-bold mb-4">농장 ({crops.length}/{farmSize}칸)</h3>
-            <div className="grid grid-cols-5 gap-4">
-              {crops.slice(0, farmSize).map((crop, index) => {
-                const elapsedTime = Date.now() - crop.plantedAt;
-                const totalGrowthTime = calculateTotalGrowthTime(crop);
-                const secondsLeft = Math.max(0, Math.ceil((totalGrowthTime - elapsedTime) / 1000));
-                const isGrown = elapsedTime >= totalGrowthTime;
-
-                return (
-                  <motion.div
-                    key={index}
-                    whileHover={{ scale: 1.1 }}
-                    className="relative text-4xl cursor-pointer p-4 bg-green-100 rounded-lg flex flex-col items-center justify-center min-h-[100px]"
-                    onClick={() => harvestCrop(index)}
-                  >
-                    <div>{cropTypes[crop.type].growthStages[isGrown ? 1 : 0]}</div>
-                    {!isGrown && (
-                      <div className="absolute left-2 bottom-2 text-sm font-bold text-gray-700">
-                        {secondsLeft}초
-                      </div>
-                    )}
-                    {crop.fertilizer && (
-                      <div className="absolute right-2 top-2 text-xs">💊</div>
-                    )}
-                  </motion.div>
-                );
-              })}
-              {[...Array(farmSize - crops.length)].map((_, index) => (
-                <div
-                  key={`empty-${index}`}
-                  className="text-4xl p-4 bg-gray-100 rounded-lg flex items-center justify-center min-h-[100px]"
-                >
-                  🟫
-                </div>
-              ))}
-            </div>
-
-            {/* 인벤토리 */}
-            <div className="mt-6">
-              <h3 className="text-xl font-bold mb-4">인벤토리</h3>
-              <div className="flex flex-wrap gap-4">
-                {Object.entries(inventory).map(([type, count]) => {
-                  const currentPrice = marketPrices[type];
-                  const basePrice = cropTypes[type].basePrice;
-                  const priceChange = ((currentPrice - basePrice) / basePrice * 100).toFixed(1);
-                  const priceColor = priceChange > 0 ? 'text-green-600' : priceChange < 0 ? 'text-red-600' : 'text-gray-600';
-                  
-                  return (
-                    <motion.button
-                      key={type}
-                      whileHover={{ scale: 1.05 }}
-                      className="bg-gray-100 p-3 rounded-lg hover:bg-gray-200"
-                      onClick={() => sellCrop(type)}
-                    >
-                      <div>
-                        {cropTypes[type].growthStages[1]} {type}: {count}개
-                      </div>
-                      <div className={priceColor}>
-                        판매가: {currentPrice}원
-                        {priceChange !== '0.0' && (
-                          <span> ({priceChange > 0 ? '+' : ''}{priceChange}%)</span>
-                        )}
-                      </div>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 도구 상태 */}
-            <div className="mt-6">
-              <h3 className="text-xl font-bold mb-4">도구 상태</h3>
-              <div className="flex flex-wrap gap-4">
-                {Object.entries(tools).map(([tool, info]) => (
-                  <div key={tool} className="bg-gray-100 p-3 rounded-lg">
-                    {tool} 내구도: {Math.floor(info.durability)}%
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 농장 확장 */}
-            <div className="mt-6">
-              <h3 className="text-xl font-bold mb-4">농장 확장</h3>
-              <div className="flex flex-wrap gap-4">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className={`p-3 rounded-lg ${
-                    money >= farmSize * 1000 && farmSize < 100
-                      ? 'bg-green-500 hover:bg-green-600'
-                      : 'bg-gray-300'
-                  } text-white transition-colors`}
-                  onClick={expandFarm}
-                  disabled={money < farmSize * 1000 || farmSize >= 100}
-                  title={farmSize >= 100 ? '농장이 최대 크기입니다' : `확장 비용: ${farmSize * 1000}원`}
-                >
-                  농장 확장 ({farmSize}/100칸) - {farmSize * 1000}원
-                </motion.button>
               </div>
             </div>
           </div>

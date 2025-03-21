@@ -124,7 +124,7 @@ function AppContent() {
         {/* 미니게임 버튼 */}
         <Link to="/minigame">
           <button 
-            className="w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center"
+            className="w-14 h-14 bg-[#3a9d1f] hover:bg-[#0aab65] text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center"
           >
             <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>
               sports_esports
@@ -132,10 +132,10 @@ function AppContent() {
           </button>
         </Link>
 
-        {/* 챗봇 토글 버튼 - 배경색 초록색으로 변경 */}
+        {/* 챗봇 토글 버튼 */}
         <button 
           onClick={() => setShowChatbot((prev) => !prev)}
-          className="w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center"
+          className="w-14 h-14 bg-[#3a9d1f] hover:bg-[#0aab65] text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center"
         >
           <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>
             {showChatbot ? 'close' : 'mode_comment'}
@@ -143,9 +143,9 @@ function AppContent() {
         </button>
       </div>
 
-      {/* 챗봇 UI - 완전히 별도로 분리 */}
-      {showChatbot && (
-        <div className="fixed bottom-28 right-8 z-50 w-96 bg-white rounded-lg shadow-xl">
+      {/* 챗봇 UI - container 클래스 유지 */}
+      <div className={`container ${showChatbot ? "show-chatbot" : ""}`}>
+        <div className="cb-popup">
           <div className="cb-header">
             <div className="header-info">
               <ChatIcon />
@@ -175,7 +175,7 @@ function AppContent() {
             />
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
