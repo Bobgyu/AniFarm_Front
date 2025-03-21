@@ -253,55 +253,54 @@ const Header = () => {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="p-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">메뉴</h2>
+                  <div className="flex justify-end items-center mb-4">
                     <button
                       onClick={() => setIsMenuOpen(false)}
                       className="p-2 hover:bg-gray-100 rounded-full"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
 
-                <div className="space-y-4">
-                  {Object.entries(menuStructure).map(([category, items]) => (
-                    <div key={category} className="border rounded-lg">
-                      <div className="font-semibold p-3 bg-gray-50 rounded-t-lg border-b">
-                        {category}
-                      </div>
-                      <div className="p-3">
-                        <div className="space-y-2">
-                          {items.map((item, index) => (
-                            <div
-                              key={index}
-                              className="text-sm md:text-base text-gray-600 hover:text-black cursor-pointer"
-                              onClick={() =>
-                                handleMenuItemClick(category, item)
-                              }
-                            >
-                              {item}
-                            </div>
-                          ))}
+                  <div className="space-y-4">
+                    {Object.entries(menuStructure).map(([category, items]) => (
+                      <div key={category} className="border rounded-lg">
+                        <div className="font-semibold p-3 bg-[#3a9d1f] text-white rounded-t-lg border-b">
+                          {category}
+                        </div>
+                        <div className="p-3">
+                          <div className="space-y-2">
+                            {items.map((item, index) => (
+                              <div
+                                key={index}
+                                className="text-sm md:text-base text-gray-600 hover:text-black cursor-pointer"
+                                onClick={() =>
+                                  handleMenuItemClick(category, item)
+                                }
+                              >
+                                {item}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
         )}
       </div>
     </div>
