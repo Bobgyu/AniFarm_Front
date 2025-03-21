@@ -575,7 +575,7 @@ const PostDetail = () => {
   return (
     <div className="container mx-auto p-4 md:p-6 max-w-4xl">
       {/* 상단 네비게이션 */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mt-6 mb-6 md:mb:6">
         <button
           onClick={() => navigate(`/community/${post.community_type || "gardening"}`)}
           className={buttonStyles.primary}
@@ -699,7 +699,7 @@ const PostDetail = () => {
       </div>
 
       {/* 하단 네비게이션 */}
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-center mb-6 md:mb-0 mt-6">
         <button
           onClick={() => navigate(`/community/${post.community_type || "gardening"}`)}
           className={buttonStyles.primary}
