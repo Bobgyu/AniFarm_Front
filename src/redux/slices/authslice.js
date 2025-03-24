@@ -231,25 +231,31 @@ export const logoutWithAlert = createAsyncThunk(
 // 토큰 체크 로직 수정
 export const checkLoginStatusThunk = createAsyncThunk(
   'auth/checkLoginStatusThunk',
-  async (_, { dispatch }) => {
-    const token = localStorage.getItem("token");
-    const tokenExpiry = localStorage.getItem("tokenExpiry");
+  async (_, { dispatch, getState }) => {
+    // 현재 로그인 상태 확인
+    const { isAuthenticated } = getState().auth;
     
-    if (!token || !tokenExpiry) {
-      dispatch(logoutWithAlert({
-        title: '인증 만료',
-        text: '로그인 정보가 만료되었습니다. 다시 로그인해주세요.'
-      }));
-      return;
-    }
+    // 로그인된 상태일 때만 토큰 체크 수행
+    if (isAuthenticated) {
+      const token = localStorage.getItem("token");
+      const tokenExpiry = localStorage.getItem("tokenExpiry");
+      
+      if (!token || !tokenExpiry) {
+        dispatch(logoutWithAlert({
+          title: '인증 만료',
+          text: '로그인 정보가 만료되었습니다. 다시 로그인해주세요.'
+        }));
+        return;
+      }
 
-    const now = new Date().getTime();
-    if (parseInt(tokenExpiry) < now) {
-      dispatch(logoutWithAlert({
-        title: '세션 만료',
-        text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.'
-      }));
-      return;
+      const now = new Date().getTime();
+      if (parseInt(tokenExpiry) < now) {
+        dispatch(logoutWithAlert({
+          title: '세션 만료',
+          text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.'
+        }));
+        return;
+      }
     }
   }
 );
