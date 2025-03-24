@@ -60,6 +60,16 @@ const Header = () => {
     return false;
   };
 
+  // 토큰 유효성 검사 추가
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token && user) {
+      // 토큰이 없는데 user 상태가 있다면 로그아웃 처리
+      dispatch(clearToken());
+      navigate('/');
+    }
+  }, [dispatch, user, navigate]);
+
   const handleLogout = () => {
     Swal.fire({
       title: "로그아웃",
@@ -70,10 +80,12 @@ const Header = () => {
       cancelButtonText: "취소",
     }).then((result) => {
       if (result.isConfirmed) {
+        // 로그아웃 처리를 먼저 수행
+        dispatch(clearToken());
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        dispatch(clearToken());
 
+        // UI 업데이트 후 안내 메시지 표시
         Swal.fire({
           title: "로그아웃 완료",
           text: "로그아웃 되었습니다.",

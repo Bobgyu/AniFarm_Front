@@ -212,18 +212,18 @@ export const fetchUserInfo = createAsyncThunk(
 // 비동기 로그아웃 처리를 위한 thunk
 export const logoutWithAlert = createAsyncThunk(
   'auth/logoutWithAlert',
-  async (_, { dispatch }) => {
+  async ({ title, text }, { dispatch }) => {
     await Swal.fire({
       icon: 'warning',
-      title: '자동 로그아웃',
-      text: '장시간 활동이 없어 자동 로그아웃되었습니다.',
+      title: title || '자동 로그아웃',
+      text: text || '장시간 활동이 없어 자동 로그아웃되었습니다.',
       confirmButtonText: '확인',
       allowOutsideClick: false,
       timer: 3000,
       timerProgressBar: true
     });
     
-    dispatch(logout());
+    dispatch(logoutThunk());
     return true;
   }
 );
@@ -236,13 +236,19 @@ export const checkLoginStatusThunk = createAsyncThunk(
     const tokenExpiry = localStorage.getItem("tokenExpiry");
     
     if (!token || !tokenExpiry) {
-      dispatch(logout());
+      dispatch(logoutWithAlert({
+        title: '인증 만료',
+        text: '로그인 정보가 만료되었습니다. 다시 로그인해주세요.'
+      }));
       return;
     }
 
     const now = new Date().getTime();
     if (parseInt(tokenExpiry) < now) {
-      dispatch(logout());
+      dispatch(logoutWithAlert({
+        title: '세션 만료',
+        text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.'
+      }));
       return;
     }
   }
@@ -262,11 +268,20 @@ export const checkTokenExpiration = createAsyncThunk(
   }
 );
 
+// 로그아웃 처리를 위한 공통 함수
 const performLogout = () => {
   localStorage.clear();
   sessionStorage.clear();
-  // window.location.href 제거 - 리다이렉션은 컴포넌트에서 처리
 };
+
+// logoutThunk로 이름 변경
+export const logoutThunk = createAsyncThunk(
+  'auth/logoutThunk',
+  async (_, { dispatch }) => {
+    performLogout();
+    return true;
+  }
+);
 
 // handleFulfilled 함수 정의 : 요청 성공 시 상태 업데이트 로직을 별도의 함수로 분리
 const handleFulfilled = (stateKey) => (state, action) => {
@@ -284,7 +299,7 @@ export const refreshToken = createAsyncThunk(
   'auth/refreshToken',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/auth/refresh`, {}, {
+      const response = await axios.post('/auth/refresh-token', {}, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -292,30 +307,14 @@ export const refreshToken = createAsyncThunk(
       
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
-        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000;
-        localStorage.setItem('tokenExpiry', expiry.toString());
-        
-        await Swal.fire({
-          icon: 'success',
-          title: '토큰이 갱신되었습니다',
-          showConfirmButton: false,
-          timer: 1500
-        });
-        
+        const expiry = new Date().getTime() + 2 * 60 * 60 * 1000; // 2시간
+        localStorage.setItem('loginExpireTime', expiry.toString());
         return response.data;
       }
       
       throw new Error('토큰 갱신 실패');
     } catch (error) {
-      await Swal.fire({
-        icon: 'error',
-        title: '토큰 갱신 실패',
-        text: error.response?.data?.message || '토큰 갱신에 실패했습니다.',
-        confirmButtonText: '확인',
-        timer: 3000,
-        timerProgressBar: true
-      });
-      return rejectWithValue(error.response?.data || '토큰 갱신 실패');
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -359,7 +358,7 @@ const authSlice = createSlice({
       localStorage.removeItem("token");
       localStorage.removeItem("user");
     },
-    logout: (state) => {
+    logoutAction: (state) => {
       Object.assign(state, {
         postLoginData: null,
         loginExpireTime: null,
@@ -422,7 +421,7 @@ const authSlice = createSlice({
               popup: 'animate__animated animate__fadeOutUp'
             }
           });
-          return logoutWithAlert();
+          return logoutWithAlert({ title: '인증 만료', text: '다시 로그인해주세요.' });
         }
       })
 
@@ -455,10 +454,9 @@ const authSlice = createSlice({
         state.userInfoError = action.payload;
       })
 
-      .addCase(logoutWithAlert.fulfilled, (state, action) => {
-        if (action.payload) {
-          state.isAuthenticated = false;
-        }
+      .addCase(logoutThunk.fulfilled, (state) => {
+        // logoutAction 리듀서 재사용
+        authSlice.caseReducers.logoutAction(state);
       })
       
       .addCase(checkLoginStatusThunk.fulfilled, () => {
@@ -471,7 +469,7 @@ export const {
   verifyEmail,
   resetAuthState,
   cancelMembership,
-  logout,
+  logoutAction,
   updateLastActivity,
   clearRedirectFlag
 } = authSlice.actions;

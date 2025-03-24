@@ -1,40 +1,31 @@
 import { useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { clearToken } from "../redux/slices/loginslice";
+import { logoutWithAlert } from "../redux/slices/authslice";
+import Swal from "sweetalert2";
 
 const useAutoLogout = () => {
   const dispatch = useDispatch();
+  const TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000; // 24시간
 
-  // 테스트용으로 1분으로 설정
-  // const INACTIVE_TIMEOUT = 60 * 1000; // 60초 = 1분
-  const INACTIVE_TIMEOUT = 2 * 60 * 60 * 1000; // 원래 설정 (2시간)
-
-  const performLogout = useCallback(() => {
-    dispatch(clearToken());
-    localStorage.clear();
-    alert("자동 로그아웃 되었습니다.");
-    window.location.href = "/";
+  const handleLogout = useCallback(() => {
+    dispatch(logoutWithAlert({
+      title: '세션 만료',
+      text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.'
+    }));
   }, [dispatch]);
-
-  const handleUserActivity = useCallback(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const expireTime = localStorage.getItem("loginExpireTime");
-
-      if (expireTime && new Date().getTime() > parseInt(expireTime)) {
-        console.log("토큰 만료 - 로그아웃 실행");
-        performLogout();
-      }
-    }
-  }, [performLogout]);
 
   useEffect(() => {
     let inactivityTimeout;
 
-    const autoLogout = () => {
-      console.log("비활성 시간 초과 - 자동 로그아웃 실행");
-      performLogout();
-      clearTimeout(inactivityTimeout);
+    const checkTokenExpiration = () => {
+      const token = localStorage.getItem("token");
+      const expireTime = localStorage.getItem("tokenExpiry");
+      
+      if (token && expireTime && new Date().getTime() > parseInt(expireTime)) {
+        handleLogout();
+        return true;
+      }
+      return false;
     };
 
     const resetInactivityTimer = () => {
@@ -42,33 +33,45 @@ const useAutoLogout = () => {
       if (!token) return;
 
       clearTimeout(inactivityTimeout);
-      inactivityTimeout = setTimeout(autoLogout, INACTIVE_TIMEOUT);
+      inactivityTimeout = setTimeout(() => {
+        if (!checkTokenExpiration()) {
+          Swal.fire({
+            icon: 'warning',
+            title: '자동 로그아웃',
+            text: '장시간 활동이 없어 자동 로그아웃되었습니다.',
+            confirmButtonText: '확인'
+          }).then(() => {
+            handleLogout();
+          });
+        }
+      }, TOKEN_EXPIRE_TIME);
     };
 
     const handleActivity = () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        handleUserActivity();
+      if (!checkTokenExpiration()) {
         resetInactivityTimer();
       }
     };
 
-    const events = ["mousemove", "keypress", "click", "scroll", "touchstart"];
-    events.forEach((event) => {
+    const activityEvents = ["mousedown", "keydown", "scroll", "touchstart"];
+    activityEvents.forEach((event) => {
       window.addEventListener(event, handleActivity);
     });
 
+    // 초기 타이머 설정
     if (localStorage.getItem("token")) {
       resetInactivityTimer();
     }
 
     return () => {
       clearTimeout(inactivityTimeout);
-      events.forEach((event) => {
+      activityEvents.forEach((event) => {
         window.removeEventListener(event, handleActivity);
       });
     };
-  }, [handleUserActivity]);
+  }, [handleLogout, TOKEN_EXPIRE_TIME]);
+
+  return null;
 };
 
 export default useAutoLogout;

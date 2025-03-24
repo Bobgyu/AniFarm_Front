@@ -1,11 +1,13 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
 import axios from "axios";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // PriceCard 컴포넌트를 별도로 분리
 const PriceCard = lazy(() => import('./PriceCard'));
 
 const SalsesInformation = () => {
   const [predictions, setPredictions] = useState({});
+  const [priceHistory, setPriceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("cabbage");
@@ -51,6 +53,51 @@ const SalsesInformation = () => {
 
     fetchPredictions();
   }, []);
+
+  useEffect(() => {
+    const fetchPriceHistory = async () => {
+      try {
+        const response = await axios.get('/pricedata/Total_v3.csv', {
+          baseURL: 'http://localhost:8000',
+          responseType: 'text'
+        });
+        
+        // CSV 파싱 로직
+        const rows = response.data.trim().split('\n').map(row => {
+          const values = row.split(',');
+          return {
+            date: values[0],
+            cabbage: Number(values[5]?.replace(/"/g, '').replace(/,/g, '')),
+            potato: Number(values[6]?.replace(/"/g, '').replace(/,/g, '')),
+            strawberry: Number(values[7]?.replace(/"/g, '').replace(/,/g, '')),
+            onion: Number(values[8]?.replace(/"/g, '').replace(/,/g, '')),
+            spinach: Number(values[9]?.replace(/"/g, '').replace(/,/g, '')),
+            cucumber: Number(values[10]?.replace(/"/g, '').replace(/,/g, '')),
+            tomato: Number(values[11]?.replace(/"/g, '').replace(/,/g, '')),
+            apple: Number(values[12]?.replace(/"/g, '').replace(/,/g, '')),
+            carrot: Number(values[13]?.replace(/"/g, '').replace(/,/g, '')),
+            broccoli: Number(values[14]?.replace(/"/g, '').replace(/,/g, '')),
+          };
+        });
+
+        // 헤더 제거
+        const dataWithoutHeader = rows.slice(1);
+        
+        // 최근 30일 데이터만 필터링 (수정된 부분)
+        const recentData = dataWithoutHeader
+          .filter(row => row[activeTab] > 0)  // 유효한 가격 데이터만 필터링
+          .slice(0, 30)  // 최근 30일치 데이터 선택
+          .reverse();    // 날짜 순서대로 정렬 (과거 -> 최근)
+
+        setPriceHistory(recentData);
+      } catch (err) {
+        console.error("가격 이력 데이터 가져오기 오류:", err);
+        setError(err.message);
+      }
+    };
+
+    fetchPriceHistory();
+  }, [activeTab]);
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center p-8">
@@ -101,6 +148,49 @@ const SalsesInformation = () => {
     );
   };
 
+  // 가격 변동 그래프 컴포넌트 수정
+  const PriceHistoryGraph = ({ data, productId }) => {
+    return (
+      <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 text-gray-800">
+          📈 최근 가격 추이
+        </h3>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="date" 
+                angle={-45}
+                textAnchor="end"
+                height={60}
+                tick={{fontSize: 12}}
+                tickFormatter={(date) => date.split('-').slice(1).join('/')} // MM/DD 형식으로 표시
+              />
+              <YAxis 
+                tick={{fontSize: 12}}
+                tickFormatter={(value) => `${value.toLocaleString()}원`} // 원화 표시로 변경
+              />
+              <Tooltip 
+                formatter={(value) => [`${value.toLocaleString()}원`, "가격"]}
+                labelFormatter={(label) => `날짜: ${label}`}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey={productId}
+                stroke="#4caf50"
+                strokeWidth={2}
+                dot={true} // 데이터 포인트 표시
+                name="가격"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="p-4 pt-12 max-w-4xl mx-auto bg-gray-50 min-h-screen my-8 rounded-2xl">
       <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
@@ -128,6 +218,11 @@ const SalsesInformation = () => {
       </div>
 
       {renderTabContent()}
+      
+      {/* 가격 변동 그래프 추가 */}
+      {priceHistory.length > 0 && (
+        <PriceHistoryGraph data={priceHistory} productId={activeTab} />
+      )}
 
       {/* 모델 정보 */}
       <div className="mt-8 bg-white p-6 rounded-lg shadow-md">

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUserInfo, fetchDeleteAuthData, fetchUpdateAuthData } from "../../redux/slices/authslice";
+import { refreshToken } from '../../redux/slices/loginslice';
 import MyInfo from './MyInfo';
 import MyPosts from './MyPosts';
 import MyComments from './MyComments';
@@ -12,16 +13,33 @@ const Mypage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userInfo, userInfoLoading, userInfoError } = useSelector((state) => state.auth);
+  const loginUser = useSelector((state) => state.login.user);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-    dispatch(fetchUserInfo());
-  }, [dispatch, navigate]);
+    const checkAndFetchUserInfo = async () => {
+      try {
+        // 토큰 만료 시간 체크
+        const expireTime = localStorage.getItem('tokenExpiry');
+        const now = new Date().getTime();
+        
+        if (expireTime && now > parseInt(expireTime)) {
+          // 토큰 갱신 시도
+          const refreshResult = await dispatch(refreshToken()).unwrap();
+          if (!refreshResult) {
+            throw new Error('토큰 갱신 실패');
+          }
+        }
+        
+        // 사용자 정보 조회
+        await dispatch(fetchUserInfo()).unwrap();
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+
+    checkAndFetchUserInfo();
+  }, [dispatch]);
 
   const handlePasswordChange = () => {
     setShowPasswordModal(true);
@@ -60,11 +78,17 @@ const Mypage = () => {
   }
 
   if (userInfoError) {
-    if (userInfoError.includes("인증이 만료되었습니다") || userInfoError.includes("401")) {
+    const isAuthError = 
+      userInfoError.includes("인증이 만료되었습니다") || 
+      userInfoError.includes("401") || 
+      !localStorage.getItem("token");
+
+    if (isAuthError) {
       localStorage.removeItem("token");
       navigate("/login");
       return null;
     }
+
     return (
       <div className="flex justify-center items-center min-h-screen pt-16">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">

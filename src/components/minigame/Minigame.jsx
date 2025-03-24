@@ -340,13 +340,10 @@ const Minigame = () => {
   const harvestCrop = (index) => {
     const crop = crops[index];
     if (crop.isGrown) {
+      // 호미 내구도 체크를 가장 먼저 수행
       if (tools.호미.durability <= 0) {
         setMessage('호미의 내구도가 없습니다. 새로 호미를 구매하세요!');
-        if (money < shopItems.호미.price) {
-          setIsGameOver(true);
-          return;
-        }
-        return;
+        return;  // 내구도가 0 이하면 즉시 함수 종료
       }
 
       // 수확 실패 확률 계산
@@ -612,7 +609,7 @@ const Minigame = () => {
         {/* 상단 정보 섹션 */}
         <div className="mb-6 flex justify-between items-center">
           <div className="flex gap-4 items-center">
-            <div className="text-xl">💰 {money}원</div>
+            <div className="text-xl text-green-600">💰 {money}원</div>
             <div className="text-xl">🌞 {season}</div>
             <div className="text-xl relative group">
               <div className="flex items-center gap-2 cursor-help">
@@ -755,7 +752,7 @@ const Minigame = () => {
               <motion.div
                 key={index}
                 whileHover={{ scale: 1.1 }}
-                      className="relative text-4xl cursor-pointer p-4 bg-green-100 rounded-lg flex flex-col items-center justify-center min-h-[100px]"
+                      className="relative text-4xl cursor-pointer p-4 bg-green-100 rounded-lg flex flex-col items-center justify-center w-[100px] h-[100px]"
                 onClick={() => harvestCrop(index)}
               >
                       <div>{cropTypes[crop.type].growthStages[isGrown ? 1 : 0]}</div>
@@ -773,7 +770,7 @@ const Minigame = () => {
                 {[...Array(farmSize - crops.length)].map((_, index) => (
                   <div
                     key={`empty-${index}`}
-                    className="text-4xl p-4 bg-gray-100 rounded-lg flex items-center justify-center min-h-[100px]"
+                    className="text-4xl p-4 bg-gray-100 rounded-lg flex items-center justify-center w-[100px] h-[100px]"
                   >
                     🟫
                   </div>
@@ -783,7 +780,7 @@ const Minigame = () => {
               {/* 인벤토리 */}
               <div className="mt-6">
           <h3 className="text-xl font-bold mb-4">인벤토리</h3>
-                <div className="flex flex-wrap gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   {Object.entries(inventory).map(([type, count]) => {
                     const currentPrice = marketPrices[type];
                     const basePrice = cropTypes[type].basePrice;
@@ -794,14 +791,17 @@ const Minigame = () => {
                       <motion.button
                         key={type}
                         whileHover={{ scale: 1.05 }}
-                        className="bg-gray-100 p-3 rounded-lg hover:bg-gray-200"
+                        className="bg-gray-100 p-3 rounded-lg hover:bg-gray-200 w-[130px] h-[80px] flex flex-col items-center justify-center"
                 onClick={() => sellCrop(type)}
               >
-                        <div>
-                          {cropTypes[type].growthStages[1]} {type}: {count}개
+                        <div className="text-2xl">
+                          {cropTypes[type].growthStages[1]}
                         </div>
-                        <div className={priceColor}>
-                          판매가: {currentPrice}원
+                        <div className="text-sm text-center">
+                          {type}: {count}개
+                        </div>
+                        <div className={`${priceColor} text-xs text-center`}>
+                          {currentPrice}원
                           {priceChange !== '0.0' && (
                             <span> ({priceChange > 0 ? '+' : ''}{priceChange}%)</span>
                           )}
