@@ -14,7 +14,7 @@ const initialState = {
 // 상수 추가
 const TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000; // 24시간
 
-// refreshToken 액션 추가
+// refreshToken 액션 수정
 export const refreshToken = createAsyncThunk(
   'login/refreshToken',
   async (_, { rejectWithValue }) => {
@@ -27,9 +27,9 @@ export const refreshToken = createAsyncThunk(
       
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
-        // 로그인 만료 시간 갱신 (2시간)
-        const expireTime = new Date().getTime() + 2 * 60 * 60 * 1000;
-        localStorage.setItem('loginExpireTime', expireTime.toString());
+        // 만료 시간을 24시간으로 통일
+        const expireTime = new Date().getTime() + TOKEN_EXPIRE_TIME;
+        localStorage.setItem('tokenExpiry', expireTime.toString()); // tokenExpiry로 통일
         return response.data;
       }
       
@@ -68,7 +68,7 @@ const loginSlice = createSlice({
       state.token = null;
       state.user = null;
       localStorage.removeItem("token");
-      localStorage.removeItem("loginExpireTime");
+      localStorage.removeItem("tokenExpiry"); // tokenExpiry로 통일
       // 열람 기록 삭제
       localStorage.removeItem(`viewedMedicines_${state.user?.userId}`);
       localStorage.removeItem(`viewedNews_${state.user?.userId}`);

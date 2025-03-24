@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUserInfo, fetchDeleteAuthData, fetchUpdateAuthData } from "../../redux/slices/authslice";
+import { refreshToken } from '../../redux/slices/loginslice';
 import MyInfo from './MyInfo';
 import MyPosts from './MyPosts';
 import MyComments from './MyComments';
@@ -16,33 +17,29 @@ const Mypage = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    
-    // console.log("Token:", token);
-    // console.log("Login User:", loginUser);
-    
-    if (!token) {
-      Swal.fire({
-        title: '로그인이 필요합니다',
-        text: '로그인 페이지로 이동합니다.',
-        icon: 'warning',
-        confirmButtonText: '확인'
-      }).then(() => {
-        navigate("/login");
-      });
-      return;
-    }
-
-    dispatch(fetchUserInfo())
-      .unwrap()
-      .catch((error) => {
-        console.error("Error fetching user info:", error);
-        if (error.message?.includes("401") || error.message?.includes("인증")) {
-          localStorage.removeItem("token");
-          navigate("/login");
+    const checkAndFetchUserInfo = async () => {
+      try {
+        // 토큰 만료 시간 체크
+        const expireTime = localStorage.getItem('tokenExpiry');
+        const now = new Date().getTime();
+        
+        if (expireTime && now > parseInt(expireTime)) {
+          // 토큰 갱신 시도
+          const refreshResult = await dispatch(refreshToken()).unwrap();
+          if (!refreshResult) {
+            throw new Error('토큰 갱신 실패');
+          }
         }
-      });
-  }, [dispatch, navigate, loginUser]);
+        
+        // 사용자 정보 조회
+        await dispatch(fetchUserInfo()).unwrap();
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+
+    checkAndFetchUserInfo();
+  }, [dispatch]);
 
   const handlePasswordChange = () => {
     setShowPasswordModal(true);
