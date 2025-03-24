@@ -14,7 +14,6 @@ const CommunityNavigation = () => {
         <h1 className="text-3xl font-bold text-gray-800">
           Gardening Community
         </h1>
-        <p className="text-gray-600">The Forum</p>
       </div>
 
       <div className="flex flex-nowrap overflow-x-auto justify-center gap-2 md:gap-4 mb-6">

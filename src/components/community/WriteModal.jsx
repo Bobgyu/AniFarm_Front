@@ -12,6 +12,8 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
         return "전체";
       case "marketplace":
         return "sell";
+      case "freeboard":
+        return "freeboard";
       default:
         return "";
     }

@@ -85,6 +85,11 @@ const Write = ({ posts }) => {
     <div className="container mx-auto p-4">
       {/* 모바일 환경: md 미만에서 카드 형태로 렌더링 */}
       <div className="md:hidden">
+        {posts.some(post => post.category === 'sell') && (
+          <div className="text-xs text-gray-500 mb-4 p-2 bg-gray-100 rounded">
+            당사 웹사이트에서 이루어지는 모든 거래는 사용자 간의 직거래이며, 당사는 이에 대한 어떠한 책임도 지지 않습니다. 사용자 간의 거래로 발생하는 모든 문제(사기, 하자, 분쟁 등)에 대해 당사는 법적 책임을 지지 않으며, 거래 조건 및 제품 상태에 대한 확인은 전적으로 사용자 본인의 책임입니다. 또한, 당사는 거래로 인한 어떠한 손해나 손실에 대해 보상하지 않습니다.
+          </div>
+        )}
         {currentPosts.map((post, index) => (
           <div
             key={`post-mobile-${post.post_id || index}`}
@@ -115,6 +120,11 @@ const Write = ({ posts }) => {
 
       {/* 데스크탑 등 md 이상: 기존 테이블 형태 */}
       <div className="hidden md:block overflow-x-auto">
+        {posts.some(post => post.category === 'sell') && (
+          <div className="text-xs text-gray-500 mb-4 p-2 bg-gray-100 rounded">
+            당사 웹사이트에서 이루어지는 모든 거래는 사용자 간의 직거래이며, 당사는 이에 대한 어떠한 책임도 지지 않습니다. 사용자 간의 거래로 발생하는 모든 문제(사기, 하자, 분쟁 등)에 대해 당사는 법적 책임을 지지 않으며, 거래 조건 및 제품 상태에 대한 확인은 전적으로 사용자 본인의 책임입니다. 또한, 당사는 거래로 인한 어떠한 손해나 손실에 대해 보상하지 않습니다.
+          </div>
+        )}
         <table className="min-w-full table-fixed">
           <thead>
             <tr className="bg-gray-100">
