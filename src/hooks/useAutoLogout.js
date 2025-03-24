@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { clearToken } from "../redux/slices/loginslice";
+import { updateLastActivity, logoutWithAlert } from "../redux/slices/authslice";
 
 const useAutoLogout = () => {
   const dispatch = useDispatch();
@@ -9,20 +9,6 @@ const useAutoLogout = () => {
   // const INACTIVE_TIMEOUT = 60 * 1000; // 60초 = 1분
   const INACTIVE_TIMEOUT = 2 * 60 * 60 * 1000; // 원래 설정 (2시간)
 
-  const performLogout = useCallback(() => {
-    // Redux 상태 초기화를 먼저 수행
-    dispatch(clearToken());
-    
-    // 로컬 스토리지 클리어
-    localStorage.clear();
-    
-    // 알림 표시
-    alert("자동 로그아웃 되었습니다.");
-    
-    // 페이지 새로고침 대신 리다이렉트 사용
-    window.location.replace("/login");
-  }, [dispatch]);
-
   const handleUserActivity = useCallback(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -30,17 +16,26 @@ const useAutoLogout = () => {
 
       if (expireTime && new Date().getTime() > parseInt(expireTime)) {
         console.log("토큰 만료 - 로그아웃 실행");
-        performLogout();
+        dispatch(logoutWithAlert({
+          title: '세션 만료',
+          text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.'
+        }));
+      } else {
+        // 유효한 토큰이 있는 경우에만 활동 시간 업데이트
+        dispatch(updateLastActivity());
       }
     }
-  }, [performLogout]);
+  }, [dispatch]);
 
   useEffect(() => {
     let inactivityTimeout;
 
     const autoLogout = () => {
       console.log("비활성 시간 초과 - 자동 로그아웃 실행");
-      performLogout();
+      dispatch(logoutWithAlert({
+        title: '자동 로그아웃',
+        text: '장시간 활동이 없어 자동 로그아웃되었습니다.'
+      }));
       clearTimeout(inactivityTimeout);
     };
 
@@ -53,15 +48,12 @@ const useAutoLogout = () => {
     };
 
     const handleActivity = () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        handleUserActivity();
-        resetInactivityTimer();
-      }
+      handleUserActivity();
+      resetInactivityTimer();
     };
 
-    const events = ["mousemove", "keypress", "click", "scroll", "touchstart"];
-    events.forEach((event) => {
+    const activityEvents = ["mousedown", "keydown", "scroll", "touchstart"];
+    activityEvents.forEach((event) => {
       window.addEventListener(event, handleActivity);
     });
 
@@ -71,11 +63,11 @@ const useAutoLogout = () => {
 
     return () => {
       clearTimeout(inactivityTimeout);
-      events.forEach((event) => {
+      activityEvents.forEach((event) => {
         window.removeEventListener(event, handleActivity);
       });
     };
-  }, [handleUserActivity]);
+  }, [handleUserActivity, dispatch]);
 };
 
 export default useAutoLogout;

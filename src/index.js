@@ -5,7 +5,7 @@ import App from "./App";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { checkLoginStatusThunk, updateLastActivity, logoutWithAlert } from "./redux/slices/authslice";
+import { checkLoginStatusThunk, updateLastActivity, logoutWithAlert, logoutAction } from "./redux/slices/authslice";
 
 const theme = createTheme({
   typography: {
@@ -19,20 +19,13 @@ const initializeAuth = () => {
   const token = localStorage.getItem("token");
   
   if (!token || (expireTime && new Date().getTime() > parseInt(expireTime))) {
-    localStorage.clear();
-    store.dispatch({ type: 'auth/logout' });
-    
-    // 토큰 만료 알림 표시
     if (expireTime && new Date().getTime() > parseInt(expireTime)) {
       store.dispatch(logoutWithAlert({
         title: '세션 만료',
         text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.'
       }));
-    }
-    
-    const protectedRoutes = ['/mypage', '/profile', '/settings'];
-    if (protectedRoutes.some(route => window.location.pathname.includes(route))) {
-      window.location.href = '/login';
+    } else {
+      store.dispatch(logoutAction());
     }
   }
 };
@@ -47,25 +40,21 @@ const setupActivityTracking = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        store.dispatch({ type: 'auth/logout' });
+        store.dispatch(logoutWithAlert({
+          title: '인증 오류',
+          text: '로그인 정보가 없습니다. 다시 로그인해주세요.'
+        }));
         return;
       }
       await store.dispatch(checkLoginStatusThunk()).unwrap();
     } catch (error) {
       console.error('로그인 상태 체크 실패:', error);
-      // 에러 발생 시 로그아웃 처리
-      store.dispatch({ type: 'auth/logout' });
+      store.dispatch(logoutWithAlert({
+        title: '인증 오류',
+        text: '로그인 상태 확인에 실패했습니다. 다시 로그인해주세요.'
+      }));
     }
   }, 5 * 60 * 1000);  // 5분
-
-  // 사용자 활동 감지
-  const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-  
-  activityEvents.forEach(eventType => {
-    document.addEventListener(eventType, () => {
-      store.dispatch(updateLastActivity());
-    });
-  });
 };
 
 // 초기화 실행
