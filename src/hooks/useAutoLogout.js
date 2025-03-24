@@ -10,10 +10,17 @@ const useAutoLogout = () => {
   const INACTIVE_TIMEOUT = 2 * 60 * 60 * 1000; // 원래 설정 (2시간)
 
   const performLogout = useCallback(() => {
+    // Redux 상태 초기화를 먼저 수행
     dispatch(clearToken());
+    
+    // 로컬 스토리지 클리어
     localStorage.clear();
+    
+    // 알림 표시
     alert("자동 로그아웃 되었습니다.");
-    window.location.href = "/";
+    
+    // 페이지 새로고침 대신 리다이렉트 사용
+    window.location.replace("/login");
   }, [dispatch]);
 
   const handleUserActivity = useCallback(() => {

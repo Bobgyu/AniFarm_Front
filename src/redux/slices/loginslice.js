@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAction } from "@reduxjs/toolkit";
 import { jwtDecode } from "../../utils/jwtDecode.js";
 import { fetchDeleteAuthData } from "./authslice.js";
 
@@ -7,6 +7,7 @@ const initialState = {
   token: initialToken || null,
   user: initialToken ? jwtDecode(initialToken) : null,
   error: null,
+  isLoggedIn: !!initialToken,
 };
 
 const loginSlice = createSlice({
@@ -21,6 +22,7 @@ const loginSlice = createSlice({
       // 로그인 만료 시간 설정 (2시간)
       const expireTime = new Date().getTime() + 2 * 60 * 60 * 1000;
       localStorage.setItem("loginExpireTime", expireTime.toString());
+      state.isLoggedIn = true;
     },
     clearToken: (state) => {
       state.token = null;
@@ -28,6 +30,7 @@ const loginSlice = createSlice({
       state.error = null;
       localStorage.removeItem("token");
       localStorage.removeItem("loginExpireTime");
+      state.isLoggedIn = false;
     },
   },
   extraReducers: (builder) => {
@@ -40,6 +43,7 @@ const loginSlice = createSlice({
       // 열람 기록 삭제
       localStorage.removeItem(`viewedMedicines_${state.user?.userId}`);
       localStorage.removeItem(`viewedNews_${state.user?.userId}`);
+      state.isLoggedIn = false;
     });
   },
 });
