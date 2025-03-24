@@ -119,48 +119,27 @@ const Today = () => {
   const loadFromJsonFile = async () => {
     try {
       const chunkInfo = Cookies.get('frozen_price_chunks');
-      console.log('로드된 쿠키 원본:', chunkInfo);
       if (chunkInfo) {
-        console.log('디코딩된 쿠키:', decodeURIComponent(chunkInfo));
         const { count, lastUpdateTime } = JSON.parse(decodeURIComponent(chunkInfo));
-        console.log('파싱된 쿠키 데이터:', { count, lastUpdateTime });
-        
         const allData = {};
         
         // 모든 청크 로드
         for (let i = 0; i < count; i++) {
           const chunkData = Cookies.get(`frozen_price_chunk_${i}`);
           if (chunkData) {
-            console.log(`청크 ${i} 원본:`, chunkData);
-            console.log(`청크 ${i} 디코딩:`, decodeURIComponent(chunkData));
-            Object.assign(allData, JSON.parse(decodeURIComponent(chunkData)));
+            const decodedData = JSON.parse(decodeURIComponent(chunkData));
+            Object.assign(allData, decodedData);
           }
         }
         
         if (Object.keys(allData).length > 0) {
           setFrozenData(allData);
           setLastUpdateTime(new Date(lastUpdateTime));
-          console.log('데이터 로드 완료:', {
-            itemCount: Object.keys(allData).length,
-            lastUpdateTime
-          });
+          setPriceData(allData); // 쿠키 데이터를 바로 priceData로 설정
         }
       }
     } catch (error) {
       console.error('쿠키 로드 중 오류:', error);
-      console.error('디코딩 시도:', {
-        originalCookies: document.cookie,
-        decodedCookies: decodeURIComponent(document.cookie)
-      });
-      // 에러 발생 시 모든 관련 쿠키 삭제
-      const chunkInfo = Cookies.get('frozen_price_chunks');
-      if (chunkInfo) {
-        const { count } = JSON.parse(chunkInfo);
-        for (let i = 0; i < count; i++) {
-          Cookies.remove(`frozen_price_chunk_${i}`);
-        }
-        Cookies.remove('frozen_price_chunks');
-      }
     }
   };
 
@@ -237,20 +216,13 @@ const Today = () => {
     const fetchPriceData = async () => {
       try {
         setLoading(true);
+        // 먼저 쿠키에서 데이터 로드
+        await loadFromJsonFile();
+        
+        // API에서 새로운 데이터 가져오기
         const response = await axios.get('http://localhost:8000/api/price');
-        console.log('API Response:', response.data);
-
-        // 현재 시간이 오후 3시 이전인지 확인
-        const now = new Date();
-        const updateTime = new Date(now);
-        updateTime.setHours(15, 0, 0, 0);
         
-        // 주말 체크 (0: 일요일, 6: 토요일)
-        const isWeekend = now.getDay() === 0 || now.getDay() === 6;
-        
-        // 새로운 데이터 처리 로직
         if (response.data && response.data.data && response.data.data.item) {
-          // 가장 최근의 유효한 데이터를 찾기 위한 임시 저장소
           const latestValidData = {};
           let hasValidDpr1Data = false;
           
@@ -263,10 +235,8 @@ const Today = () => {
               
               if (hasDpr1) hasValidDpr1Data = true;
               
-              // 현재 아이템의 데이터가 유효한지 확인
               if (!hasDpr1 && !hasDpr2) return;
 
-              // 이미 저장된 데이터가 없거나, 현재 데이터가 더 최신인 경우
               if (!latestValidData[itemName] || 
                   (hasDpr1 && new Date(item.day1.replace(/[()]/g, '')) > new Date(latestValidData[itemName].date))) {
                 
@@ -292,39 +262,29 @@ const Today = () => {
               }
             });
 
-          console.log('프리징 상태 체크:', {
-            isWeekend,
-            currentTime: now.toLocaleTimeString(),
-            hasValidDpr1Data,
-            hasFrozenData: !!frozenData,
-            hasLastUpdateTime: !!lastUpdateTime,
-            latestValidDataKeys: Object.keys(latestValidData),
-            frozenDataKeys: frozenData ? Object.keys(frozenData) : []
-          });
-
-          // 데이터 업데이트 및 프리징 로직
+          // 현재 시간이 오후 3시 이전인지 확인
+          const now = new Date();
+          const updateTime = new Date(now);
+          updateTime.setHours(15, 0, 0, 0);
+          
+          // 주말 체크 (0: 일요일, 6: 토요일)
+          const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+          
           if (Object.keys(latestValidData).length > 0) {
             updateData(latestValidData, now, isWeekend, hasValidDpr1Data);
-          } else {
-            console.log('유효한 데이터가 없어 프리징된 데이터 사용');
-            if (frozenData) {
-              setPriceData(frozenData);
-            }
           }
-        } else {
-          console.error('Invalid API response structure:', response.data);
-          setError('데이터 형식이 올바르지 않습니다.');
         }
       } catch (err) {
-        setError('가격 데이터를 불러오는데 실패했습니다.');
         console.error('Error fetching price data:', err);
+        // API 호출 실패 시 쿠키 데이터 사용
+        if (frozenData) {
+          setPriceData(frozenData);
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    // 초기 데이터 로드
-    loadFromJsonFile();
     fetchPriceData();
 
     // 매일 오후 3시에 데이터 업데이트 (주말 제외)
@@ -496,7 +456,7 @@ const Today = () => {
           </Tabs>
         </Box>
         <Typography variant="body2" align="right" sx={{ color: '#666' }}>
-          가격단위: 원    기준일 {filteredData[0]?.[1]?.date || ''}
+          가격단위: 원(₩)  |  기준일: {(filteredData[0]?.[1]?.date || '').replace(/^\d+일전\s*/, '')}
         </Typography>
       </Box>
 
