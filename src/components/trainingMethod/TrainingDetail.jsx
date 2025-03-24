@@ -8,6 +8,13 @@ const TrainingDetail = () => {
   const searchParams = new URLSearchParams(location.search);
   const cropId = searchParams.get('cropId');
 
+  // 스크롤 초기화: 컴포넌트가 마운트될 때 스크롤을 최상단으로 이동
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    // 또는 부드러운 스크롤 효과를 원하면 아래와 같이 사용:
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   // Memoize the sorted crop entries to ensure stable reference
   const sortedCropEntries = useMemo(() => {
     return Object.entries(cropData).sort((a, b) => 

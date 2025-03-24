@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { FaSeedling, FaWater, FaSun, FaLeaf, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { motion } from "framer-motion"; 
+import { motion, AnimatePresence } from "framer-motion"; 
 import tomatoes from '../../assets/images/tomatoes.jpg';
 import lettuce from '../../assets/images/lettuce.jpg';
 import carrot from '../../assets/images/carrot.jpg';
