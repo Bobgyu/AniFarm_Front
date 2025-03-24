@@ -299,7 +299,7 @@ export const refreshToken = createAsyncThunk(
   'auth/refreshToken',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/auth/refresh`, {}, {
+      const response = await axios.post('/auth/refresh-token', {}, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -307,30 +307,14 @@ export const refreshToken = createAsyncThunk(
       
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
-        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000;
-        localStorage.setItem('tokenExpiry', expiry.toString());
-        
-        await Swal.fire({
-          icon: 'success',
-          title: '토큰이 갱신되었습니다',
-          showConfirmButton: false,
-          timer: 1500
-        });
-        
+        const expiry = new Date().getTime() + 2 * 60 * 60 * 1000; // 2시간
+        localStorage.setItem('loginExpireTime', expiry.toString());
         return response.data;
       }
       
       throw new Error('토큰 갱신 실패');
     } catch (error) {
-      await Swal.fire({
-        icon: 'error',
-        title: '토큰 갱신 실패',
-        text: error.response?.data?.message || '토큰 갱신에 실패했습니다.',
-        confirmButtonText: '확인',
-        timer: 3000,
-        timerProgressBar: true
-      });
-      return rejectWithValue(error.response?.data || '토큰 갱신 실패');
+      return rejectWithValue(error.message);
     }
   }
 );

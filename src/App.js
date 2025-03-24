@@ -6,6 +6,8 @@ import {
   Route,
   useLocation,
   Link,
+  Navigate,
+  useNavigate,
 } from "react-router-dom";
 import Home from "./components/common/Home";
 import Culture from "./components/common/Culture";
@@ -23,7 +25,7 @@ import Pests from "./components/pests/Pests";
 import TrainingMethod from "./components/trainingMethod/TrainingMethod";
 import PostDetail from "./components/community/PostDetail";
 import Write from "./components/community/Write";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import TrainingDetail from "./components/trainingMethod/TrainingDetail";
 import Today from "./components/Today/Today";
 import useAutoLogout from "./hooks/useAutoLogout";
@@ -31,6 +33,7 @@ import { ChatIcon } from "./components/chatbot/ChatIcon";
 import { ChatMsg } from "./components/chatbot/ChatMsg";
 import ChatForm from "./components/chatbot/ChatForm";
 import Minigame from "./components/minigame/Minigame";
+import Swal from 'sweetalert2';
 
 function App() {
   return (
@@ -45,6 +48,7 @@ function AppContent() {
   const location = useLocation();
   const dispatch = useDispatch();
   useAutoLogout(); // 커스텀 훅 사용
+  const navigate = useNavigate();
 
   // 챗봇 관련 상태
   const [showChatbot, setShowChatbot] = useState(false);
@@ -92,6 +96,31 @@ function AppContent() {
     }
   }, [chatHistory]);
 
+  // 보호된 라우트를 위한 함수 추가
+  const ProtectedMypage = () => {
+    const token = localStorage.getItem('token');
+    const user = useSelector((state) => state.login.user);
+
+    useEffect(() => {
+      if (!token || !user) {
+        Swal.fire({
+          title: '로그인이 필요합니다',
+          text: '로그인 페이지로 이동합니다.',
+          icon: 'warning',
+          confirmButtonText: '확인'
+        }).then(() => {
+          navigate("/login");
+        });
+      }
+    }, [navigate, user]);
+
+    if (!token || !user) {
+      return null;
+    }
+
+    return <Mypage />;
+  };
+
   return (
     <div className="App">
       <Header1 />
@@ -110,8 +139,7 @@ function AppContent() {
         <Route path="/pests" element={<Pests />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/mypage" element={<Mypage />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/mypage" element={<ProtectedMypage />} />
         <Route path="/trainingMethod" element={<TrainingMethod />} />
         <Route path="/Today" element={<Today />} />
         <Route path="/trainingDetail" element={<TrainingDetail />} />

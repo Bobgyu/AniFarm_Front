@@ -19,7 +19,7 @@ const MyPosts = () => {
   useEffect(() => {
     dispatch(fetchMyPosts()).then(() => {
       // 받아온 데이터의 형식을 확인
-      console.log('게시글 데이터:', myPosts);
+      // console.log('게시글 데이터:', myPosts);
     });
   }, [dispatch]);
 

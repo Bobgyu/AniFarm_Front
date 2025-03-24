@@ -50,7 +50,6 @@ const Community = () => {
       case "marketplace":
         return [
           { id: "all", name: "전체" },
-          { id: "question", name: "질문하기" },
           { id: "sell", name: "판매하기" },
           { id: "buy", name: "구매하기" },
         ];

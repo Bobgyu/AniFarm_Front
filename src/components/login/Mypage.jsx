@@ -12,16 +12,37 @@ const Mypage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userInfo, userInfoLoading, userInfoError } = useSelector((state) => state.auth);
+  const loginUser = useSelector((state) => state.login.user);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    
+    // console.log("Token:", token);
+    // console.log("Login User:", loginUser);
+    
     if (!token) {
-      navigate("/login");
+      Swal.fire({
+        title: '로그인이 필요합니다',
+        text: '로그인 페이지로 이동합니다.',
+        icon: 'warning',
+        confirmButtonText: '확인'
+      }).then(() => {
+        navigate("/login");
+      });
       return;
     }
-    dispatch(fetchUserInfo());
-  }, [dispatch, navigate]);
+
+    dispatch(fetchUserInfo())
+      .unwrap()
+      .catch((error) => {
+        console.error("Error fetching user info:", error);
+        if (error.message?.includes("401") || error.message?.includes("인증")) {
+          localStorage.removeItem("token");
+          navigate("/login");
+        }
+      });
+  }, [dispatch, navigate, loginUser]);
 
   const handlePasswordChange = () => {
     setShowPasswordModal(true);
@@ -60,11 +81,17 @@ const Mypage = () => {
   }
 
   if (userInfoError) {
-    if (userInfoError.includes("인증이 만료되었습니다") || userInfoError.includes("401")) {
+    const isAuthError = 
+      userInfoError.includes("인증이 만료되었습니다") || 
+      userInfoError.includes("401") || 
+      !localStorage.getItem("token");
+
+    if (isAuthError) {
       localStorage.removeItem("token");
       navigate("/login");
       return null;
     }
+
     return (
       <div className="flex justify-center items-center min-h-screen pt-16">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">

@@ -1,6 +1,7 @@
-import { createSlice, createAction } from "@reduxjs/toolkit";
+import { createSlice, createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { jwtDecode } from "../../utils/jwtDecode.js";
 import { fetchDeleteAuthData } from "./authslice.js";
+import axios from "axios";
 
 const initialToken = localStorage.getItem("token");
 const initialState = {
@@ -9,6 +10,35 @@ const initialState = {
   error: null,
   isLoggedIn: !!initialToken,
 };
+
+// 상수 추가
+const TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000; // 24시간
+
+// refreshToken 액션 추가
+export const refreshToken = createAsyncThunk(
+  'login/refreshToken',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.post('http://localhost:8000/auth/refresh-token', {}, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.data.access_token) {
+        localStorage.setItem('token', response.data.access_token);
+        // 로그인 만료 시간 갱신 (2시간)
+        const expireTime = new Date().getTime() + 2 * 60 * 60 * 1000;
+        localStorage.setItem('loginExpireTime', expireTime.toString());
+        return response.data;
+      }
+      
+      throw new Error('토큰 갱신 실패');
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || '토큰 갱신에 실패했습니다.');
+    }
+  }
+);
 
 const loginSlice = createSlice({
   name: "login",
@@ -19,9 +49,8 @@ const loginSlice = createSlice({
       state.user = jwtDecode(action.payload);
       state.error = null;
       localStorage.setItem("token", action.payload);
-      // 로그인 만료 시간 설정 (2시간)
-      const expireTime = new Date().getTime() + 2 * 60 * 60 * 1000;
-      localStorage.setItem("loginExpireTime", expireTime.toString());
+      const expireTime = new Date().getTime() + TOKEN_EXPIRE_TIME;
+      localStorage.setItem("tokenExpiry", expireTime.toString());
       state.isLoggedIn = true;
     },
     clearToken: (state) => {
@@ -29,7 +58,7 @@ const loginSlice = createSlice({
       state.user = null;
       state.error = null;
       localStorage.removeItem("token");
-      localStorage.removeItem("loginExpireTime");
+      localStorage.removeItem("tokenExpiry");
       state.isLoggedIn = false;
     },
   },
@@ -45,6 +74,18 @@ const loginSlice = createSlice({
       localStorage.removeItem(`viewedNews_${state.user?.userId}`);
       state.isLoggedIn = false;
     });
+
+    // refreshToken 케이스 추가
+    builder
+      .addCase(refreshToken.fulfilled, (state, action) => {
+        state.token = action.payload.access_token;
+        state.user = jwtDecode(action.payload.access_token);
+        state.error = null;
+        state.isLoggedIn = true;
+      })
+      .addCase(refreshToken.rejected, (state, action) => {
+        state.error = action.payload;
+      });
   },
 });
 
