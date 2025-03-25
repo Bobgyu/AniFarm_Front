@@ -52,6 +52,8 @@ const Pests = () => {
     { value: "tomato", label: "🍅 토마토" },
     { value: "apple", label: "🍎 사과" },
     { value: "potato", label: "🥔 감자" },
+    { value: "grape", label: "🍇 포도" },
+    { value: "corn", label: "🌽 옥수수" },
   ];
 
   const resetStateHandler = () => {
@@ -152,7 +154,18 @@ const Pests = () => {
           ).unwrap();
           console.log("사과 분석 결과:", response);
           break;
-
+        case "grape":
+          response = await dispatch(
+            analyzeImage({ formData, type: "grape" })
+          ).unwrap();
+          console.log("포도 분석 결과:", response);
+          break;
+        case "corn":
+          response = await dispatch(
+            analyzeImage({ formData, type: "corn" })
+          ).unwrap();
+          console.log("옥수수 분석 결과:", response);
+          break;
         default:
           break;
       }
@@ -173,26 +186,27 @@ const Pests = () => {
         return {
           status: "diseased",
           disease: "ex) 흰가루병",
-          recommendation: "ex) 통풍이 잘 되도록 관리하고, 질소질 비료를 줄이세요."
+          recommendation:
+            "ex) 통풍이 잘 되도록 관리하고, 질소질 비료를 줄이세요.",
         };
       case "strawberry":
         return {
           status: "diseased",
           disease: "ex) 잎끝마름병",
-          recommendation: "ex) 습도 관리에 주의하고, 이병주는 즉시 제거하세요."
+          recommendation: "ex) 습도 관리에 주의하고, 이병주는 즉시 제거하세요.",
         };
       // ... 다른 작물들에 대한 예시 추가
       default:
         return {
           status: "healthy",
           disease: "ex) 정상",
-          recommendation: "ex) 현재 특별한 조치가 필요하지 않습니다."
+          recommendation: "ex) 현재 특별한 조치가 필요하지 않습니다.",
         };
     }
   };
 
   return (
-    <Container maxWidth="md" className="px-4">
+    <Container maxWidth="lg" className="px-4">
       <Box className="py-8">
         <Typography variant="h5" className="text-center mb-4">
           병충해 진단
@@ -205,16 +219,28 @@ const Pests = () => {
               onChange={handleTabChange}
               variant="fullWidth"
               className="min-h-[48px]"
+              sx={{
+                "& .MuiTabs-flexContainer": {
+                  flexWrap: "nowrap",
+                  overflowX: "auto",
+                  "&::-webkit-scrollbar": {
+                    display: "none",
+                  },
+                  scrollbarWidth: "none",
+                  "-ms-overflow-style": "none",
+                },
+              }}
             >
               {crops.map((crop) => (
                 <Tab
                   key={crop.value}
                   label={crop.label}
-                  className="min-h-[48px]"
+                  className="min-h-[48px] min-w-[100px] flex-shrink-0"
                   sx={{
                     textTransform: "none",
                     fontSize: "1rem",
                     fontWeight: "normal",
+                    whiteSpace: "nowrap",
                     "&.Mui-selected": {
                       fontWeight: "bold",
                     },
@@ -238,7 +264,7 @@ const Pests = () => {
                 <Box className="w-full">
                   <Box className="flex justify-center flex-col items-center">
                     <label htmlFor="image-upload">
-                      <Box className="w-full sm:w-[400px] h-[330px] bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
+                      <Box className="w-full sm:w-[500px] h-[330px] bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
                         <Box className="text-center">
                           <CloudUploadIcon
                             sx={{ fontSize: 60 }}
@@ -247,7 +273,10 @@ const Pests = () => {
                           <Typography variant="body1" className="text-gray-500">
                             이미지를 업로드해주세요
                           </Typography>
-                          <Typography variant="body2" className="text-gray-400 mt-1">
+                          <Typography
+                            variant="body2"
+                            className="text-gray-400 mt-1"
+                          >
                             (최대 5MB)
                           </Typography>
                           <Button
@@ -262,7 +291,7 @@ const Pests = () => {
                       </Box>
                     </label>
 
-                    <Box className="mt-4 p-4 w-full sm:w-[400px] border-2 border-gray-300 rounded-lg">
+                    <Box className="mt-4 p-4 w-full sm:w-[500px] border-2 border-gray-300 rounded-lg">
                       <Typography
                         variant="subtitle1"
                         className="font-semibold mb-2 text-center"
@@ -380,6 +409,42 @@ const Pests = () => {
                           </Box>
                         </Box>
                       )}
+                      {selectedTab === 6 && (
+                        <Box className="text-center">
+                          <Typography variant="body2" className="text-gray-600">
+                            포도 잎사귀의 다음 증상을 진단할 수 있습니다:
+                          </Typography>
+                          <Box className="mt-2 flex flex-wrap justify-center gap-2">
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                              에스카병
+                            </span>
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                              흑색 부패병
+                            </span>
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                              잎마름병
+                            </span>
+                          </Box>
+                        </Box>
+                      )}
+                      {selectedTab === 7 && (
+                        <Box className="text-center">
+                          <Typography variant="body2" className="text-gray-600">
+                            옥수수 잎사귀의 다음 증상을 진단할 수 있습니다:
+                          </Typography>
+                          <Box className="mt-2 flex flex-wrap justify-center gap-2">
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                              세르코스포라 잎반점병
+                            </span>
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                              일반 녹병
+                            </span>
+                            <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                              북부 잎마름병
+                            </span>
+                          </Box>
+                        </Box>
+                      )}
                     </Box>
                   </Box>
                 </Box>
@@ -408,7 +473,7 @@ const Pests = () => {
                   <Box className="w-full">
                     <Typography variant="h6" className="mb-4 pb-2"></Typography>
                     <Box className="flex justify-center">
-                      <Box className="w-full sm:w-[400px] h-[330px] bg-white">
+                      <Box className="w-full sm:w-[500px] h-[330px] bg-white">
                         <img
                           src={selectedImage}
                           alt="선택된 이미지"
@@ -418,7 +483,10 @@ const Pests = () => {
                     </Box>
                     {!selectedImage && (
                       <Box className="mt-4 p-4 border-2 border-gray-300 rounded-lg">
-                        <Typography variant="subtitle1" className="font-semibold mb-2">
+                        <Typography
+                          variant="subtitle1"
+                          className="font-semibold mb-2"
+                        >
                           진단 가능한 병해충
                         </Typography>
                         {selectedTab === 0 && (
@@ -471,6 +539,23 @@ const Pests = () => {
                             </span>
                           </Typography>
                         )}
+                        {selectedTab === 6 && (
+                          <Typography variant="body2" className="flex gap-2">
+                            포도:
+                            <span className="text-gray-600">
+                              에스카병, 흑색 부패병, 잎마름병, 정상
+                            </span>
+                          </Typography>
+                        )}
+                        {selectedTab === 7 && (
+                          <Typography variant="body2" className="flex gap-2">
+                            옥수수:
+                            <span className="text-gray-600">
+                              세르코스포라 잎반점병, 일반 녹병, 북부 잎마름병,
+                              정상
+                            </span>
+                          </Typography>
+                        )}
                       </Box>
                     )}
                   </Box>
@@ -480,33 +565,41 @@ const Pests = () => {
 
             {/* 우측 - 진단 결과 카드 */}
             <Box className="w-full md:w-1/2 flex items-center justify-start mt-8 md:mt-14">
-              <Box className="w-full sm:w-[400px]">
-                <Box className="w-full sm:w-[400px] h-auto sm:h-[340px] border-2 border-gray-300 rounded-lg p-4">
-                  <Typography variant="h6" className="mb-3 border-b border-gray-200 pb-2">
+              <Box className="w-full sm:w-[500px]">
+                <Box className="w-full sm:w-[500px] h-auto sm:h-[340px] border-2 border-gray-300 rounded-lg p-4">
+                  <Typography
+                    variant="h6"
+                    className="mb-3 border-b border-gray-200 pb-2"
+                  >
                     {showExample ? "예상 진단 결과" : "진단 결과"}
                   </Typography>
                   <Paper
                     className={`p-3 ${
-                      (showExample ? getExampleResult() : result)?.status === "healthy"
+                      (showExample ? getExampleResult() : result)?.status ===
+                      "healthy"
                         ? "bg-green-50"
-                        : (showExample ? getExampleResult() : result)?.status === "invalid"
+                        : (showExample ? getExampleResult() : result)
+                            ?.status === "invalid"
                         ? "bg-gray-50"
                         : "bg-red-50"
                     } transition-colors duration-300`}
                     sx={{ boxShadow: "none" }}
                   >
                     <Box className="space-y-2 text-sm">
-                      
                       <Typography variant="body2">
                         <span className="font-semibold">진단 결과: </span>
-                        {showExample ? getExampleResult().disease : result?.disease}
+                        {showExample
+                          ? getExampleResult().disease
+                          : result?.disease}
                       </Typography>
                       <Typography
                         variant="body2"
                         className="whitespace-pre-wrap border-b border-gray-200 pb-2"
                       >
                         <span className="font-semibold">권장 조치: </span>
-                        {showExample ? getExampleResult().recommendation : result?.recommendation}
+                        {showExample
+                          ? getExampleResult().recommendation
+                          : result?.recommendation}
                       </Typography>
                     </Box>
                   </Paper>
