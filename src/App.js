@@ -23,6 +23,8 @@ import Community from "./components/community/Community";
 import SalsesInformation from "./components/SalsesInformation/SalsesInformation";
 import Pests from "./components/pests/Pests";
 import TrainingMethod from "./components/trainingMethod/TrainingMethod";
+import QuizData from "./components/minigame/CropQuiz/QuizData";
+import CropQuiz from "./components/minigame/CropQuiz/CropQuiz";  
 import PostDetail from "./components/community/PostDetail";
 import Write from "./components/community/Write";
 import { useDispatch, useSelector } from "react-redux";
@@ -141,6 +143,8 @@ function AppContent() {
         <Route path="/register" element={<Register />} />
         <Route path="/mypage" element={<ProtectedMypage />} />
         <Route path="/trainingMethod" element={<TrainingMethod />} />
+        <Route path="/QuizData" element={<QuizData />} />
+        <Route path="/CropQuiz" element={<CropQuiz />} />
         <Route path="/Today" element={<Today />} />
         <Route path="/trainingDetail" element={<TrainingDetail />} />
         <Route path="/minigame" element={<Minigame />} />

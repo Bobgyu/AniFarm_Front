@@ -25,13 +25,10 @@ const TrainingMethod = () => {
   const [videos, setVideos] = useState([]);
   const [videosLoading, setVideosLoading] = useState(true);
   const [startIndex, setStartIndex] = useState(0);
-  const [news, setNews] = useState([]);
-  const [newsPage, setNewsPage] = useState(0);
-  const newsItemsPerPage = 3;
   const [[page, direction], setPage] = useState([0, 0]);
 
   // 유튜브 영상 페이지 네비게이션을 위한 상태
-  const [videoPage, setVideoPage] = useState(0);
+  const [[videoPage, videoDirection], setVideoPageState] = useState([0, 0]);
   // 화면크기에 따라 한 페이지에 보여질 영상의 개수를 동적으로 설정: 모바일은 1, 데스크탑은 3
   const [videoItemsPerPage, setVideoItemsPerPage] = useState(() =>
     window.innerWidth < 768 ? 1 : 3
@@ -47,7 +44,7 @@ const TrainingMethod = () => {
     const handleResize = () => {
       const newItemsPerPage = window.innerWidth < 768 ? 1 : 3;
       setVideoItemsPerPage(newItemsPerPage);
-      setVideoPage(0); // 리사이즈 시 페이지 초기화
+      setVideoPageState([0, 0]); // 리사이즈 시 페이지 초기화
     };
     window.addEventListener("resize", handleResize);
     // 컴포넌트 마운트 시 한 번 실행
@@ -79,8 +76,6 @@ const TrainingMethod = () => {
     })
   };
 
-  const totalNewsPages = Math.ceil(news.length / newsItemsPerPage);
-
   useEffect(() => {
     const fetchYoutubeVideos = async () => {
       setVideosLoading(true);
@@ -96,22 +91,6 @@ const TrainingMethod = () => {
     };
 
     fetchYoutubeVideos();
-  }, []);
-
-  // 크롤러 엔드포인트로부터 뉴스를 가져오기 위한 useEffect (여기서는 list/20 사용)
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/api/crawler/news-links?list=20');
-        // 응답 구조: { news_links: [ { title, link, image, content }, ... ] }
-        setNews(response.data.news_links || []);
-      } catch (error) {
-        console.error('뉴스 크롤링 데이터 fetch 오류:', error);
-        setNews([]);
-      }
-    };
-
-    fetchNews();
   }, []);
 
   const methods = [
@@ -174,11 +153,17 @@ const TrainingMethod = () => {
 
   // 데스크탑의 화살표 네비게이션 핸들러 (모바일은 아래 슬라이더로 대체)
   const handleVideoPrevious = () => {
-    setVideoPage((prev) => (prev === 0 ? totalVideoPages - 1 : prev - 1));
+    setVideoPageState(([prevPage]) => [
+      prevPage === 0 ? totalVideoPages - 1 : prevPage - 1,
+      -1,
+    ]);
   };
 
   const handleVideoNext = () => {
-    setVideoPage((prev) => (prev === totalVideoPages - 1 ? 0 : prev + 1));
+    setVideoPageState(([prevPage]) => [
+      prevPage === totalVideoPages - 1 ? 0 : prevPage + 1,
+      1,
+    ]);
   };
 
   const visibleImages = allImages.slice(startIndex, startIndex + 4);
@@ -339,9 +324,9 @@ const TrainingMethod = () => {
                   onDragEnd={(event, info) => {
                     const threshold = sliderWidth / 4;
                     if (info.offset.x < -threshold && videoPage < videos.length - 1) {
-                      setVideoPage(videoPage + 1);
+                      setVideoPageState([videoPage + 1, 0]);
                     } else if (info.offset.x > threshold && videoPage > 0) {
-                      setVideoPage(videoPage - 1);
+                      setVideoPageState([videoPage - 1, 0]);
                     }
                   }}
                   animate={{ x: -videoPage * sliderWidth }}
@@ -379,36 +364,42 @@ const TrainingMethod = () => {
             ) : (
               // 데스크탑에서는 기존 그리드 방식 유지
               <div className="grid gap-8 grid-cols-3">
-                {videos
-                  .slice(
-                    videoPage * videoItemsPerPage,
-                    (videoPage + 1) * videoItemsPerPage
-                  )
-                  .map((video) => (
-                    <div
-                      key={video.id.videoId}
-                      className="bg-white rounded-lg shadow-lg overflow-hidden"
-                    >
-                      <div className="aspect-w-16 aspect-h-9">
-                        <img
-                          src={video.snippet.thumbnails.high.url}
-                          alt={video.snippet.title}
-                          className="w-full h-[300px] object-cover cursor-pointer"
-                          onClick={() =>
-                            window.open(`https://www.youtube.com/watch?v=${video.id.videoId}`, "_blank")
-                          }
-                        />
-                      </div>
-                      <div className="p-4">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">
-                          {video.snippet.title}
-                        </h3>
-                        <p className="text-gray-600 text-sm line-clamp-3">
-                          {video.snippet.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                <AnimatePresence mode="wait">
+                  {videos
+                    .slice(
+                      videoPage * videoItemsPerPage,
+                      (videoPage + 1) * videoItemsPerPage
+                    )
+                    .map((video) => (
+                      <motion.div
+                        key={video.id.videoId}
+                        className="bg-white rounded-lg shadow-lg overflow-hidden"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <div className="aspect-w-16 aspect-h-9">
+                          <img
+                            src={video.snippet.thumbnails.high.url}
+                            alt={video.snippet.title}
+                            className="w-full h-[300px] object-cover cursor-pointer"
+                            onClick={() =>
+                              window.open(`https://www.youtube.com/watch?v=${video.id.videoId}`, "_blank")
+                            }
+                          />
+                        </div>
+                        <div className="p-4">
+                          <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">
+                            {video.snippet.title}
+                          </h3>
+                          <p className="text-gray-600 text-sm line-clamp-3">
+                            {video.snippet.description}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))}
+                </AnimatePresence>
               </div>
             )}
           </div>
@@ -424,11 +415,13 @@ const TrainingMethod = () => {
           <p className="text-xl mb-8">
             전문가의 도움을 받아 더 나은 농작물을 기르세요
           </p>
+          <div className="flex justify-center items-center gap-4">
           <Link to="/trainingDetail?cropId=crop1">
             <button className="bg-[#3a9d1f] text-white px-8 py-3 rounded-full hover:bg-[#0aab65]">
               육성 가이드 보기
             </button>
           </Link>
+        </div>
         </div>
       </div>
     </div>
