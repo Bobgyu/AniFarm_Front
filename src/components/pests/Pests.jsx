@@ -229,6 +229,9 @@ const Pests = () => {
                   scrollbarWidth: "none",
                   "-ms-overflow-style": "none",
                 },
+                "& .MuiTabs-indicator": {
+                  backgroundColor: "#3a9d1f",
+                },
               }}
             >
               {crops.map((crop) => (
@@ -241,8 +244,14 @@ const Pests = () => {
                     fontSize: "1rem",
                     fontWeight: "normal",
                     whiteSpace: "nowrap",
+                    color: "#666",
                     "&.Mui-selected": {
+                      color: "#3a9d1f",
                       fontWeight: "bold",
+                    },
+                    "&:hover": {
+                      color: "#3a9d1f",
+                      opacity: 0.8,
                     },
                   }}
                 />
@@ -284,6 +293,12 @@ const Pests = () => {
                             component="span"
                             startIcon={<CloudUploadIcon />}
                             className="mt-4 min-w-[120px] h-[2.4rem]"
+                            sx={{
+                              backgroundColor: "#3a9d1f",
+                              "&:hover": {
+                                backgroundColor: "#2d7b18",
+                              },
+                            }}
                           >
                             이미지 업로드
                           </Button>
@@ -457,6 +472,15 @@ const Pests = () => {
                       onClick={handleDiagnosis}
                       disabled={isLoading}
                       className="min-w-[120px] h-[2.4rem]"
+                      sx={{
+                        backgroundColor: "#3a9d1f",
+                        "&:hover": {
+                          backgroundColor: "#2d7b18",
+                        },
+                        "&.Mui-disabled": {
+                          backgroundColor: "#a5d3a0",
+                        },
+                      }}
                     >
                       {isLoading ? "분석 중..." : "진단하기"}
                     </Button>
@@ -466,6 +490,18 @@ const Pests = () => {
                       onClick={resetStateHandler}
                       disabled={isLoading}
                       className="min-w-[120px] h-[2.4rem]"
+                      sx={{
+                        color: "#3a9d1f",
+                        borderColor: "#3a9d1f",
+                        "&:hover": {
+                          borderColor: "#2d7b18",
+                          color: "#2d7b18",
+                        },
+                        "&.Mui-disabled": {
+                          borderColor: "#a5d3a0",
+                          color: "#a5d3a0",
+                        },
+                      }}
                     >
                       다시 시도
                     </Button>
