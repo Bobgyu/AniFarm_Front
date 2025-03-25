@@ -8,9 +8,8 @@ const Footer = () => {
   const handleCropQuiz = () => {
     navigate("/CropQuiz");
   };
-
-  const handleCropData = () => {
-    navigate("/CropData");
+  const handleQuizData = () => {
+    navigate("/QuizData");
   };
 
   return (
@@ -40,7 +39,7 @@ const Footer = () => {
               Crop Quiz
             </button>
             <button
-              onClick={handleCropData}
+              onClick={handleQuizData}
               className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
             >
               Crop Data
