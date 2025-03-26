@@ -193,9 +193,50 @@ const Pests = () => {
         return {
           status: "diseased",
           disease: "ex) 잎끝마름병",
-          recommendation: "ex) 습도 관리에 주의하고, 이병주는 즉시 제거하세요.",
+          recommendation:
+            "ex) 과습을 피하고 토양이 건조하지 않도록 일정한 습도를 유지하세요.",
         };
-      // ... 다른 작물들에 대한 예시 추가
+      case "kiwi":
+        return {
+          status: "diseased",
+          disease: "ex) 점무늬병",
+          recommendation: "ex) 나무 사이 간격을 유지하고 환기를 자주 해주세요.",
+        };
+      case "tomato":
+        return {
+          status: "diseased",
+          disease: "ex) 박테리아성 반점병",
+          recommendation:
+            "ex) 잎이 젖지 않도록 관리해주시고 줄기 및 잎을 정리해주세요.",
+        };
+      case "apple":
+        return {
+          status: "diseased",
+          disease: "ex) 검은무늬병",
+          recommendation:
+            "ex)통풍을 원활하게 하여 잎이 빨리 마르도록 관리해주세요.",
+        };
+      case "potato":
+        return {
+          status: "diseased",
+          disease: "ex) 잎마름병",
+          recommendation:
+            "ex) 물이 고이지 않도록 두둑을 높게 만들고 배수로 정비해주세요.",
+        };
+      case "grape":
+        return {
+          status: "diseased",
+          disease: "ex) 에스카병",
+          recommendation:
+            "ex) 가지치기 시 상처를 최소화 해주시고 절단부위에 보호제를 도포해주세요",
+        };
+      case "corn":
+        return {
+          status: "diseased",
+          disease: "ex) 세르코스포라 잎반점병",
+          recommendation:
+            "ex) 통풍을 원활하게하여 습도조절을 해주시고 감염부위를 신속히 제거 후 소각해주세요",
+        };
       default:
         return {
           status: "healthy",
