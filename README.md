@@ -108,7 +108,7 @@ REACT_APP_BACKEND_URL=http://localhost:8000
 
 - `/` - 메인 페이지
 - `/weather` - 날씨 정보
-- `/disease` - 농산물 질병 예측
+- `/disease` - 농산물 질병 이미지 분석
 - `/price` - 가격 정보
 - `/market` - 시장 정보
 - `/community` - 커뮤니티
