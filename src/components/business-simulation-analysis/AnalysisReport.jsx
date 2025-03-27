@@ -413,7 +413,7 @@ const AnalysisReport = ({ data }) => {
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar dataKey="cost" name="경영비상세" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="cost" name="금액" radius={[4, 4, 0, 0]}>
                 {costData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
