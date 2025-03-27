@@ -236,7 +236,7 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
                           <button
                             type="button"
                             onClick={() => handleAddCrop(crop)}
-                            className="px-4 py-1 text-sm text-white bg-[#ff6b3d] rounded hover:bg-[#e85d33] transition-colors duration-200"
+                            className="px-4 py-1 text-sm text-white bg-[#3a9d1f] rounded hover:bg-[#2d7a17] transition-colors duration-200"
                           >
                             추가하기
                           </button>
