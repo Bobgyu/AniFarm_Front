@@ -25,7 +25,7 @@ const BusinessSimulation = () => {
       {/* 상단 배너 */}
       <div className="bg-[#fff] text-[#000000] py-8">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-4">경영모의계산</h1>
+          <h1 className="text-4xl font-bold mb-4">경영 모의계산</h1>
         </div>
       </div>
 

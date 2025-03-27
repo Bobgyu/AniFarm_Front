@@ -119,7 +119,7 @@ const Sale = () => {
                   : hoveredContent === "community"
                   ? "농산물 판매 커뮤니티에서 직거래를 시작해보세요"
                   : hoveredContent === "business"
-                  ? "경영모의계산"
+                  ? "경영 모의계산을 통해 최적의 경영 방법을 찾아보세요"
                   : "판매하기에 관한 내용"}
               </h2>
             </div>
@@ -189,7 +189,7 @@ const Sale = () => {
                     <div className="p-4">
                       <div className="text-2xl mb-2 text-center">💼</div>
                       <h3 className="text-lg font-semibold text-gray-900 text-center">
-                        경영모의계산
+                        경영 모의계산
                       </h3>
                     </div>
                   </motion.div>
