@@ -24,7 +24,7 @@ import SalsesInformation from "./components/SalsesInformation/SalsesInformation"
 import Pests from "./components/pests/Pests";
 import TrainingMethod from "./components/trainingMethod/TrainingMethod";
 import QuizData from "./components/minigame/CropQuiz/QuizData";
-import CropQuiz from "./components/minigame/CropQuiz/CropQuiz";  
+import CropQuiz from "./components/minigame/CropQuiz/CropQuiz";
 import PostDetail from "./components/community/PostDetail";
 import Write from "./components/community/Write";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,7 +35,8 @@ import { ChatIcon } from "./components/chatbot/ChatIcon";
 import { ChatMsg } from "./components/chatbot/ChatMsg";
 import ChatForm from "./components/chatbot/ChatForm";
 import Minigame from "./components/minigame/Minigame";
-import Swal from 'sweetalert2';
+import BusinessSimulation from "./components/business-simulation-analysis/BusinessSimulation";
+import Swal from "sweetalert2";
 
 function App() {
   return (
@@ -61,19 +62,22 @@ function AppContent() {
 
   const generateChatResponse = async (history) => {
     const updateHistory = (text) => {
-      setChatHistory((prev) => [...prev.filter((msg) => msg.text !== "생각중..."), {role: "model", text}]);
+      setChatHistory((prev) => [
+        ...prev.filter((msg) => msg.text !== "생각중..."),
+        { role: "model", text },
+      ]);
     };
 
-    const formattedHistory = history.map(({role, text}) => ({
-      role: role === 'user' ? 'user' : 'model',
-      parts: [{text:text}]
+    const formattedHistory = history.map(({ role, text }) => ({
+      role: role === "user" ? "user" : "model",
+      parts: [{ text: text }],
     }));
-    
+
     const requestOptions = {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({contents: formattedHistory})
-    }
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: formattedHistory }),
+    };
 
     try {
       const response = await fetch(BACKEND_URL, requestOptions);
@@ -82,34 +86,36 @@ function AppContent() {
       if (!response.ok)
         throw new Error(data.error.message || "요청 오류가 발생했습니다.");
 
-      const responseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
+      const responseText = data.candidates[0].content.parts[0].text
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .trim();
       updateHistory(responseText);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     if (chatBodyRef.current) {
       chatBodyRef.current.scrollTo({
         top: chatBodyRef.current.scrollHeight,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   }, [chatHistory]);
 
   // 보호된 라우트를 위한 함수 추가
   const ProtectedMypage = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     const user = useSelector((state) => state.login.user);
 
     useEffect(() => {
       if (!token || !user) {
         Swal.fire({
-          title: '로그인이 필요합니다',
-          text: '로그인 페이지로 이동합니다.',
-          icon: 'warning',
-          confirmButtonText: '확인'
+          title: "로그인이 필요합니다",
+          text: "로그인 페이지로 이동합니다.",
+          icon: "warning",
+          confirmButtonText: "확인",
         }).then(() => {
           navigate("/login");
         });
@@ -148,6 +154,7 @@ function AppContent() {
         <Route path="/Today" element={<Today />} />
         <Route path="/trainingDetail" element={<TrainingDetail />} />
         <Route path="/minigame" element={<Minigame />} />
+        <Route path="/business-simulation" element={<BusinessSimulation />} />
       </Routes>
       <Footer />
 
@@ -155,22 +162,26 @@ function AppContent() {
       <div className="fixed bottom-8 right-8 z-50 flex flex-row items-center gap-4">
         {/* 미니게임 버튼 */}
         <Link to="/minigame">
-          <button 
-            className="w-14 h-14 bg-[#3a9d1f] hover:bg-[#0aab65] text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>
+          <button className="w-14 h-14 bg-[#3a9d1f] hover:bg-[#0aab65] text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center">
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: "28px" }}
+            >
               sports_esports
             </span>
           </button>
         </Link>
 
         {/* 챗봇 토글 버튼 */}
-        <button 
+        <button
           onClick={() => setShowChatbot((prev) => !prev)}
           className="w-14 h-14 bg-[#3a9d1f] hover:bg-[#0aab65] text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center"
         >
-          <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>
-            {showChatbot ? 'close' : 'mode_comment'}
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: "28px" }}
+          >
+            {showChatbot ? "close" : "mode_comment"}
           </span>
         </button>
       </div>
@@ -183,8 +194,8 @@ function AppContent() {
               <ChatIcon />
               <h2 className="logo-text">Farming Agent Chatbot</h2>
             </div>
-            <button 
-              className="material-symbols-outlined" 
+            <button
+              className="material-symbols-outlined"
               onClick={() => setShowChatbot(false)}
             >
               keyboard_arrow_down
@@ -193,17 +204,19 @@ function AppContent() {
           <div className="cb-body" ref={chatBodyRef}>
             <div className="message bot-message">
               <ChatIcon />
-              <p className="message-text">안녕하세요 <br /> 저는 농업 챗봇입니다. 무엇을 도와드릴까요?</p>
+              <p className="message-text">
+                안녕하세요 <br /> 저는 농업 챗봇입니다. 무엇을 도와드릴까요?
+              </p>
             </div>
             {chatHistory.map((chat, index) => (
-              <ChatMsg key={index} chat={chat}/>
+              <ChatMsg key={index} chat={chat} />
             ))}
           </div>
           <div className="cb-footer">
-            <ChatForm 
-              chatHistory={chatHistory} 
-              setChatHistory={setChatHistory} 
-              generateChatResponse={generateChatResponse} 
+            <ChatForm
+              chatHistory={chatHistory}
+              setChatHistory={setChatHistory}
+              generateChatResponse={generateChatResponse}
             />
           </div>
         </div>

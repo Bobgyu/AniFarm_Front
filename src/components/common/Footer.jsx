@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AnifarmLogo from "../../assets/main/aniform.png";
 
 const Footer = () => {
@@ -18,16 +18,13 @@ const Footer = () => {
         <div className="flex justify-between items-center w-full h-full">
           {/* 로고 및 주소 정보 */}
           <div className="flex items-center">
-            <img
-              src={AnifarmLogo}
-              alt="Logo"
-              className="w-[40px] mr-4 ml-2"
-            />
+            <img src={AnifarmLogo} alt="Logo" className="w-[40px] mr-4 ml-2" />
             <p className="text-sm text-gray-600 text-left">
               (08503) 서울 금천구 가산디지털2로 144 현대테라타워 가산DK A동 20층
               <br className="hidden md:block" />
               대표전화: 02-2038-0800 | FAX: 02-000-0000
             </p>
+            <Link to="/business-simulation">경영모의계산</Link>
           </div>
 
           {/* 버튼 섹션 */}
