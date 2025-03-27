@@ -1,11 +1,41 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
 const AnalysisReport = ({ data }) => {
   const { method, goals } = data;
   const [cropData, setCropData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // 경영비 상세 데이터 (예시)
+  const costData = [
+    { name: "주도경영비", cost: 2500000, color: "#FF6B6B" },
+    { name: "기타재료비", cost: 3700000, color: "#4ECDC4" },
+    { name: "소농구비", cost: 150000, color: "#45B7D1" },
+    { name: "대농구감가상각비", cost: 7200000, color: "#96CEB4" },
+    { name: "영농시설상각비", cost: 1500000, color: "#D4A5A5" },
+    { name: "수리유지비", cost: 800000, color: "#9FA4C4" },
+    { name: "기타비용", cost: 200000, color: "#B5EAD7" },
+    { name: "농기계사용료", cost: 150000, color: "#FFB7B2" },
+    { name: "토지임차료", cost: 7000000, color: "#E2F0CB" },
+    { name: "위탁영농비", cost: 4800000, color: "#C7CEEA" },
+    { name: "고용노동비", cost: 17645755, color: "#FF9AA2" },
+    { name: "자가노력비", cost: 7200000, color: "#FFB347" },
+    { name: "생산관리비", cost: 9300000, color: "#98DDCA" },
+    { name: "중간재료비", cost: 9200000, color: "#D4A5A5" },
+    { name: "농작업위탁비", cost: 12800000, color: "#957DAD" },
+  ];
 
   // 작물 데이터 로드
   useEffect(() => {
@@ -105,6 +135,21 @@ const AnalysisReport = ({ data }) => {
         cropYield,
       };
     }
+  };
+
+  // 차트 커스텀 툴팁
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 border border-gray-200 shadow-lg rounded">
+          <p className="text-gray-600">{label}</p>
+          <p className="text-[#3a9d1f] font-bold">
+            {`경영비상세: ${payload[0].value.toLocaleString()}원`}
+          </p>
+        </div>
+      );
+    }
+    return null;
   };
 
   if (loading) {
@@ -220,7 +265,7 @@ const AnalysisReport = ({ data }) => {
           {method === "income" ? (
             <>
               <div>
-                <p className="text-sm text-gray-600 mb-1">목표 소득</p>
+                <p className="text-sm text-gray-600 mb-1">월 목표 소득</p>
                 <p className="text-lg font-bold text-gray-800">
                   {results.targetIncome.toLocaleString()}원
                 </p>
@@ -279,6 +324,47 @@ const AnalysisReport = ({ data }) => {
             {results.expectedReturnRate > 0
               ? `투자금액 대비 예상 수익률은 ${results.expectedReturnRate}%입니다.`
               : "투자금액을 입력해주시면 예상 수익률을 확인할 수 있습니다."}
+          </p>
+        </div>
+      </div>
+
+      {/* 경영비 상세 분석 */}
+      <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+          <span className="w-2 h-6 bg-[#3a9d1f] rounded mr-2"></span>
+          작물별 경영비 상세
+        </h3>
+        <div className="h-[500px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={costData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 100 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="name"
+                angle={-45}
+                textAnchor="end"
+                height={100}
+                interval={0}
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis
+                tickFormatter={(value) => `${(value / 1000000).toFixed(1)}백만`}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Bar dataKey="cost" name="경영비상세" radius={[4, 4, 0, 0]}>
+                {costData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="mt-4">
+          <p className="text-sm text-gray-600">
+            * 경영비는 작물 재배에 필요한 모든 비용을 포함합니다.
           </p>
         </div>
       </div>

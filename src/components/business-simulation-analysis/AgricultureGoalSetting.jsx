@@ -318,7 +318,7 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
               <>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    목표 소득 (원)
+                    월 목표 소득 (원)
                   </label>
                   <div className="relative">
                     <input
