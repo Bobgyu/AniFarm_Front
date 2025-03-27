@@ -24,11 +24,13 @@ const Footer = () => {
               <br className="hidden md:block" />
               대표전화: 02-2038-0800 | FAX: 02-000-0000
             </p>
-            <Link to="/business-simulation">경영모의계산</Link>
           </div>
 
           {/* 버튼 섹션 */}
           <div className="flex gap-4">
+            <button className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded">
+              <Link to="/business-simulation">경영모의계산</Link>
+            </button>
             <button
               onClick={handleCropQuiz}
               className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded"
