@@ -13,7 +13,7 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
+
   // 반응형 상태: 화면 너비가 768px 미만이면 모바일 환경으로 판단
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
@@ -25,35 +25,36 @@ const Header = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  
+
   // 현재 경로가 어떤 섹션에 속하는지 확인하는 함수
   const isActivePath = (path) => {
     const currentPath = location.pathname.toLowerCase();
 
     // 재배하기 관련 경로들
     const culturePaths = [
-      '/culture',
-      '/trainingmethod',
-      '/trainingdetail',
-      '/pests',
-      '/weather',
-      '/community/gardening'
+      "/culture",
+      "/trainingmethod",
+      "/trainingdetail",
+      "/pests",
+      "/weather",
+      "/community/gardening",
     ];
 
     // 판매하기 관련 경로들
     const salePaths = [
-      '/sale',
-      '/today',
-      '/pricinginformation',
-      '/salsesinformation',
-      '/community/marketplace'
+      "/sale",
+      "/today",
+      "/pricinginformation",
+      "/salsesinformation",
+      "/community/marketplace",
+      "/business-simulation",
     ];
 
-    if (path === '/culture') {
+    if (path === "/culture") {
       return culturePaths.includes(currentPath);
     }
 
-    if (path === '/sale') {
+    if (path === "/sale") {
       return salePaths.includes(currentPath);
     }
 
@@ -62,11 +63,11 @@ const Header = () => {
 
   // 토큰 유효성 검사 추가
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token && user) {
       // 토큰이 없는데 user 상태가 있다면 로그아웃 처리
       dispatch(clearToken());
-      navigate('/');
+      navigate("/");
     }
   }, [dispatch, user, navigate]);
 
@@ -104,64 +105,67 @@ const Header = () => {
 
     // 상세 경로 매핑
     if (category === "재배 하기") {
-        switch (item) {
-            case "육성법":
-                path = "/TrainingMethod";
-                break;
-            case "병충해":
-                path = "/Pests";
-                break;
-            case "날씨":
-                path = "/weather";
-                break;
-            case "재배 커뮤니티":
-                path = "/community/gardening";
-                break;
-            default:
-                path = "/culture";
-        }
+      switch (item) {
+        case "육성법":
+          path = "/TrainingMethod";
+          break;
+        case "병충해":
+          path = "/Pests";
+          break;
+        case "날씨":
+          path = "/weather";
+          break;
+        case "재배 커뮤니티":
+          path = "/community/gardening";
+          break;
+        default:
+          path = "/culture";
+      }
     } else if (category === "판매 하기") {
-        switch (item) {
-            case "오늘의 가격":
-                path = "/Today";
-                break;
-            case "소비 트렌드":
-                path = "/pricinginformation";
-                break;
-            case "가격 예측":
-                path = "/SalsesInformation";
-                break;
-            case "판매 커뮤니티":
-                path = "/community/marketplace";
-                break;
-            default:
-                path = "/sale";
-        }
+      switch (item) {
+        case "오늘의 가격":
+          path = "/Today";
+          break;
+        case "소비 트렌드":
+          path = "/pricinginformation";
+          break;
+        case "가격 예측":
+          path = "/SalsesInformation";
+          break;
+        case "판매 커뮤니티":
+          path = "/community/marketplace";
+          break;
+        case "경영모의계산":
+          path = "/business-simulation";
+          break;
+        default:
+          path = "/sale";
+      }
     } else if (category === "기능/엔터") {
-        switch (item) {
-            case "챗봇":
-                // 챗봇 안내 메시지 표시
-                Swal.fire({
-                    title: '챗봇 이용 안내',
-                    text: '우측 하단의 토글 버튼을 누르면 챗봇을 이용하실 수 있습니다. 챗봇은 농산물 재배 방법과 병충해 치료법을 안내해 드립니다.',
-                    icon: 'info',
-                    confirmButtonText: '확인',
-                    confirmButtonColor: '#3a9d1f'
-                });
-                setIsMenuOpen(false);  // 메뉴 닫기
-                return;  // 여기서 함수 종료
-            case "미니게임":
-                path = "/minigame";
-                break;
-            default:
-                path = "/";
-        }
+      switch (item) {
+        case "챗봇":
+          // 챗봇 안내 메시지 표시
+          Swal.fire({
+            title: "챗봇 이용 안내",
+            text: "우측 하단의 토글 버튼을 누르면 챗봇을 이용하실 수 있습니다. 챗봇은 농산물 재배 방법과 병충해 치료법을 안내해 드립니다.",
+            icon: "info",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#3a9d1f",
+          });
+          setIsMenuOpen(false); // 메뉴 닫기
+          return; // 여기서 함수 종료
+        case "미니게임":
+          path = "/minigame";
+          break;
+        default:
+          path = "/";
+      }
     }
 
     // 카테고리와 아이템 모두 파라미터로 전달
     const queryParams = new URLSearchParams({
-        category: category,
-        type: item,
+      category: category,
+      type: item,
     });
 
     // 경로 이동
@@ -171,8 +175,14 @@ const Header = () => {
 
   const menuStructure = {
     "재배 하기": ["육성법", "병충해", "날씨", "재배 커뮤니티"],
-    "판매 하기": ["오늘의 가격", "소비 트렌드", "가격 예측", "판매 커뮤니티"],
-    "기능/엔터": ["챗봇", "미니게임"]
+    "판매 하기": [
+      "오늘의 가격",
+      "소비 트렌드",
+      "가격 예측",
+      "경영모의계산",
+      "판매 커뮤니티",
+    ],
+    "기능/엔터": ["챗봇", "미니게임"],
   };
 
   return (
@@ -195,9 +205,9 @@ const Header = () => {
               <Link
                 to="/culture"
                 className={`inline-flex items-center justify-center h-[40px] md:h-[50px] px-3 md:px-5 py-0 text-base md:text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${
-                  isActivePath('/culture')
-                    ? 'bg-[#3a9d1f] text-white border-[#3a9d1f]'
-                    : 'bg-transparent border-transparent text-gray-900 hover:bg-[#3a9d1f] hover:text-white hover:border-[#3a9d1f] active:bg-[#3a9d1f] active:text-white active:border-[#3a9d1f]'
+                  isActivePath("/culture")
+                    ? "bg-[#3a9d1f] text-white border-[#3a9d1f]"
+                    : "bg-transparent border-transparent text-gray-900 hover:bg-[#3a9d1f] hover:text-white hover:border-[#3a9d1f] active:bg-[#3a9d1f] active:text-white active:border-[#3a9d1f]"
                 }`}
               >
                 재배하기
@@ -206,9 +216,9 @@ const Header = () => {
               <Link
                 to="/sale"
                 className={`inline-flex items-center justify-center h-[40px] md:h-[50px] px-3 md:px-5 py-0 text-base md:text-xl font-semibold text-center no-underline align-middle transition-all duration-300 ease-in-out border-2 rounded-full cursor-pointer select-none focus:outline-none whitespace-nowrap ${
-                  isActivePath('/sale')
-                    ? 'bg-[#3a9d1f] text-white border-[#3a9d1f]'
-                    : 'bg-transparent border-transparent text-gray-900 hover:bg-[#3a9d1f] hover:text-white hover:border-[#3a9d1f] active:bg-[#3a9d1f] active:text-white active:border-[#3a9d1f]'
+                  isActivePath("/sale")
+                    ? "bg-[#3a9d1f] text-white border-[#3a9d1f]"
+                    : "bg-transparent border-transparent text-gray-900 hover:bg-[#3a9d1f] hover:text-white hover:border-[#3a9d1f] active:bg-[#3a9d1f] active:text-white active:border-[#3a9d1f]"
                 }`}
               >
                 판매하기
@@ -259,60 +269,60 @@ const Header = () => {
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={() => setIsMenuOpen(false)}
+          >
+            <div
+              className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-[600px] md:h-screen overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
             >
-              <div
-                className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-[600px] md:h-screen overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="p-4">
-                  <div className="flex justify-end items-center mb-4">
-                    <button
-                      onClick={() => setIsMenuOpen(false)}
-                      className="p-2 hover:bg-gray-100 rounded-full"
+              <div className="p-4">
+                <div className="flex justify-end items-center mb-4">
+                  <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="p-2 hover:bg-gray-100 rounded-full"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
 
-                  <div className="space-y-4">
-                    {Object.entries(menuStructure).map(([category, items]) => (
-                      <div key={category} className="border rounded-lg">
-                        <div className="font-semibold p-3 bg-[#3a9d1f] text-white rounded-t-lg border-b">
-                          {category}
-                        </div>
-                        <div className="p-3">
-                          <div className="space-y-2">
-                            {items.map((item, index) => (
-                              <div
-                                key={index}
-                                className="text-sm md:text-base text-gray-600 hover:text-black cursor-pointer"
-                                onClick={() =>
-                                  handleMenuItemClick(category, item)
-                                }
-                              >
-                                {item}
-                              </div>
-                            ))}
-                          </div>
+                <div className="space-y-4">
+                  {Object.entries(menuStructure).map(([category, items]) => (
+                    <div key={category} className="border rounded-lg">
+                      <div className="font-semibold p-3 bg-[#3a9d1f] text-white rounded-t-lg border-b">
+                        {category}
+                      </div>
+                      <div className="p-3">
+                        <div className="space-y-2">
+                          {items.map((item, index) => (
+                            <div
+                              key={index}
+                              className="text-sm md:text-base text-gray-600 hover:text-black cursor-pointer"
+                              onClick={() =>
+                                handleMenuItemClick(category, item)
+                              }
+                            >
+                              {item}
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
+          </div>
         )}
       </div>
     </div>

@@ -20,21 +20,78 @@ const AnalysisReport = ({ data }) => {
 
   // 경영비 상세 데이터 (예시)
   const costData = [
-    { name: "주도경영비", cost: 2500000, color: "#FF6B6B" },
-    { name: "기타재료비", cost: 3700000, color: "#4ECDC4" },
-    { name: "소농구비", cost: 150000, color: "#45B7D1" },
-    { name: "대농구감가상각비", cost: 7200000, color: "#96CEB4" },
-    { name: "영농시설상각비", cost: 1500000, color: "#D4A5A5" },
-    { name: "수리유지비", cost: 800000, color: "#9FA4C4" },
-    { name: "기타비용", cost: 200000, color: "#B5EAD7" },
-    { name: "농기계사용료", cost: 150000, color: "#FFB7B2" },
-    { name: "토지임차료", cost: 7000000, color: "#E2F0CB" },
-    { name: "위탁영농비", cost: 4800000, color: "#C7CEEA" },
-    { name: "고용노동비", cost: 17645755, color: "#FF9AA2" },
-    { name: "자가노력비", cost: 7200000, color: "#FFB347" },
-    { name: "생산관리비", cost: 9300000, color: "#98DDCA" },
-    { name: "중간재료비", cost: 9200000, color: "#D4A5A5" },
-    { name: "농작업위탁비", cost: 12800000, color: "#957DAD" },
+    {
+      name: "종자종묘비",
+      cost: 2850000,
+      color: "#FF6B6B",
+      description: "작물 재배에 필요한 종자, 묘목 구입비용",
+    },
+    {
+      name: "비료비",
+      cost: 3200000,
+      color: "#4ECDC4",
+      description: "화학비료, 유기질비료 등 비료 구입비용",
+    },
+    {
+      name: "농약비",
+      cost: 1500000,
+      color: "#45B7D1",
+      description: "살충제, 살균제, 제초제 등 농약 구입비용",
+    },
+    {
+      name: "농자재비",
+      cost: 2100000,
+      color: "#96CEB4",
+      description: "멀칭필름, 지주대, 포장재료 등 구입비용",
+    },
+    {
+      name: "수도광열비",
+      cost: 1800000,
+      color: "#D4A5A5",
+      description: "전기, 수도, 유류비 등 에너지 비용",
+    },
+    {
+      name: "농구비",
+      cost: 4200000,
+      color: "#9FA4C4",
+      description: "농기구 구입 및 감가상각비",
+    },
+    {
+      name: "영농시설비",
+      cost: 7500000,
+      color: "#B5EAD7",
+      description: "하우스, 저장고 등 시설 설치 및 감가상각비",
+    },
+    {
+      name: "수리유지비",
+      cost: 1200000,
+      color: "#FFB7B2",
+      description: "시설물, 농기계 수리 및 유지보수비",
+    },
+    {
+      name: "임차료",
+      cost: 5500000,
+      color: "#E2F0CB",
+      description: "농지, 농기계, 시설 등의 임차비용",
+    },
+    {
+      name: "고용노동비",
+      cost: 8500000,
+      color: "#C7CEEA",
+      description: "일용직, 상용직 등 고용 인건비",
+    },
+    {
+      name: "위탁영농비",
+      cost: 3200000,
+      color: "#FF9AA2",
+      description: "작업 위탁 수수료 및 용역비",
+    },
+    {
+      name: "판매관리비",
+      cost: 2800000,
+      color: "#FFB347",
+      description: "선별, 포장, 운송, 판매 수수료 등",
+    },
   ];
 
   // 작물 데이터 로드
@@ -140,12 +197,14 @@ const AnalysisReport = ({ data }) => {
   // 차트 커스텀 툴팁
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
+      const data = costData.find((item) => item.name === label);
       return (
         <div className="bg-white p-4 border border-gray-200 shadow-lg rounded">
-          <p className="text-gray-600">{label}</p>
-          <p className="text-[#3a9d1f] font-bold">
-            {`경영비상세: ${payload[0].value.toLocaleString()}원`}
+          <p className="text-gray-900 font-bold mb-1">{label}</p>
+          <p className="text-[#3a9d1f] font-bold mb-2">
+            {`금액: ${payload[0].value.toLocaleString()}원`}
           </p>
+          <p className="text-gray-600 text-sm">{data?.description}</p>
         </div>
       );
     }
