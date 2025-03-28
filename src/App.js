@@ -36,6 +36,7 @@ import { ChatMsg } from "./components/chatbot/ChatMsg";
 import ChatForm from "./components/chatbot/ChatForm";
 import Minigame from "./components/minigame/Minigame";
 import BusinessSimulation from "./components/business-simulation-analysis/BusinessSimulation";
+import CultureCalendar from "./components/calendar/Growthcalendar.jsx";
 import Swal from "sweetalert2";
 
 function App() {
@@ -155,6 +156,7 @@ function AppContent() {
         <Route path="/trainingDetail" element={<TrainingDetail />} />
         <Route path="/minigame" element={<Minigame />} />
         <Route path="/business-simulation" element={<BusinessSimulation />} />
+        <Route path="/cultureCalendar" element={<CultureCalendar />} />
       </Routes>
       <Footer />
 
