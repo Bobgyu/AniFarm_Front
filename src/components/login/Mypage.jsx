@@ -15,6 +15,7 @@ const Mypage = () => {
   const { userInfo, userInfoLoading, userInfoError } = useSelector((state) => state.auth);
   const loginUser = useSelector((state) => state.login.user);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showMyInfoModal, setShowMyInfoModal] = useState(false);
 
   useEffect(() => {
     const checkAndFetchUserInfo = async () => {
@@ -102,7 +103,15 @@ const Mypage = () => {
     <div className="min-h-[calc(100vh-64px)] w-full pt-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col md:flex-row gap-6">
-          <div className="w-full md:w-1/4 md:sticky md:top-[120px] h-fit">
+          <div className="md:hidden w-full">
+            <button
+              onClick={() => setShowMyInfoModal(true)}
+              className="w-full bg-[#3a9d1f] text-white py-2 px-4 rounded-lg hover:bg-[#0aab65] transition-colors"
+            >
+              내 정보 보기
+            </button>
+          </div>
+          <div className="hidden md:block w-full md:w-1/4 md:sticky md:top-[120px] h-fit">
             <MyInfo 
               userInfo={userInfo}
               onPasswordChange={handlePasswordChange}
@@ -115,6 +124,28 @@ const Mypage = () => {
           </div>
         </div>
       </div>
+
+      {/* 내 정보 모달 */}
+      {showMyInfoModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          onClick={(e) => {
+            // 모달 바깥 영역 클릭 시에만 닫힘
+            if (e.target === e.currentTarget) {
+              setShowMyInfoModal(false);
+            }
+          }}
+        >
+          <div className="w-full max-w-md">
+            <MyInfo 
+              userInfo={userInfo}
+              onPasswordChange={handlePasswordChange}
+              onDeleteAccount={handleDeleteAccount}
+            />
+          </div>
+        </div>
+      )}
+
       {showPasswordModal && (
         <PasswordModal 
           onClose={() => setShowPasswordModal(false)}

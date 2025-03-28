@@ -277,16 +277,16 @@ const AnalysisReport = ({ data }) => {
             <table className="w-full border-collapse">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                     작물명
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                     지역
                   </th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold text-gray-600">
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                     시간당 매출
                   </th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold text-gray-600">
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                     3.3m당 매출
                   </th>
                 </tr>
@@ -294,16 +294,16 @@ const AnalysisReport = ({ data }) => {
               <tbody className="divide-y divide-gray-200">
                 {goals.selectedCrops.map((crop, index) => (
                   <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-900">
+                    <td className="px-4 py-3 text-sm text-gray-900 text-center">
                       {crop.crop_name}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">
                       {crop.region || "전국"}
                     </td>
-                    <td className="px-4 py-3 text-sm text-right text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">
                       {crop.hourly_sales.toLocaleString()}원
                     </td>
-                    <td className="px-4 py-3 text-sm text-right text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600 text-center">
                       {crop.sales_per_area.toLocaleString()}원
                     </td>
                   </tr>
@@ -413,7 +413,7 @@ const AnalysisReport = ({ data }) => {
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar dataKey="cost" name="경영비상세" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="cost" name="금액" radius={[4, 4, 0, 0]}>
                 {costData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}

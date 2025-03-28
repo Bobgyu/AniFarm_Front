@@ -129,6 +129,13 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
     }));
   };
 
+  const handleQuickAdd = (field, amount) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: prev[field] ? Number(prev[field]) + amount : amount,
+    }));
+  };
+
   if (error) {
     return <div className="text-red-600 text-center p-4">{error}</div>;
   }
@@ -183,16 +190,16 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
               <table className="w-full border-collapse">
                 <thead className="bg-gray-50 sticky top-0 z-10">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                       작물명
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                       지역
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-600">
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                       시간당 매출
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-600">
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                       3.3m당 매출
                     </th>
                     <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
@@ -222,12 +229,12 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
                         <td className="px-4 py-3 text-sm text-gray-600">
                           {crop.region || "전국"}
                         </td>
-                        <td className="px-4 py-3 text-sm text-right text-gray-600">
+                        <td className="px-4 py-3 text-sm text-center text-gray-600">
                           {crop.hourly_sales
                             ? `${crop.hourly_sales.toLocaleString()}원`
                             : "-"}
                         </td>
-                        <td className="px-4 py-3 text-sm text-right text-gray-600">
+                        <td className="px-4 py-3 text-sm text-center text-gray-600">
                           {crop.sales_per_area
                             ? `${crop.sales_per_area.toLocaleString()}원`
                             : "-"}
@@ -258,16 +265,16 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
               <table className="w-full border-collapse">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                       작물명
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                       지역
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-600">
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                       시간당 매출
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-600">
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
                       3.3m당 매출
                     </th>
                     <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
@@ -284,10 +291,10 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
                       <td className="px-4 py-3 text-sm text-gray-600">
                         {crop.region || "전국"}
                       </td>
-                      <td className="px-4 py-3 text-sm text-right text-gray-600">
+                      <td className="px-4 py-3 text-sm text-center text-gray-600">
                         {crop.hourly_sales ? `${crop.hourly_sales}원` : "-"}
                       </td>
-                      <td className="px-4 py-3 text-sm text-right text-gray-600">
+                      <td className="px-4 py-3 text-sm text-center text-gray-600">
                         {crop.sales_per_area ? `${crop.sales_per_area}원` : "-"}
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -334,6 +341,29 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
                       원
                     </span>
                   </div>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={() => handleQuickAdd("targetIncome", 5000000)}
+                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      +500만원
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleQuickAdd("targetIncome", 1000000)}
+                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      +100만원
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleQuickAdd("targetIncome", 100000)}
+                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      +10만원
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -353,6 +383,33 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
                     <span className="absolute right-3 top-3 text-gray-500">
                       원
                     </span>
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleQuickAdd("investmentAmount", 5000000)
+                      }
+                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      +500만원
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleQuickAdd("investmentAmount", 1000000)
+                      }
+                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      +100만원
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleQuickAdd("investmentAmount", 100000)}
+                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      +10만원
+                    </button>
                   </div>
                 </div>
               </>
@@ -395,6 +452,33 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
                     <span className="absolute right-3 top-3 text-gray-500">
                       원
                     </span>
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleQuickAdd("investmentAmount", 5000000)
+                      }
+                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      +500만원
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleQuickAdd("investmentAmount", 1000000)
+                      }
+                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      +100만원
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleQuickAdd("investmentAmount", 100000)}
+                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      +10만원
+                    </button>
                   </div>
                 </div>
               </>

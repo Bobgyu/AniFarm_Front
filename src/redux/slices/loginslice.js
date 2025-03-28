@@ -27,9 +27,9 @@ export const refreshToken = createAsyncThunk(
       
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
-        // 만료 시간을 24시간으로 통일
+        // 24시간으로 통일
         const expireTime = new Date().getTime() + TOKEN_EXPIRE_TIME;
-        localStorage.setItem('tokenExpiry', expireTime.toString()); // tokenExpiry로 통일
+        localStorage.setItem('tokenExpiry', expireTime.toString());
         return response.data;
       }
       

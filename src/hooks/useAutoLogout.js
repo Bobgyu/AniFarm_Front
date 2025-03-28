@@ -8,48 +8,51 @@ const useAutoLogout = () => {
   const TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000; // 24시간
 
   const handleLogout = useCallback(() => {
-    dispatch(logoutWithAlert({
+    Swal.fire({
+      icon: 'warning',
       title: '세션 만료',
-      text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.'
-    }));
+      text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.',
+      confirmButtonText: '확인',
+      allowOutsideClick: false,
+      showClass: {
+        popup: 'animate__animated animate__fadeInDown'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__fadeOutUp'
+      }
+    }).then(() => {
+      dispatch(logoutWithAlert({
+        title: '세션 만료',
+        text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.'
+      }));
+    });
   }, [dispatch]);
 
   useEffect(() => {
     let inactivityTimeout;
 
-    const checkTokenExpiration = () => {
-      const token = localStorage.getItem("token");
-      const expireTime = localStorage.getItem("tokenExpiry");
-      
-      if (token && expireTime && new Date().getTime() > parseInt(expireTime)) {
-        handleLogout();
-        return true;
-      }
-      return false;
-    };
-
     const resetInactivityTimer = () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
       clearTimeout(inactivityTimeout);
       inactivityTimeout = setTimeout(() => {
-        if (!checkTokenExpiration()) {
-          Swal.fire({
-            icon: 'warning',
-            title: '자동 로그아웃',
-            text: '장시간 활동이 없어 자동 로그아웃되었습니다.',
-            confirmButtonText: '확인'
-          }).then(() => {
-            handleLogout();
-          });
-        }
-      }, TOKEN_EXPIRE_TIME);
+        handleLogout();
+      }, TOKEN_EXPIRE_TIME); // TOKEN_EXPIRE_TIME 사용
     };
 
     const handleActivity = () => {
-      if (!checkTokenExpiration()) {
-        resetInactivityTimer();
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const expireTime = localStorage.getItem("tokenExpiry");
+      if (expireTime) {
+        const now = new Date().getTime();
+        if (now > parseInt(expireTime)) {
+          handleLogout();
+        } else {
+          // 활동이 있을 때마다 만료 시간 갱신
+          const newExpireTime = new Date().getTime() + TOKEN_EXPIRE_TIME;
+          localStorage.setItem("tokenExpiry", newExpireTime.toString());
+          resetInactivityTimer();
+        }
       }
     };
 
