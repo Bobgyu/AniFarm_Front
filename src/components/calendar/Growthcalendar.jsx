@@ -331,7 +331,11 @@ const GuidanceItem = styled.li`
 const cropEmojis = {
   '토마토': '🍅',
   '상추': '🥬',
-  '감자': '🥔'
+  '감자': '🥔',
+  '딸기': '🍓',
+  '당근': '🥕',
+  '오이': '🥒',
+  '고추': '🌶️'
 };
 
 const recommendedSowingPeriods = {
@@ -344,6 +348,22 @@ const recommendedSowingPeriods = {
     { start: '8월', end: '9월', note: '가을 재배' }
   ],
   '감자': [
+    { start: '2월', end: '3월', note: '봄 재배' },
+    { start: '8월', end: '9월', note: '가을 재배' }
+  ],
+  '딸기': [
+    { start: '3월', end: '4월', note: '봄 재배' },
+    { start: '8월', end: '9월', note: '가을 재배' }
+  ],
+  '당근': [
+    { start: '2월', end: '3월', note: '봄 재배' },
+    { start: '8월', end: '9월', note: '가을 재배' }
+  ],
+  '오이': [
+    { start: '3월', end: '4월', note: '봄 재배' },
+    { start: '8월', end: '9월', note: '가을 재배' }
+  ],
+  '고추': [
     { start: '2월', end: '3월', note: '봄 재배' },
     { start: '8월', end: '9월', note: '가을 재배' }
   ]
@@ -489,7 +509,7 @@ const GrowthCalendar = () => {
   const [weatherData, setWeatherData] = useState(null);
 
   const cities = ['서울', '부산', '대구', '인천', '광주', '대전', '울산', '제주'];
-  const crops = ['토마토', '상추', '감자'];
+  const crops = ['토마토', '상추', '감자', '딸기', '당근', '오이', '고추'];
 
   const getWeatherEmoji = (temp, rainfall) => {
     if (rainfall > 0) return '🌧️';
