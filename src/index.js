@@ -5,7 +5,11 @@ import App from "./App";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { checkLoginStatusThunk, updateLastActivity, logoutWithAlert, logoutAction } from "./redux/slices/authslice";
+import { checkLoginStatusThunk, updateLastActivity, logoutAction, 
+         checkActivityAndRefreshToken, periodicStatusCheck } from "./redux/slices/authslice";
+
+// 토큰 만료 시간을 전역 상수로 정의
+export const TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000; // 24시간
 
 const theme = createTheme({
   typography: {
@@ -17,11 +21,18 @@ const theme = createTheme({
 const initializeAuth = () => {
   const token = localStorage.getItem("token");
   
-  // 토큰이 있을 때만 만료 체크 수행
   if (token) {
+    // 토큰이 있을 때 만료 시간 설정 또는 갱신
+    const currentExpireTime = localStorage.getItem("tokenExpiry");
+    if (!currentExpireTime) {
+      const expireTime = new Date().getTime() + TOKEN_EXPIRE_TIME;
+      localStorage.setItem("tokenExpiry", expireTime.toString());
+    }
+    
+    // 만료 체크
     const expireTime = localStorage.getItem("tokenExpiry");
     if (expireTime && new Date().getTime() > parseInt(expireTime)) {
-      store.dispatch(logoutWithAlert({
+      store.dispatch(logoutAction({
         title: '세션 만료',
         text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.'
       }));
@@ -29,39 +40,25 @@ const initializeAuth = () => {
   }
 };
 
-// 초기화 실행
-initializeAuth();
-
 // 활동 감지 및 상태 체크 설정
 const setupActivityTracking = () => {
-  // 상태 체크 주기를 5분으로 변경
-  setInterval(async () => {
-    const { isAuthenticated } = store.getState().auth;
-    
-    // 로그인된 상태일 때만 체크 수행
-    if (isAuthenticated) {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          store.dispatch(logoutWithAlert({
-            title: '인증 오류',
-            text: '로그인 정보가 없습니다. 다시 로그인해주세요.'
-          }));
-          return;
-        }
-        await store.dispatch(checkLoginStatusThunk()).unwrap();
-      } catch (error) {
-        console.error('로그인 상태 체크 실패:', error);
-        store.dispatch(logoutWithAlert({
-          title: '인증 오류',
-          text: '로그인 상태 확인에 실패했습니다. 다시 로그인해주세요.'
-        }));
-      }
-    }
-  }, 5 * 60 * 1000);  // 5분
+  // 활동 감지
+  const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+  
+  activityEvents.forEach(eventType => {
+    document.addEventListener(eventType, () => {
+      store.dispatch(checkActivityAndRefreshToken());
+    });
+  });
+
+  // 주기적인 상태 체크 (5분마다)
+  setInterval(() => {
+    store.dispatch(periodicStatusCheck());
+  }, 5 * 60 * 1000);
 };
 
 // 초기화 실행
+initializeAuth();
 store.dispatch(checkLoginStatusThunk());
 setupActivityTracking();
 
