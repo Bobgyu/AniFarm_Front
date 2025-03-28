@@ -9,7 +9,7 @@ const CropQuiz = () => {
 
   useEffect(() => {
     // GET /api/quiz/crops 엔드포인트를 호출하여 작물 옵션 데이터를 가져옵니다.
-    fetch("http://localhost:8000/api/quiz/crops")
+    fetch("http://localhost:8000/api/quiz")
       .then((response) => response.json())
       .then((data) => {
         setQuizOptions(data);
