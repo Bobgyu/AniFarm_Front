@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import QuizData from './QuizData';
+import React, { useState, useEffect } from "react";
+import QuizData from "./QuizData";
 
 const CropQuiz = () => {
   // 백엔드 API에서 받아온 작물 옵션 목록 (예: [{ id: 101, crop: '감자' }, ...])
@@ -9,16 +9,16 @@ const CropQuiz = () => {
 
   useEffect(() => {
     // GET /api/quiz/crops 엔드포인트를 호출하여 작물 옵션 데이터를 가져옵니다.
-    fetch("http://localhost:8000/api/quiz")
-      .then(response => response.json())
-      .then(data => {
+    fetch("http://localhost:8000/api/quiz/crops")
+      .then((response) => response.json())
+      .then((data) => {
         setQuizOptions(data);
         // 기본 선택: 첫 번째 옵션
         if (data.length > 0) {
           setSelectedOption(data[0]);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error fetching crop options:", error);
       });
   }, []);
@@ -36,9 +36,7 @@ const CropQuiz = () => {
         {/* 타이틀 및 안내 문구 */}
         <div className="flex flex-col items-center w-full">
           <div className="text-left flex flex-col w-full max-w-lg">
-            <div className="text-3xl font-bold mb-2">
-              작물별 퀴즈
-            </div>
+            <div className="text-3xl font-bold mb-2">작물별 퀴즈</div>
             <div className="mb-6">
               <div className="crop-selection-instruction">
                 퀴즈를 진행할 작물을 선택하세요
@@ -48,10 +46,10 @@ const CropQuiz = () => {
             {/* 작물 드롭다운 */}
             <div className="relative">
               <select
-                value={selectedOption ? selectedOption.id : ''}
+                value={selectedOption ? selectedOption.id : ""}
                 onChange={handleCropChange}
                 className="border border-gray-300 p-2 rounded-lg w-full"
-                style={{ maxWidth: '600px' }}
+                style={{ maxWidth: "600px" }}
               >
                 {quizOptions.map((option) => (
                   <option key={option.id} value={option.id}>
@@ -71,6 +69,6 @@ const CropQuiz = () => {
       </div>
     </main>
   );
-}
+};
 
 export default CropQuiz;
