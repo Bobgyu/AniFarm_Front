@@ -6,7 +6,7 @@ import trend from "../../assets/images/trend.jpg"; // 소비트렌드 이미지
 import prediction from "../../assets/images/prediction.jpg"; // 가격예측 이미지
 import community from "../../assets/images/community.png"; // 커뮤니티 이미지
 import market from "../../assets/images/market.jpg"; // 오늘의 가격 이미지 추가
-import business from "../../assets/images/market.jpg"; // 경영모의계산 이미지 추가해야함
+import business from "../../assets/images/Business.jpg"; // 경영모의계산 이미지 추가해야함
 
 const Sale = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
