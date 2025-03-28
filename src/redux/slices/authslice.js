@@ -99,7 +99,8 @@ export const loginUser = createAsyncThunk(
       
       if (response.success && response.data.access_token) {
         localStorage.setItem("token", response.data.access_token);
-        const expiry = new Date().getTime() + 12 * 60 * 60 * 1000; // 12시간으로 연장
+        // 24시간으로 통일
+        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000;
         localStorage.setItem("tokenExpiry", expiry.toString());
         return response.data;
       }
@@ -313,8 +314,9 @@ export const refreshToken = createAsyncThunk(
       
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
-        const expiry = new Date().getTime() + 2 * 60 * 60 * 1000; // 2시간
-        localStorage.setItem('loginExpireTime', expiry.toString());
+        // 24시간으로 통일
+        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000;
+        localStorage.setItem('tokenExpiry', expiry.toString());
         return response.data;
       }
       
