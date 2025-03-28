@@ -182,21 +182,6 @@ const QuizData = ({ selectedCrop }) => {
           </div>
         )}
       </div>
-      {/* 아래 스타일은 dot-button의 크기, 모양 및 선택되었을 때 색상을 정의합니다. */}
-      <style jsx>{`
-        .dot-button {
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          border: 1px solid #ccc;
-          background-color: #fff;
-          cursor: pointer;
-        }
-        .dot-button.selected {
-          background-color: #007bff;
-          border-color: #007bff;
-        }
-      `}</style>
     </div>
   );
 };
