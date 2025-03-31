@@ -157,8 +157,8 @@ const Header = () => {
           });
           setIsMenuOpen(false); // 메뉴 닫기
           return; // 여기서 함수 종료
-        case "미니게임":
-          path = "/minigame";
+        case "퀴즈게임":
+          path = "/QuizGame";
           break;
         default:
           path = "/";

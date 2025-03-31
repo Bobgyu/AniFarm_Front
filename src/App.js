@@ -38,7 +38,7 @@ import Minigame from "./components/minigame/Minigame";
 import BusinessSimulation from "./components/business-simulation-analysis/BusinessSimulation";
 import CultureCalendar from "./components/calendar/Growthcalendar.jsx";
 import Swal from "sweetalert2";
-
+import QuizGame from "./components/minigame/QuizGame";
 function App() {
   return (
     <Router>
@@ -156,14 +156,15 @@ function AppContent() {
         <Route path="/trainingDetail" element={<TrainingDetail />} />
         <Route path="/minigame" element={<Minigame />} />
         <Route path="/business-simulation" element={<BusinessSimulation />} />
-        <Route path="/cultureCalendar" element={<CultureCalendar />} />
+        <Route path="/cultureCalendar" element={<CultureCalendar />} /> 
+        <Route path="/QuizGame" element={<QuizGame />} />
       </Routes>
       <Footer />
 
       {/* 버튼 컨테이너 - 챗봇 컨테이너와 별도로 분리 */}
       <div className="fixed bottom-8 right-8 z-50 flex flex-row items-center gap-4">
         {/* 미니게임 버튼 */}
-        <Link to="/minigame">
+        <Link to="/QuizGame">
           <button className="w-14 h-14 bg-[#3a9d1f] hover:bg-[#0aab65] text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center">
             <span
               className="material-symbols-outlined"
