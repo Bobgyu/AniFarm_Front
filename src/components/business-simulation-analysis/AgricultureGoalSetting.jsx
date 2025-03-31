@@ -144,9 +144,6 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">
           재배면적 대비 농업 목표 설정
         </h2>
-        <p className="text-sm sm:text-base text-gray-600">
-          재배면적에 맞는 예상소득을 확인해보세요
-        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
