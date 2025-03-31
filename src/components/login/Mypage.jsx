@@ -104,7 +104,7 @@ const Mypage = () => {
   return (
     <div>
       <div>
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col md:flex-row gap-6 mt-10 mr-10">
           <div className="md:hidden w-full">
             <button
               onClick={() => setShowMyInfoModal(true)}
