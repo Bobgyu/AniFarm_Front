@@ -377,8 +377,8 @@ const AnalysisReport = ({ data }) => {
       </div>
 
       {/* 주의사항 */}
-      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 sm:p-4 rounded-r-lg">
-        <p className="text-xs sm:text-sm text-yellow-700">
+      <div className="bg-[#f8f8f8] border-l-4 border-[#3a9d1f] p-3 sm:p-4 rounded-r-lg">
+        <p className="text-xs sm:text-sm text-[#3a9d1f]">
           • 본 분석 결과는 평균적인 데이터를 기반으로 산출된 예상 수치입니다.
           <br className="hidden sm:block" />• 실제 경영 환경과 재배 조건에 따라
           결과가 달라질 수 있습니다.

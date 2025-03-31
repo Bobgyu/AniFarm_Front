@@ -232,7 +232,7 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
               <button
                 type="button"
                 onClick={handleSearch}
-                className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-[#3a9d1f] text-white rounded-md hover:bg-[#2d7a17] transition-colors duration-200"
+                className="w-full sm:w-auto px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#3a9d1f] text-white rounded-md hover:bg-[#2d7a17] transition-colors duration-200 whitespace-nowrap"
                 disabled={loading}
               >
                 {loading ? "검색 중..." : "검색"}

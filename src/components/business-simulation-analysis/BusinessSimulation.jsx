@@ -52,8 +52,8 @@ const BusinessSimulation = () => {
           <p className="text-sm sm:text-base text-gray-600 mt-2">
             재배면적 기준 농업 경영 분석 및 수익성 계산
           </p>
-          <div className="mt-4 bg-green-50 border-l-4 border-green-400 p-3 sm:p-4 rounded-r-lg">
-            <p className="text-xs sm:text-sm text-green-700">
+          <div className="mt-4 bg-[#f8f8f8] border-l-4 border-[#3a9d1f] p-3 sm:p-4 rounded-r-lg">
+            <p className="text-xs sm:text-sm text-[#3a9d1f]">
               • 3.3m²(1평) 기준 작물별 수익성 정보를 바탕으로 원하시는
               재배면적에 대한 경영 분석을 제공합니다.
               <br className="hidden sm:block" />• 실제 경영 환경과 재배 조건에
