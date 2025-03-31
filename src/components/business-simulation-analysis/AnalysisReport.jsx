@@ -254,15 +254,7 @@ const AnalysisReport = ({ data }) => {
       </div>
 
       {/* 주요 지표 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
-          <h3 className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
-            시간당 매출
-          </h3>
-          <p className="text-lg sm:text-xl font-bold text-gray-800">
-            {Math.round(results.hourly_sales).toLocaleString()}원
-          </p>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
           <h3 className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
             연간 매출
