@@ -34,12 +34,6 @@ const Footer = () => {
             >
               Crop Quiz
             </button>
-            <button
-              onClick={handleQuizData}
-              className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
-            >
-              Crop Data
-            </button>
           </div>
 
           {/* 저작권 정보 */}

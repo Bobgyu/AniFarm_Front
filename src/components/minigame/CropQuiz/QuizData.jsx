@@ -202,7 +202,7 @@ const QuizData = ({ selectedCrop }) => {
             <ul className="mt-2">
               {result.results.map((item, index) => (
                 <li key={index}>
-                  문제 {item.quiz_id}: {item.is_correct ? "정답" : "오답"}
+                  문제 {index + 1}: {item.is_correct ? "정답" : "오답"}
                 </li>
               ))}
             </ul>
