@@ -34,6 +34,7 @@ const AnalysisReport = ({ data }) => {
               total_cost: crop.total_cost,
               monthly_income: (crop.annual_sales - crop.total_cost) / 12,
               costs: {
+                수도광열비: crop.costs?.수도광열비 || 0,
                 종자종묘비: crop.costs?.종자종묘비 || 0,
                 기타재료비: crop.costs?.기타재료비 || 0,
                 소농구비: crop.costs?.소농구비 || 0,
@@ -45,7 +46,6 @@ const AnalysisReport = ({ data }) => {
                 토지임차료: crop.costs?.토지임차료 || 0,
                 위탁영농비: crop.costs?.위탁영농비 || 0,
                 고용노동비: crop.costs?.고용노동비 || 0,
-                중자재종묘비: crop.costs?.중자재종묘비 || 0,
                 보통비료비: crop.costs?.보통비료비 || 0,
                 부산물비료비: crop.costs?.부산물비료비 || 0,
                 농약비: crop.costs?.농약비 || 0,
@@ -97,26 +97,28 @@ const AnalysisReport = ({ data }) => {
           return null;
         }
 
-        // 재배면적에 따른 수익 계산 (3.3m² 기준으로 계산)
         const areaRatio = cultivationArea / 3.3;
+        const newAnnualSales = details.sales_per_area * cultivationArea;
+
+        // 총 경영비 계산 - 원래 연간매출액 대비 총경영비 비율을 새로운 연간매출액에 적용
+        const costRatio = details.total_cost / details.annual_sales;
+        const totalCost = newAnnualSales * costRatio;
+
+        // 각 비용 항목의 원래 비율 유지하면서 새로운 총 경영비에 적용
+        const costs = Object.entries(details.costs || {}).map(
+          ([name, cost]) => ({
+            name,
+            cost: totalCost * (cost / details.total_cost), // 원래 비율 유지
+          })
+        );
 
         return {
           name: crop.crop_name,
           hourly_sales: details.hourly_sales,
           sales_per_area: details.sales_per_area,
-          annual_sales: details.sales_per_area * cultivationArea,
-          total_cost:
-            details.sales_per_area *
-            cultivationArea *
-            (details.total_cost / details.annual_sales),
-          costs: Object.entries(details.costs || {}).map(([name, cost]) => ({
-            name,
-            cost:
-              (cost / details.total_cost) *
-              (details.sales_per_area *
-                cultivationArea *
-                (details.total_cost / details.annual_sales)),
-          })),
+          annual_sales: newAnnualSales,
+          total_cost: totalCost,
+          costs: costs,
         };
       })
       .filter(Boolean);
@@ -155,28 +157,20 @@ const AnalysisReport = ({ data }) => {
       ).toFixed(1),
     };
 
-    // 경영비 상세 정보 통합
-    const combinedCosts = {};
-    selectedCropsData.forEach((crop) => {
-      crop.costs.forEach(({ name, cost }) => {
-        combinedCosts[name] = (combinedCosts[name] || 0) + cost;
-      });
-    });
-
     // 경영비 항목별 색상 매핑
     const costColors = {
-      종자종묘비: "#FF6B6B",
-      기타재료비: "#4ECDC4",
-      소농구비: "#45B7D1",
-      대농구상각비: "#96CEB4",
-      영농시설상각비: "#FFEEAD",
-      수리유지비: "#D4A5A5",
-      기타비용: "#9B9B9B",
-      농기계시설임차료: "#FFD93D",
-      토지임차료: "#6C5B7B",
-      위탁영농비: "#C06C84",
-      고용노동비: "#F8B195",
-      중자재종묘비: "#355C7D",
+      수도광열비: "#FF6B6B",
+      종자종묘비: "#4ECDC4",
+      기타재료비: "#45B7D1",
+      소농구비: "#96CEB4",
+      대농구상각비: "#FFEEAD",
+      영농시설상각비: "#D4A5A5",
+      수리유지비: "#9B9B9B",
+      기타비용: "#FFD93D",
+      농기계시설임차료: "#6C5B7B",
+      토지임차료: "#C06C84",
+      위탁영농비: "#F8B195",
+      고용노동비: "#355C7D",
       보통비료비: "#99B898",
       부산물비료비: "#2A363B",
       농약비: "#A8E6CF",
@@ -185,6 +179,7 @@ const AnalysisReport = ({ data }) => {
     // 경영비 항목 순서 정의
     const costOrder = [
       "수도광열비",
+      "종자종묘비",
       "기타재료비",
       "소농구비",
       "대농구상각비",
@@ -195,7 +190,6 @@ const AnalysisReport = ({ data }) => {
       "토지임차료",
       "위탁영농비",
       "고용노동비",
-      "종자종묘비",
       "보통비료비",
       "부산물비료비",
       "농약비",
@@ -204,7 +198,13 @@ const AnalysisReport = ({ data }) => {
     // 비용 데이터를 정의된 순서대로 정렬
     const costData = costOrder.map((name) => ({
       name,
-      cost: Math.round((combinedCosts[name] || 0) / selectedCropsData.length),
+      cost: Math.round(
+        selectedCropsData.reduce(
+          (sum, crop) =>
+            sum + crop.costs.find((c) => c.name === name)?.cost || 0,
+          0
+        ) / selectedCropsData.length
+      ),
       color: costColors[name] || "#3a9d1f", // 기본 색상
     }));
 
