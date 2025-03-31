@@ -243,107 +243,75 @@ const AnalysisReport = ({ data }) => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">분석 결과</h2>
-        <p className="text-gray-600">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">
+          분석 결과
+        </h2>
+        <p className="text-sm sm:text-base text-gray-600">
           재배면적에 맞는 예상소득 분석 결과입니다.
         </p>
       </div>
 
-      {/* 기본 정보 */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
-        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-          <span className="w-2 h-6 bg-[#3a9d1f] rounded mr-2"></span>
-          기본 정보
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <p className="text-sm text-gray-600 mb-1">선택한 작물</p>
-            <div className="space-y-1">
-              {goals.selectedCrops.map((crop, index) => (
-                <p key={index} className="text-lg font-bold text-gray-800">
-                  {crop.crop_name}
-                </p>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">재배면적</p>
-            <p className="text-lg font-bold text-gray-800">
-              {goals.cultivationArea.toLocaleString()}평
-            </p>
-          </div>
+      {/* 주요 지표 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
+          <h3 className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
+            시간당 매출
+          </h3>
+          <p className="text-lg sm:text-xl font-bold text-gray-800">
+            {Math.round(results.hourly_sales).toLocaleString()}원
+          </p>
+        </div>
+        <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
+          <h3 className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
+            연간 매출
+          </h3>
+          <p className="text-lg sm:text-xl font-bold text-gray-800">
+            {Math.round(results.annual_sales).toLocaleString()}원
+          </p>
+        </div>
+        <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
+          <h3 className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
+            월 평균 소득
+          </h3>
+          <p className="text-lg sm:text-xl font-bold text-gray-800">
+            {Math.round(results.monthly_income).toLocaleString()}원
+          </p>
+        </div>
+        <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
+          <h3 className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
+            경영비 비율
+          </h3>
+          <p className="text-lg sm:text-xl font-bold text-gray-800">
+            {results.cost_ratio}%
+          </p>
         </div>
       </div>
 
-      {/* 수익 분석 */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
-        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-          <span className="w-2 h-6 bg-[#3a9d1f] rounded mr-2"></span>
-          수익 분석
+      {/* 경영비 분석 */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
+        <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+          <span className="w-1.5 sm:w-2 h-5 sm:h-6 bg-[#3a9d1f] rounded mr-2"></span>
+          경영비 분석
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <p className="text-sm text-gray-600 mb-1">시간당 매출</p>
-            <p className="text-lg font-bold text-gray-800">
-              {Math.round(results.hourly_sales).toLocaleString()}원
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">3.3m²당 매출</p>
-            <p className="text-lg font-bold text-gray-800">
-              {Math.round(results.sales_per_area).toLocaleString()}원
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">월 예상소득</p>
-            <p className="text-lg font-bold text-gray-800">
-              {Math.round(results.monthly_income).toLocaleString()}원
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">연간 매출액</p>
-            <p className="text-lg font-bold text-gray-800">
-              {Math.round(results.annual_sales).toLocaleString()}원
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">총 경영비</p>
-            <p className="text-lg font-bold text-gray-800">
-              {Math.round(results.total_cost).toLocaleString()}원
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">경영비 비율</p>
-            <p className="text-lg font-bold text-gray-800">
-              {results.cost_ratio}%
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 경영비 상세 분석 */}
-      <div className="bg-white p-6 rounded-lg border border-gray-200">
-        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-          <span className="w-2 h-6 bg-[#3a9d1f] rounded mr-2"></span>
-          경영비 상세 분석
-        </h3>
-        <div className="h-80">
+        <div className="h-[300px] sm:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={results.costData}>
+            <BarChart
+              data={results.costData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="name"
                 angle={-45}
                 textAnchor="end"
-                height={100}
-                interval={0}
+                height={60}
+                tick={{ fontSize: 12 }}
               />
               <YAxis />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="cost" name="비용">
+              <Bar dataKey="cost">
                 {results.costData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -351,6 +319,70 @@ const AnalysisReport = ({ data }) => {
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* 세부 분석 */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
+        <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+          <span className="w-1.5 sm:w-2 h-5 sm:h-6 bg-[#3a9d1f] rounded mr-2"></span>
+          세부 분석
+        </h3>
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600">
+                  항목
+                </th>
+                <th className="px-3 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm font-semibold text-gray-600">
+                  금액
+                </th>
+                <th className="px-3 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm font-semibold text-gray-600">
+                  비율
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {results.costData.map((item, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900 flex items-center">
+                    <span
+                      className="w-3 h-3 rounded-full mr-2"
+                      style={{ backgroundColor: item.color }}
+                    ></span>
+                    {item.name}
+                  </td>
+                  <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-right text-gray-600">
+                    {item.cost.toLocaleString()}원
+                  </td>
+                  <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-right text-gray-600">
+                    {((item.cost / results.total_cost) * 100).toFixed(1)}%
+                  </td>
+                </tr>
+              ))}
+              <tr className="bg-gray-50 font-semibold">
+                <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">
+                  총 경영비
+                </td>
+                <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-right text-gray-900">
+                  {Math.round(results.total_cost).toLocaleString()}원
+                </td>
+                <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-right text-gray-900">
+                  100%
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* 주의사항 */}
+      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 sm:p-4 rounded-r-lg">
+        <p className="text-xs sm:text-sm text-yellow-700">
+          • 본 분석 결과는 평균적인 데이터를 기반으로 산출된 예상 수치입니다.
+          <br className="hidden sm:block" />• 실제 경영 환경과 재배 조건에 따라
+          결과가 달라질 수 있습니다.
+        </p>
       </div>
     </div>
   );
