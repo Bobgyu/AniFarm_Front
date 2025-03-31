@@ -271,14 +271,39 @@ const Today = () => {
           const isWeekend = now.getDay() === 0 || now.getDay() === 6;
           
           if (Object.keys(latestValidData).length > 0) {
+            // 데이터베이스에 저장
+            try {
+              await axios.post('http://localhost:8000/api/price/save', 
+                Object.entries(latestValidData).map(([item_name, data]) => ({
+                  item_name,
+                  ...data
+                }))
+              );
+            } catch (error) {
+              console.error('데이터베이스 저장 중 오류:', error);
+            }
+            
             updateData(latestValidData, now, isWeekend, hasValidDpr1Data);
           }
         }
       } catch (err) {
         console.error('Error fetching price data:', err);
-        // API 호출 실패 시 쿠키 데이터 사용
-        if (frozenData) {
-          setPriceData(frozenData);
+        // API 호출 실패 시 데이터베이스에서 데이터 가져오기
+        try {
+          const dbResponse = await axios.get('http://localhost:8000/api/price/from-db');
+          if (dbResponse.data && dbResponse.data.data && dbResponse.data.data.item) {
+            const dbData = {};
+            dbResponse.data.data.item.forEach(item => {
+              dbData[item.item_name] = item;
+            });
+            setPriceData(dbData);
+          }
+        } catch (dbError) {
+          console.error('데이터베이스 조회 중 오류:', dbError);
+          // 데이터베이스 조회 실패 시 쿠키 데이터 사용
+          if (frozenData) {
+            setPriceData(frozenData);
+          }
         }
       } finally {
         setLoading(false);
@@ -316,7 +341,7 @@ const Today = () => {
         clearTimeout(updateTimer);
       };
     }
-  }, []); // 의존성 배열을 비워서 컴포넌트 마운트 시에만 실행
+  }, []);
 
   if (loading) {
     return (
