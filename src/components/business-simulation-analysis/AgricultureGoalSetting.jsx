@@ -3,12 +3,11 @@ import axios from "axios";
 
 const AgricultureGoalSetting = ({ onComplete, method }) => {
   const [formData, setFormData] = useState({
-    targetIncome: "",
     cultivationArea: "",
     selectedCrops: [],
-    investmentAmount: "",
   });
 
+  const [areaUnit, setAreaUnit] = useState("pyeong"); // pyeong 또는 m2
   const [searchTerm, setSearchTerm] = useState("");
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,14 +20,7 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
         setLoading(true);
         const response = await axios.get("http://localhost:8000/api/crop-data");
         if (response.data.success) {
-          const formattedCrops = response.data.data.map((crop) => ({
-            id: crop.id,
-            crop_name: crop.crop_name,
-            region: crop.region,
-            hourly_sales: crop.revenue_per_hour,
-            sales_per_area: crop.revenue_per_3_3m,
-          }));
-          setCrops(formattedCrops);
+          setCrops(response.data.data);
         } else {
           setError("작물 데이터를 불러오는데 실패했습니다.");
         }
@@ -48,14 +40,7 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
     if (!searchTerm.trim()) {
       const response = await axios.get("http://localhost:8000/api/crop-data");
       if (response.data.success) {
-        const formattedCrops = response.data.data.map((crop) => ({
-          id: crop.id,
-          crop_name: crop.crop_name,
-          region: crop.region,
-          hourly_sales: crop.revenue_per_hour,
-          sales_per_area: crop.revenue_per_3_3m,
-        }));
-        setCrops(formattedCrops);
+        setCrops(response.data.data);
       }
       return;
     }
@@ -66,14 +51,7 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
         `http://localhost:8000/api/crop-data/${encodeURIComponent(searchTerm)}`
       );
       if (response.data.success) {
-        const formattedCrops = response.data.data.map((crop) => ({
-          id: crop.id,
-          crop_name: crop.crop_name,
-          region: crop.region,
-          hourly_sales: crop.revenue_per_hour,
-          sales_per_area: crop.revenue_per_3_3m,
-        }));
-        setCrops(formattedCrops);
+        setCrops([response.data.data]);
       } else {
         setError("작물 검색에 실패했습니다.");
       }
@@ -136,47 +114,125 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
     }));
   };
 
+  const handleAreaUnitChange = (unit) => {
+    setAreaUnit(unit);
+    if (formData.cultivationArea) {
+      const currentValue = Number(formData.cultivationArea);
+      if (unit === "m2") {
+        // 평에서 m²로 변환 (1평 = 3.3058m²)
+        setFormData((prev) => ({
+          ...prev,
+          cultivationArea: (currentValue * 3.3058).toFixed(2),
+        }));
+      } else {
+        // m²에서 평으로 변환
+        setFormData((prev) => ({
+          ...prev,
+          cultivationArea: (currentValue / 3.3058).toFixed(2),
+        }));
+      }
+    }
+  };
+
   if (error) {
     return <div className="text-red-600 text-center p-4">{error}</div>;
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          {method === "income"
-            ? "기대소득 대비 농업 목표 설정"
-            : "재배면적 대비 농업 목표 설정"}
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">
+          재배면적 대비 농업 목표 설정
         </h2>
-        <p className="text-gray-600">
-          {method === "income"
-            ? "기대소득에 맞는 재배면적과 경영비를 알아보세요"
-            : "재배면적에 맞는 예상소득을 확인해보세요"}
+        <p className="text-sm sm:text-base text-gray-600">
+          재배면적에 맞는 예상소득을 확인해보세요
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+        {/* 재배면적 입력 */}
+        <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
+          <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <span className="w-1.5 sm:w-2 h-5 sm:h-6 bg-[#3a9d1f] rounded mr-2"></span>
+            재배면적을 입력해주세요
+          </h3>
+
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+              <div className="w-full sm:w-2/3">
+                <input
+                  type="number"
+                  name="cultivationArea"
+                  value={formData.cultivationArea}
+                  onChange={handleChange}
+                  placeholder="재배면적을 입력해주세요"
+                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3a9d1f] focus:border-[#3a9d1f]"
+                  min="0"
+                />
+              </div>
+              <div className="flex gap-2 w-full sm:w-1/3">
+                <button
+                  type="button"
+                  onClick={() => handleAreaUnitChange("pyeong")}
+                  className={`flex-1 px-3 py-2 text-sm sm:text-base rounded-md transition-colors duration-200 ${
+                    areaUnit === "pyeong"
+                      ? "bg-[#3a9d1f] text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  평
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAreaUnitChange("m2")}
+                  className={`flex-1 px-3 py-2 text-sm sm:text-base rounded-md transition-colors duration-200 ${
+                    areaUnit === "m2"
+                      ? "bg-[#3a9d1f] text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  m²
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {[100, 200, 300, 500, 1000].map((amount) => (
+                <button
+                  key={amount}
+                  type="button"
+                  onClick={() => handleQuickAdd("cultivationArea", amount)}
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors duration-200"
+                >
+                  +{amount}
+                  {areaUnit === "pyeong" ? "평" : "m²"}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* 작물 검색 및 선택 */}
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-            <span className="w-2 h-6 bg-[#3a9d1f] rounded mr-2"></span>
+        <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
+          <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
+            <span className="w-1.5 sm:w-2 h-5 sm:h-6 bg-[#3a9d1f] rounded mr-2"></span>
             희망재배 작물을 선택해주세요
           </h3>
 
           {/* 검색창 */}
-          <div className="mb-6">
-            <div className="flex gap-2">
+          <div className="mb-4 sm:mb-6">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="원하는 작물명을 검색해주세요."
-                className="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3a9d1f] focus:border-[#3a9d1f]"
+                className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3a9d1f] focus:border-[#3a9d1f]"
               />
               <button
                 type="button"
                 onClick={handleSearch}
-                className="px-6 py-3 bg-[#3a9d1f] text-white rounded-md hover:bg-[#2d7a17] transition-colors duration-200"
+                className="w-full sm:w-auto px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#3a9d1f] text-white rounded-md hover:bg-[#2d7a17] transition-colors duration-200 whitespace-nowrap"
                 disabled={loading}
               >
                 {loading ? "검색 중..." : "검색"}
@@ -185,125 +241,48 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
           </div>
 
           {/* 검색 결과 테이블 */}
-          <div className="overflow-x-auto">
-            <div className="max-h-[400px] overflow-y-auto">
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="max-h-[300px] sm:max-h-[400px] overflow-y-auto">
               <table className="w-full border-collapse">
                 <thead className="bg-gray-50 sticky top-0 z-10">
                   <tr>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-center text-xs sm:text-sm font-semibold text-gray-600">
                       작물명
                     </th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
-                      지역
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-center text-xs sm:text-sm font-semibold text-gray-600">
+                      3.3m² 수익
                     </th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
-                      시간당 매출
-                    </th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
-                      3.3m당 매출
-                    </th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
-                      항목추가
+                    <th className="px-3 sm:px-4 py-2 sm:py-3 text-center text-xs sm:text-sm font-semibold text-gray-600">
+                      선택
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {loading ? (
-                    <tr>
-                      <td colSpan="5" className="text-center py-4">
-                        데이터를 불러오는 중...
-                      </td>
-                    </tr>
-                  ) : filteredCrops.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className="text-center py-4">
-                        검색 결과가 없습니다.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredCrops.map((crop) => (
-                      <tr key={crop.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-900">
-                          {crop.crop_name}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {crop.region || "전국"}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-center text-gray-600">
-                          {crop.hourly_sales
-                            ? `${crop.hourly_sales.toLocaleString()}원`
-                            : "-"}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-center text-gray-600">
-                          {crop.sales_per_area
-                            ? `${crop.sales_per_area.toLocaleString()}원`
-                            : "-"}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <button
-                            type="button"
-                            onClick={() => handleAddCrop(crop)}
-                            className="px-4 py-1 text-sm text-white bg-[#3a9d1f] rounded hover:bg-[#2d7a17] transition-colors duration-200"
-                          >
-                            추가하기
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* 선택된 작물 목록 */}
-          {formData.selectedCrops.length > 0 && (
-            <div className="mt-8">
-              <h4 className="text-md font-semibold text-gray-700 mb-3">
-                선택된 작물
-              </h4>
-              <table className="w-full border-collapse">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
-                      작물명
-                    </th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
-                      지역
-                    </th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
-                      시간당 매출
-                    </th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
-                      3.3m당 매출
-                    </th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">
-                      삭제
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {formData.selectedCrops.map((crop) => (
-                    <tr key={crop.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900">
+                <tbody>
+                  {filteredCrops.map((crop, index) => (
+                    <tr
+                      key={index}
+                      className="border-b border-gray-200 hover:bg-gray-50"
+                    >
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-center text-xs sm:text-sm">
                         {crop.crop_name}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {crop.region || "전국"}
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-center text-xs sm:text-sm">
+                        {crop.revenue_per_3_3m?.toLocaleString()}원
                       </td>
-                      <td className="px-4 py-3 text-sm text-center text-gray-600">
-                        {crop.hourly_sales ? `${crop.hourly_sales}원` : "-"}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-center text-gray-600">
-                        {crop.sales_per_area ? `${crop.sales_per_area}원` : "-"}
-                      </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-3 sm:px-4 py-2 sm:py-3 text-center">
                         <button
                           type="button"
-                          onClick={() => handleRemoveCrop(crop.crop_name)}
-                          className="px-4 py-1 text-sm text-white bg-gray-500 rounded hover:bg-gray-600 transition-colors duration-200"
+                          onClick={() => handleAddCrop(crop)}
+                          className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm bg-[#3a9d1f] text-white rounded hover:bg-[#2d7a17] transition-colors duration-200"
+                          disabled={formData.selectedCrops.some(
+                            (selected) => selected.crop_name === crop.crop_name
+                          )}
                         >
-                          삭제
+                          {formData.selectedCrops.some(
+                            (selected) => selected.crop_name === crop.crop_name
+                          )
+                            ? "선택됨"
+                            : "선택"}
                         </button>
                       </td>
                     </tr>
@@ -311,185 +290,43 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* 선택된 작물 목록 */}
+          {formData.selectedCrops.length > 0 && (
+            <div className="mt-4 sm:mt-6">
+              <h4 className="text-sm sm:text-base font-semibold mb-2 sm:mb-3">
+                선택된 작물
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {formData.selectedCrops.map((crop) => (
+                  <div
+                    key={crop.crop_name}
+                    className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-[#3a9d1f] text-white rounded text-xs sm:text-sm"
+                  >
+                    {crop.crop_name}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveCrop(crop.crop_name)}
+                      className="ml-1 hover:text-red-200"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
 
-        {/* 경영 목표 설정 */}
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-            <span className="w-2 h-6 bg-[#3a9d1f] rounded mr-2"></span>
-            경영 목표 설정
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {method === "income" ? (
-              <>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    월 목표 소득 (원)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      name="targetIncome"
-                      value={formData.targetIncome}
-                      onChange={handleChange}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3a9d1f] focus:border-[#3a9d1f]"
-                      placeholder="예: 50000000"
-                      required
-                    />
-                    <span className="absolute right-3 top-3 text-gray-500">
-                      원
-                    </span>
-                  </div>
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      type="button"
-                      onClick={() => handleQuickAdd("targetIncome", 5000000)}
-                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
-                    >
-                      +500만원
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleQuickAdd("targetIncome", 1000000)}
-                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
-                    >
-                      +100만원
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleQuickAdd("targetIncome", 100000)}
-                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
-                    >
-                      +10만원
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    투자 금액 (원)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      name="investmentAmount"
-                      value={formData.investmentAmount}
-                      onChange={handleChange}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3a9d1f] focus:border-[#3a9d1f]"
-                      placeholder="예: 10000000"
-                      required
-                    />
-                    <span className="absolute right-3 top-3 text-gray-500">
-                      원
-                    </span>
-                  </div>
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleQuickAdd("investmentAmount", 5000000)
-                      }
-                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
-                    >
-                      +500만원
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleQuickAdd("investmentAmount", 1000000)
-                      }
-                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
-                    >
-                      +100만원
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleQuickAdd("investmentAmount", 100000)}
-                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
-                    >
-                      +10만원
-                    </button>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    재배 면적 (㎡)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      name="cultivationArea"
-                      value={formData.cultivationArea}
-                      onChange={handleChange}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3a9d1f] focus:border-[#3a9d1f]"
-                      placeholder="예: 1000"
-                      required
-                    />
-                    <span className="absolute right-3 top-3 text-gray-500">
-                      ㎡
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    투자 금액 (원)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      name="investmentAmount"
-                      value={formData.investmentAmount}
-                      onChange={handleChange}
-                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#3a9d1f] focus:border-[#3a9d1f]"
-                      placeholder="예: 10000000"
-                      required
-                    />
-                    <span className="absolute right-3 top-3 text-gray-500">
-                      원
-                    </span>
-                  </div>
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleQuickAdd("investmentAmount", 5000000)
-                      }
-                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
-                    >
-                      +500만원
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleQuickAdd("investmentAmount", 1000000)
-                      }
-                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
-                    >
-                      +100만원
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleQuickAdd("investmentAmount", 100000)}
-                      className="flex-1 px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors duration-200"
-                    >
-                      +10만원
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="flex justify-center pt-4">
+        {/* 제출 버튼 */}
+        <div className="flex justify-center">
           <button
             type="submit"
-            className="px-8 py-3 bg-[#3a9d1f] text-white rounded-md hover:bg-[#2d7a17] transition-colors duration-200 font-medium"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base bg-[#3a9d1f] text-white rounded-md hover:bg-[#2d7a17] transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            disabled={
+              !formData.cultivationArea || formData.selectedCrops.length === 0
+            }
           >
             분석 시작하기
           </button>

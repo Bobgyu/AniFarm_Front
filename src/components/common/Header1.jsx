@@ -138,7 +138,7 @@ const Header = () => {
         case "판매 커뮤니티":
           path = "/community/marketplace";
           break;
-        case "경영모의계산":
+        case "경영 모의계산":
           path = "/business-simulation";
           break;
         default:
