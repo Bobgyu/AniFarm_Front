@@ -25,17 +25,6 @@ const Footer = () => {
               대표전화: 02-2038-0800 | FAX: 02-000-0000
             </p>
           </div>
-
-          {/* 버튼 섹션 */}
-          <div className="flex gap-4">
-            <button
-              onClick={handleCropQuiz}
-              className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded"
-            >
-              Crop Quiz
-            </button>
-          </div>
-
           {/* 저작권 정보 */}
           <div className="text-center">
             <p className="text-sm text-gray-500">

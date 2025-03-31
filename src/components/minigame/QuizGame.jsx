@@ -97,7 +97,7 @@ const Sale = () => {
             <div className="text-center flex items-start justify-center mt-0 absolute top-1/3 left-0 right-0">
               <h2 className="text-3xl text-white tracking-wider select-none max-w-4xl mx-auto px-4">
                 {!hoveredContent
-                  ? "재배 시뮬레이션과 퀴즈를 통해 작물에 대한 견해를 늘려보세요."
+                  ? "재배 시뮬레이션과 퀴즈를 작물에 대한 견해를 늘려보세요."
                   : hoveredContent === "minigame"
                   ? "재배 시뮬레이션을 사용하여 직접 농부가 되어보세요."
                   : hoveredContent === "CropQuiz"
@@ -108,7 +108,7 @@ const Sale = () => {
 
             {/* 하단 버튼 그룹 컨테이너 */}
             <div className="absolute bottom-24 left-0 right-0 h-[300px] ">
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-12 px-4 max-w-4xl mx-auto w-[800px] h-[200px] mt-20 ">
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-12 px-4 max-w-4xl mx-auto w-[600px] h-[10rem] mt-20 ">
                 {/* 미니게임 카드 */}
                 <Link to="/minigame">
                   <motion.div
