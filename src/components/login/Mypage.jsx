@@ -8,6 +8,8 @@ import MyPosts from './MyPosts';
 import MyComments from './MyComments';
 import PasswordModal from './PasswordModal';
 import Swal from 'sweetalert2';
+import MyCalendar from './MyCalendar';
+
 
 const Mypage = () => {
   const dispatch = useDispatch();
@@ -100,8 +102,8 @@ const Mypage = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] w-full pt-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div>
+      <div>
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:hidden w-full">
             <button
@@ -119,6 +121,7 @@ const Mypage = () => {
             />
           </div>
           <div className="w-full md:w-3/4 space-y-6">
+            <MyCalendar />
             <MyPosts />
             <MyComments />
           </div>

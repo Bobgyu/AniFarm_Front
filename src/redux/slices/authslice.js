@@ -310,6 +310,9 @@ export const refreshTokenThunk = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
+      console.log('토큰 갱신 시도:', new Date().toLocaleTimeString());
+      console.log('현재 토큰:', token);
+
       const response = await fetch('/auth/refresh', {
         method: 'POST',
         headers: {
@@ -326,11 +329,17 @@ export const refreshTokenThunk = createAsyncThunk(
           // 만료 시간 갱신
           const newExpireTime = new Date().getTime() + TOKEN_EXPIRE_TIME;
           localStorage.setItem("tokenExpiry", newExpireTime.toString());
+          
+          console.log('토큰 갱신 성공:', new Date().toLocaleTimeString());
+          console.log('새 토큰:', data.data.newToken);
+          console.log('새 만료 시간:', new Date(newExpireTime).toLocaleString());
+          
           return data.data;
         }
       }
       throw new Error('토큰 갱신 실패');
     } catch (error) {
+      console.error('토큰 갱신 실패:', error);
       return rejectWithValue(error.message);
     }
   }
@@ -345,8 +354,13 @@ export const checkActivityAndRefreshToken = createAsyncThunk(
     
     if (token) {
       const now = new Date().getTime();
+      const timeToExpiry = parseInt(expireTime) - now;
+      
+      console.log('토큰 만료까지 남은 시간:', Math.round(timeToExpiry / 1000 / 60), '분');
+      
       // 만료 10분 전부터 토큰 갱신 시도
-      if (expireTime && (parseInt(expireTime) - now) <= 10 * 60 * 1000) {
+      if (expireTime && timeToExpiry <= 10 * 60 * 1000) {
+        console.log('토큰 갱신 조건 충족 - 10분 이내 만료');
         try {
           await dispatch(refreshTokenThunk()).unwrap();
           dispatch(updateLastActivity());
@@ -356,7 +370,7 @@ export const checkActivityAndRefreshToken = createAsyncThunk(
           return false;
         }
       } else {
-        // 만료까지 10분 이상 남은 경우 단순히 활동 시간만 업데이트
+        console.log('토큰 갱신 불필요 - 만료 시간 여유 있음');
         dispatch(updateLastActivity());
         return true;
       }

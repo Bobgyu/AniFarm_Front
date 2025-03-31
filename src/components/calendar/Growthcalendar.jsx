@@ -3,6 +3,10 @@ import Calendar from 'react-calendar';
 import styled from 'styled-components';
 import axios from 'axios';
 import { format } from 'date-fns';
+import { useDispatch, useSelector } from 'react-redux';
+import { saveCalendarData, fetchUserCalendar } from '../../redux/slices/calendarSlice';
+import Swal from 'sweetalert2';
+import { useLocation } from 'react-router-dom';
 
 // axios 인스턴스 생성
 const api = axios.create({
@@ -25,6 +29,7 @@ const SelectorsContainer = styled.div`
   background-color: #f5f5f5;
   border-radius: 8px;
   align-items: center;
+  justify-content: space-between;
 `;
 
 const Select = styled.select`
@@ -499,17 +504,39 @@ const HarvestIcon = styled.div`
   margin-top: 4px;
 `;
 
+const SaveButton = styled(ConfirmButton)`
+  background-color: #3a9d1f;
+  &:hover {
+    background-color: #2d7b18;
+  }
+`;
+
 const GrowthCalendar = () => {
-  const [selectedCity, setSelectedCity] = useState('서울');
-  const [selectedCrop, setSelectedCrop] = useState('토마토');
-  const [tempSowingDate, setTempSowingDate] = useState('');
-  const [sowingDate, setSowingDate] = useState('');
+  const location = useLocation();
+  console.log('location state:', location.state); // state 확인용 로그
+
+  // state가 있을 경우 사용, 없으면 기본값 사용
+  const [selectedCity, setSelectedCity] = useState(location.state?.selectedCity || '서울');
+  const [selectedCrop, setSelectedCrop] = useState(location.state?.selectedCrop || '토마토');
+  const [tempSowingDate, setTempSowingDate] = useState(location.state?.tempSowingDate || '');
+  const [sowingDate, setSowingDate] = useState(location.state?.sowingDate || '');
   const [date, setDate] = useState(new Date());
   const [guidance, setGuidance] = useState([]);
   const [weatherData, setWeatherData] = useState(null);
 
   const cities = ['서울', '부산', '대구', '인천', '광주', '대전', '울산', '제주'];
   const crops = ['토마토', '상추', '감자', '딸기', '당근', '오이', '고추'];
+
+  // location.state가 있을 경우 초기 데이터 로드
+  useEffect(() => {
+    if (location.state) {
+      console.log('초기 데이터 설정:', location.state);
+      setSelectedCity(location.state.selectedCity);
+      setSelectedCrop(location.state.selectedCrop);
+      setTempSowingDate(location.state.sowingDate);
+      setSowingDate(location.state.sowingDate);
+    }
+  }, [location.state]);
 
   const getWeatherEmoji = (temp, rainfall) => {
     if (rainfall > 0) return '🌧️';
@@ -601,8 +628,113 @@ const GrowthCalendar = () => {
   };
 
   const handleSowingDateConfirm = () => {
+    if (!tempSowingDate) {
+      Swal.fire({
+        title: '날짜 선택',
+        text: '파종일을 선택해주세요.',
+        icon: 'warning',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#3a9d1f'
+      });
+      return;
+    }
+
     setSowingDate(tempSowingDate);
+    Swal.fire({
+      title: '파종일 설정 완료',
+      text: `파종일이 ${tempSowingDate}로 설정되었습니다.`,
+      icon: 'success',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#3a9d1f',
+      timer: 1500
+    });
   };
+
+// 컴포넌트 내부
+const dispatch = useDispatch();
+const { calendarData, loading, error } = useSelector((state) => state.calendar);
+
+// 로그인 상태 확인 수정
+const token = localStorage.getItem('token');
+const isLoggedIn = !!token; // token이 있으면 true, 없으면 false
+
+// 저장하기 핸들러 수정
+const handleSave = () => {
+  if (!isLoggedIn) {
+    Swal.fire({
+      title: '로그인 필요',
+      text: '캘린더 저장은 로그인 후 이용 가능합니다.',
+      icon: 'warning',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#3a9d1f'
+    });
+    return;
+  }
+
+  if (!sowingDate) {
+    Swal.fire({
+      title: '파종일 필요',
+      text: '파종일을 먼저 선택해주세요.',
+      icon: 'warning',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#3a9d1f'
+    });
+    return;
+  }
+
+  const calendarData = {
+    region: selectedCity,
+    crop: selectedCrop,
+    growth_date: format(new Date(sowingDate), 'yyyy-MM-dd') // 파종일을 growth_date로 사용
+  };
+  
+  console.log('저장할 데이터:', calendarData);
+
+  Swal.fire({
+    title: '저장하시겠습니까?',
+    html: `
+      <p>선택하신 정보:</p>
+      <p>지역: ${selectedCity}</p>
+      <p>작물: ${selectedCrop}</p>
+      <p>파종일: ${format(new Date(sowingDate), 'yyyy년 MM월 dd일')}</p>
+    `,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: '저장',
+    cancelButtonText: '취소',
+    confirmButtonColor: '#3a9d1f',
+    cancelButtonColor: '#d33'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      dispatch(saveCalendarData(calendarData))
+        .unwrap()
+        .then(() => {
+          Swal.fire({
+            title: '저장 완료',
+            text: '캘린더에 성공적으로 저장되었습니다.',
+            icon: 'success',
+            confirmButtonText: '확인',
+            confirmButtonColor: '#3a9d1f'
+          });
+        })
+        .catch((error) => {
+          console.error('저장 실패:', error);
+          Swal.fire({
+            title: '저장 실패',
+            text: error.response?.data?.message || '저장 중 오류가 발생했습니다.',
+            icon: 'error',
+            confirmButtonText: '확인',
+            confirmButtonColor: '#3a9d1f'
+          });
+        });
+    }
+  });
+};
+
+// 컴포넌트 마운트 시 사용자의 캘린더 데이터 로드
+useEffect(() => {
+  dispatch(fetchUserCalendar());
+}, [dispatch]); 
 
   const renderTileContent = ({ date: tileDate, view }) => {
     if (view !== 'month') return null;
@@ -684,38 +816,45 @@ const GrowthCalendar = () => {
   return (
     <MainContent>
       <SelectorsContainer>
-        <div>
-          <Label>도시</Label>
-          <Select value={selectedCity} onChange={e => setSelectedCity(e.target.value)}>
-            {cities.map(city => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <Label>작물</Label>
-          <Select value={selectedCrop} onChange={e => setSelectedCrop(e.target.value)}>
-            {crops.map(crop => (
-              <option key={crop} value={crop}>{cropEmojis[crop]} {crop}</option>
-            ))}
-          </Select>
-        </div>
-        <DateInputContainer>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
           <div>
-            <Label>파종일</Label>
-            <DateInput
-              type="date"
-              value={tempSowingDate}
-              onChange={e => setTempSowingDate(e.target.value)}
-            />
+            <Label>도시</Label>
+            <Select value={selectedCity} onChange={e => setSelectedCity(e.target.value)}>
+              {cities.map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </Select>
           </div>
-          <ConfirmButton 
-            onClick={handleSowingDateConfirm}
-            disabled={!tempSowingDate}
-          >
-            확인
-          </ConfirmButton>
-        </DateInputContainer>
+          <div>
+            <Label>작물</Label>
+            <Select value={selectedCrop} onChange={e => setSelectedCrop(e.target.value)}>
+              {crops.map(crop => (
+                <option key={crop} value={crop}>{cropEmojis[crop]} {crop}</option>
+              ))}
+            </Select>
+          </div>
+          <DateInputContainer>
+            <div>
+              <Label>파종일</Label>
+              <DateInput
+                type="date"
+                value={tempSowingDate}
+                onChange={e => setTempSowingDate(e.target.value)}
+              />
+            </div>
+            <ConfirmButton 
+              onClick={handleSowingDateConfirm}
+              disabled={!tempSowingDate}
+            >
+              확인
+            </ConfirmButton>
+          </DateInputContainer>
+        </div>
+        {isLoggedIn && (
+          <SaveButton onClick={handleSave}>
+            저장하기
+          </SaveButton>
+        )}
       </SelectorsContainer>
 
       <CalendarContainer>
