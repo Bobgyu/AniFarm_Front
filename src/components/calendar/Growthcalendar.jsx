@@ -513,7 +513,7 @@ const SaveButton = styled(ConfirmButton)`
 
 const GrowthCalendar = () => {
   const location = useLocation();
-  console.log('location state:', location.state); // state 확인용 로그
+  // console.log('location state:', location.state); // state 확인용 로그
 
   // state가 있을 경우 사용, 없으면 기본값 사용
   const [selectedCity, setSelectedCity] = useState(location.state?.selectedCity || '서울');
@@ -530,7 +530,7 @@ const GrowthCalendar = () => {
   // location.state가 있을 경우 초기 데이터 로드
   useEffect(() => {
     if (location.state) {
-      console.log('초기 데이터 설정:', location.state);
+      // console.log('초기 데이터 설정:', location.state);
       setSelectedCity(location.state.selectedCity);
       setSelectedCrop(location.state.selectedCrop);
       setTempSowingDate(location.state.sowingDate);
@@ -579,14 +579,6 @@ const GrowthCalendar = () => {
       const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
       const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
-      console.log('Fetching guidance with params:', {
-        city: selectedCity,
-        crop: selectedCrop,
-        sowingDate: sowingDate ? format(new Date(sowingDate), 'yyyy-MM-dd') : null,
-        targetDate: format(firstDay, 'yyyy-MM-dd'),
-        endDate: format(lastDay, 'yyyy-MM-dd')
-      });
-
       const response = await api.get('/api/growth_calendar', {
         params: {
           city: selectedCity,
@@ -597,11 +589,11 @@ const GrowthCalendar = () => {
         }
       });
 
-      console.log('Received guidance:', response.data.data.guidance);
+      // console.log('Received guidance:', response.data.data.guidance);
       
       // 작업 가이드만 따로 로깅
-      const taskGuidance = response.data.data.guidance.filter(g => g.type === 'task');
-      console.log('Task guidance:', taskGuidance);
+      // const taskGuidance = response.data.data.guidance.filter(g => g.type === 'task');
+      // console.log('Task guidance:', taskGuidance);
 
       setGuidance(response.data.data.guidance);
       setWeatherData(response.data.data.weather);
@@ -688,7 +680,7 @@ const handleSave = () => {
     growth_date: format(new Date(sowingDate), 'yyyy-MM-dd') // 파종일을 growth_date로 사용
   };
   
-  console.log('저장할 데이터:', calendarData);
+  // console.log('저장할 데이터:', calendarData);
 
   Swal.fire({
     title: '저장하시겠습니까?',
@@ -718,7 +710,7 @@ const handleSave = () => {
           });
         })
         .catch((error) => {
-          console.error('저장 실패:', error);
+          // console.error('저장 실패:', error);
           Swal.fire({
             title: '저장 실패',
             text: error.response?.data?.message || '저장 중 오류가 발생했습니다.',
