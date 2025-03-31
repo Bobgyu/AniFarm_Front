@@ -5,7 +5,7 @@ import QuizGame from "../../assets/images/QuizGame.jpg"; // 기본 이미지 필
 import minigame from "../../assets/images/minigame.jpg"; // 소비트렌드 이미지
 import CropQuiz from "../../assets/images/CropQuiz.jpg"; // 가격예측 이미지
 
-const Sale = () => {
+const QuizGameMain = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
@@ -83,7 +83,7 @@ const Sale = () => {
         {/* 콘텐츠 */}
         <div className="absolute inset-0 flex flex-col">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col">
-            <div className="text-center mt-40">
+            <div className="text-center mt-60 md:mt-40">
               <h1
                 className="text-4xl text-white mb-4 select-none tracking-widest drop-shadow-xl"
                 onMouseEnter={handleTitleHover}
@@ -94,7 +94,7 @@ const Sale = () => {
             </div>
 
             {/* 중앙 텍스트 */}
-            <div className="text-center flex items-start justify-center mt-0 absolute top-1/3 left-0 right-0">
+            <div className="text-center flex items-start justify-center mt-20 md:mt-0 absolute top-1/3 left-0 right-0">
               <h2 className="text-3xl text-white tracking-wider select-none max-w-4xl mx-auto px-4">
                 {!hoveredContent
                   ? "재배 시뮬레이션과 퀴즈를 작물에 대한 견해를 늘려보세요."
@@ -107,8 +107,8 @@ const Sale = () => {
             </div>
 
             {/* 하단 버튼 그룹 컨테이너 */}
-            <div className="absolute bottom-24 left-0 right-0 h-[300px] ">
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-12 px-4 max-w-4xl mx-auto w-[600px] h-[10rem] mt-20 ">
+            <div className="absolute bottom-0 md:bottom-24 left-0 right-0 h-[300px]">
+              <div className="grid grid-cols-2 gap-12 px-4 max-w-4x1 mx-auto w-full md:w-[600px] h-[10rem] mt-20">
                 {/* 미니게임 카드 */}
                 <Link to="/minigame">
                   <motion.div
@@ -151,4 +151,4 @@ const Sale = () => {
   );
 };
 
-export default Sale;
+export default QuizGameMain;
