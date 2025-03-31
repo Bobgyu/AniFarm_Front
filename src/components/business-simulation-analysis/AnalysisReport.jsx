@@ -185,11 +185,11 @@ const AnalysisReport = ({ data }) => {
       "영농시설상각비",
       "수리유지비",
       "기타비용",
-      "농기계-시설임차료",
+      "농기계시설임차료",
       "토지임차료",
       "위탁영농비",
       "고용노동비",
-      "종자&종묘비",
+      "종자종묘비",
       "보통비료비",
       "부산물비료비",
       "농약비",
@@ -246,21 +246,26 @@ const AnalysisReport = ({ data }) => {
     <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">
-          분석 결과
+          분석 보고서
         </h2>
-        <p className="text-sm sm:text-base text-gray-600">
-          재배면적에 맞는 예상소득 분석 결과입니다.
-        </p>
       </div>
 
       {/* 주요 지표 */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
           <h3 className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
             연간 매출
           </h3>
           <p className="text-lg sm:text-xl font-bold text-gray-800">
             {Math.round(results.annual_sales).toLocaleString()}원
+          </p>
+        </div>
+        <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
+          <h3 className="text-sm sm:text-base font-semibold text-gray-600 mb-2">
+            총 경영비
+          </h3>
+          <p className="text-lg sm:text-xl font-bold text-gray-800">
+            {Math.round(results.total_cost).toLocaleString()}원
           </p>
         </div>
         <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200">
