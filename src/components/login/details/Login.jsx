@@ -122,11 +122,6 @@ const Login = () => {
             >
               로그인 하기
             </button>
-            <Link to="/register">
-              <button className="mt-3 w-full flex justify-center py-3.5 px-4 border border-gray-200 text-sm font-medium rounded-2xl text-gray-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-all duration-300">
-                이메일 회원가입
-              </button>
-            </Link>
           </div>
         </form>
 
