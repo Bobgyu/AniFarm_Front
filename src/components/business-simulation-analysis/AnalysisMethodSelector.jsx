@@ -3,17 +3,6 @@ import React from "react";
 const AnalysisMethodSelector = ({ onSelect }) => {
   const methods = [
     {
-      id: "income",
-      title: "기대소득 대비",
-      description: "재배면적과 경영비를 알아봐요",
-      icon: "💰",
-      details: [
-        "목표 소득에 따른 필요한 재배면적 계산",
-        "경영비용 분석 및 예측",
-        "수익성 분석",
-      ],
-    },
-    {
       id: "area",
       title: "재배면적 대비",
       description: "예상소득이 궁금해요",
@@ -37,7 +26,7 @@ const AnalysisMethodSelector = ({ onSelect }) => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {methods.map((method) => (
           <button
             key={method.id}
