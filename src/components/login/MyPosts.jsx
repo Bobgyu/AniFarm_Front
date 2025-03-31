@@ -10,7 +10,10 @@ import { getCategoryName, getCommunityTypeName } from './helpers';
 const MyPosts = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const myPosts = useSelector(selectMyPosts);
+  const { myPosts, loading } = useSelector((state) => ({
+    myPosts: selectMyPosts(state),
+    loading: state.write.loading
+  }));
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [showDropdown, setShowDropdown] = useState(null);
@@ -197,6 +200,20 @@ const MyPosts = () => {
       });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
+        <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-200">
+          <FaPen className="text-[#3a9d1f] text-xl" />
+          <h2 className="text-xl font-semibold text-gray-800">내 게시글</h2>
+        </div>
+        <div className="flex justify-center items-center min-h-[200px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">

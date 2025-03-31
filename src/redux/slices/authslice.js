@@ -8,6 +8,9 @@ import Swal from "sweetalert2";
 
 const BASE_URL = "http://localhost:8000";
 
+// 토큰 만료 시간을 전역 상수로 정의
+export const TOKEN_EXPIRE_TIME = 24 * 60 * 60 * 1000; // 24시간
+
 // 회원가입 요청
 export const postAuthFetchThunk = (type, url) => {
   return createAsyncThunk(type, async (value, { rejectWithValue }) => {
@@ -261,7 +264,7 @@ export const checkLoginStatusThunk = createAsyncThunk(
   }
 );
 
-// 토큰 만료 15분 전에 자동 갱신하는 로직 추가 제안
+// 토큰 만료 15분 전에 자동 갱신하는 로직 수정
 export const checkTokenExpiration = createAsyncThunk(
   'auth/checkTokenExpiration',
   async (_, { dispatch }) => {
@@ -270,7 +273,7 @@ export const checkTokenExpiration = createAsyncThunk(
     const timeToExpiry = parseInt(tokenExpiry) - now;
     
     if (timeToExpiry < 15 * 60 * 1000) { // 15분 미만 남은 경우
-      await dispatch(refreshToken());
+      await dispatch(refreshTokenThunk()); // refreshToken을 refreshTokenThunk로 변경
     }
   }
 );
@@ -301,29 +304,118 @@ const handleRejected = (state, action) => {
   state.errorMessage = action.payload?.message || "오류가 발생했습니다.";
 };
 
-// refreshToken 함수 수정
-export const refreshToken = createAsyncThunk(
+// 토큰 갱신 thunk 추가
+export const refreshTokenThunk = createAsyncThunk(
   'auth/refreshToken',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/auth/refresh-token', {}, {
+      const token = localStorage.getItem("token");
+      console.log('토큰 갱신 시도:', new Date().toLocaleTimeString());
+      console.log('현재 토큰:', token);
+
+      const response = await fetch('/auth/refresh', {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
-      
-      if (response.data.access_token) {
-        localStorage.setItem('token', response.data.access_token);
-        // 24시간으로 통일
-        const expiry = new Date().getTime() + 24 * 60 * 60 * 1000;
-        localStorage.setItem('tokenExpiry', expiry.toString());
-        return response.data;
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data.newToken) {
+          // 새 토큰 저장
+          localStorage.setItem("token", data.data.newToken);
+          // 만료 시간 갱신
+          const newExpireTime = new Date().getTime() + TOKEN_EXPIRE_TIME;
+          localStorage.setItem("tokenExpiry", newExpireTime.toString());
+          
+          console.log('토큰 갱신 성공:', new Date().toLocaleTimeString());
+          console.log('새 토큰:', data.data.newToken);
+          console.log('새 만료 시간:', new Date(newExpireTime).toLocaleString());
+          
+          return data.data;
+        }
       }
-      
       throw new Error('토큰 갱신 실패');
     } catch (error) {
+      console.error('토큰 갱신 실패:', error);
       return rejectWithValue(error.message);
     }
+  }
+);
+
+// 활동 체크 및 토큰 갱신 thunk
+export const checkActivityAndRefreshToken = createAsyncThunk(
+  'auth/checkActivityAndRefresh',
+  async (_, { dispatch, getState }) => {
+    const token = localStorage.getItem("token");
+    const expireTime = localStorage.getItem("tokenExpiry");
+    
+    if (token) {
+      const now = new Date().getTime();
+      const timeToExpiry = parseInt(expireTime) - now;
+      
+      console.log('토큰 만료까지 남은 시간:', Math.round(timeToExpiry / 1000 / 60), '분');
+      
+      // 만료 10분 전부터 토큰 갱신 시도
+      if (expireTime && timeToExpiry <= 10 * 60 * 1000) {
+        console.log('토큰 갱신 조건 충족 - 10분 이내 만료');
+        try {
+          await dispatch(refreshTokenThunk()).unwrap();
+          dispatch(updateLastActivity());
+          return true;
+        } catch (error) {
+          console.error('토큰 갱신 실패:', error);
+          return false;
+        }
+      } else {
+        console.log('토큰 갱신 불필요 - 만료 시간 여유 있음');
+        dispatch(updateLastActivity());
+        return true;
+      }
+    }
+    return false;
+  }
+);
+
+// 주기적인 상태 체크 thunk
+export const periodicStatusCheck = createAsyncThunk(
+  'auth/periodicStatusCheck',
+  async (_, { dispatch, getState }) => {
+    const { isAuthenticated } = getState().auth;
+    
+    if (isAuthenticated) {
+      const token = localStorage.getItem("token");
+      const expireTime = localStorage.getItem("tokenExpiry");
+      const now = new Date().getTime();
+
+      if (!token || !expireTime || now > parseInt(expireTime)) {
+        await Swal.fire({
+          icon: 'warning',
+          title: '세션 만료',
+          text: '로그인 세션이 만료되었습니다. 다시 로그인해주세요.',
+          confirmButtonText: '확인'
+        });
+        dispatch(logoutAction());
+        return false;
+      }
+
+      try {
+        await dispatch(checkLoginStatusThunk()).unwrap();
+        return true;
+      } catch (error) {
+        await Swal.fire({
+          icon: 'error',
+          title: '인증 오류',
+          text: '로그인 상태 확인에 실패했습니다. 다시 로그인해주세요.',
+          confirmButtonText: '확인'
+        });
+        dispatch(logoutAction());
+        return false;
+      }
+    }
+    return false;
   }
 );
 
@@ -467,8 +559,24 @@ const authSlice = createSlice({
         authSlice.caseReducers.logoutAction(state);
       })
       
-      .addCase(checkLoginStatusThunk.fulfilled, () => {
-        // 필요한 경우 여기에 추가 작업
+      .addCase(refreshTokenThunk.fulfilled, (state, action) => {
+        state.lastActivity = new Date().getTime();
+      })
+      .addCase(refreshTokenThunk.rejected, (state, action) => {
+        // 토큰 갱신 실패 시 처리
+        console.error('토큰 갱신 실패:', action.payload);
+      })
+      
+      .addCase(checkActivityAndRefreshToken.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.lastActivity = new Date().getTime();
+        }
+      })
+      
+      .addCase(periodicStatusCheck.fulfilled, (state, action) => {
+        if (!action.payload) {
+          state.isAuthenticated = false;
+        }
       });
   },
 });

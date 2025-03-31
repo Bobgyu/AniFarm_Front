@@ -441,15 +441,22 @@ const Minigame = () => {
     if (action.startsWith('fertilize_')) {
       const fertilizerType = action.replace('fertilize_', '');
       if (!handleFertilizerUse(fertilizerType, index)) return;
+      
       setCrops(prev => prev.map((crop, i) => 
         i === index ? { 
           ...crop, 
-          fertilized: true, 
+          fertilized: true,
           fertilizerType: fertilizerType,
-          quality: crop.quality * 1.2 
+          quality: crop.quality * (1 + cropTypes[crop.type].fertilizerEffects[fertilizerType])
         } : crop
       ));
-      setMessage(`${fertilizerType}를 사용했습니다!`);
+      setMessage(`${fertilizerType}를 사용했습니다! 성장 속도가 ${(cropTypes[crops[index].type].fertilizerEffects[fertilizerType] * 100).toFixed(0)}% 증가합니다.`);
+      
+      // 비료 사용 후 메뉴 닫기
+      const menu = document.getElementById(`crop-menu-${index}`);
+      if (menu) {
+        menu.classList.add('hidden');
+      }
     }
   };
 
@@ -755,14 +762,59 @@ const Minigame = () => {
                       className="relative text-4xl cursor-pointer p-4 bg-green-100 rounded-lg flex flex-col items-center justify-center w-[100px] h-[100px]"
                 onClick={() => harvestCrop(index)}
               >
+                      <div className="absolute left-2 top-1 text-xs font-medium text-gray-600">
+                        {crop.type}
+                      </div>
                       <div>{cropTypes[crop.type].growthStages[isGrown ? 1 : 0]}</div>
                       {!isGrown && (
-                        <div className="absolute left-2 bottom-2 text-sm font-bold text-gray-700">
-                          {secondsLeft}초
-                        </div>
+                        <>
+                          <div className="absolute left-2 bottom-2 text-sm font-bold text-gray-700">
+                            {secondsLeft}초
+                          </div>
+                          <div className="absolute right-2 bottom-2">
+                            <div className="relative group">
+                              <button 
+                                className="text-xs bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const menu = document.getElementById(`crop-menu-${index}`);
+                                  if (menu) {
+                                    menu.classList.toggle('hidden');
+                                  }
+                                }}
+                              >
+                                ⚙️
+                              </button>
+                              <div 
+                                id={`crop-menu-${index}`}
+                                className="hidden absolute right-0 bottom-full mb-2 w-32 bg-white rounded-lg shadow-lg z-50"
+                              >
+                                <div className="py-1">
+                                  {Object.entries(fertilizers).map(([type, count]) => (
+                                    count > 0 && (
+                                      <button
+                                        key={type}
+                                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center justify-between"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          manageCrop(index, `fertilize_${type}`);
+                                        }}
+                                      >
+                                        <span>{type}</span>
+                                        <span className="text-xs text-gray-500">({count})</span>
+                                      </button>
+                                    )
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
                       )}
-                      {crop.fertilizer && (
-                        <div className="absolute right-2 top-2 text-xs">💊</div>
+                      {crop.fertilized && (
+                        <div className="absolute right-2 top-2 text-xs">
+                          💊
+                        </div>
                       )}
               </motion.div>
                   );

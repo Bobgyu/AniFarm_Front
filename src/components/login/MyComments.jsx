@@ -14,9 +14,11 @@ const MyComments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showDropdown, setShowDropdown] = useState(null);
   const ITEMS_PER_PAGE = 3;
+  const [loading, setLoading] = useState(true);
 
   // 댓글 목록 가져오기
   const fetchComments = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('http://localhost:8000/api/comments/user', {
         headers: {
@@ -29,6 +31,8 @@ const MyComments = () => {
     } catch (error) {
       console.error('댓글 로딩 실패:', error);
       Swal.fire('오류', '댓글을 불러오는데 실패했습니다.', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -162,6 +166,20 @@ const MyComments = () => {
       Swal.fire('오류', error.message || '댓글 수정에 실패했습니다.', 'error');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
+        <div className="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-200">
+          <FaComments className="text-[#3a9d1f] text-xl" />
+          <h2 className="text-xl font-semibold text-gray-800">내 댓글</h2>
+        </div>
+        <div className="flex justify-center items-center min-h-[200px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">

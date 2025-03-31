@@ -3,13 +3,15 @@ import React, { useState, useEffect } from 'react';
 // 각 작물별 퀴즈 데이터를 저장합니다.
 
 const QuizData = ({ selectedCrop }) => {
-  // 각 작물별 퀴즈 데이터, 선택된 답, 제출 결과 및 에러 상태 관리
+  // 각 작물별 퀴즈 데이터, 선택된 답, 제출 결과, 에러 및 로딩 상태 관리
   const [quizQuestions, setQuizQuestions] = useState([]);
-  // 각 질문의 선택된 옵션을 저장 (quiz id: 선택된 옵션 번호)
+  // 각 질문의 선택된 옵션을 저장 (quiz id: 선택된 옵션 텍스트)
   const [selectedAnswers, setSelectedAnswers] = useState({});
   // 제출 후 받은 결과 (정답 여부, 총 점수 등)
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  // 로딩 상태를 관리합니다.
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // 작물이 변경되면 상태 리셋 (이전 문제, 선택 답안, 결과, 에러 제거)
@@ -21,6 +23,7 @@ const QuizData = ({ selectedCrop }) => {
     if (selectedCrop) {
       const fetchQuizData = async () => {
         try {
+          setLoading(true);
           const encodedCrop = encodeURIComponent(selectedCrop);
           const response = await fetch(`http://localhost:8000/api/quiz/${encodedCrop}`);
           if (!response.ok) {
@@ -32,6 +35,8 @@ const QuizData = ({ selectedCrop }) => {
         } catch (err) {
           console.error("Error fetching quiz questions:", err);
           setError("퀴즈 데이터를 불러오는데 문제가 발생했습니다.");
+        } finally {
+          setLoading(false);
         }
       };
 
@@ -39,12 +44,20 @@ const QuizData = ({ selectedCrop }) => {
     }
   }, [selectedCrop]);
 
-  // 사용자가 옵션 버튼을 클릭하면 해당 질문의 선택된 옵션을 업데이트합니다.
-  // 버튼에 1,2,3,4 값으로 전달하여 나중에 정답 비교 시 (user_answer - 1)을 이용합니다.
-  const handleOptionSelect = (quizId, optionNumber) => {
+  // 로딩중일 때 SaleNews와 같은 로딩 스피너를 보여줍니다.
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-10">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#0aab65]"></div>
+      </div>
+    );
+  }
+
+  // 사용자가 옵션 버튼을 클릭 시 선택한 옵션 텍스트 저장
+  const handleOptionSelect = (quizId, optionText) => {
     setSelectedAnswers(prevAnswers => ({
       ...prevAnswers,
-      [quizId]: optionNumber
+      [quizId]: optionText
     }));
   };
 
@@ -52,11 +65,9 @@ const QuizData = ({ selectedCrop }) => {
   const handleSubmitQuiz = () => {
     const computedResults = quizQuestions.map(quiz => {
       const selectedAnswer = selectedAnswers[quiz.id];
-      // 백엔드에서 받은 correct_answer는 0부터 시작합니다.
-      // 버튼은 1부터 시작하도록 했으므로, (selectedAnswer - 1)과 비교합니다.
-      const isCorrect =
-        selectedAnswer !== undefined &&
-        String(selectedAnswer - 1) === String(quiz.correct_answer).trim();
+      // 제출 시 정답 여부 비교
+      const isCorrect = selectedAnswer !== undefined &&
+          selectedAnswer.trim() === quiz.correct_answer.trim();
       return { quiz_id: quiz.id, is_correct: isCorrect };
     });
 
@@ -78,18 +89,21 @@ const QuizData = ({ selectedCrop }) => {
   // quiz의 correct_answer 값을 이용해 해당 옵션 텍스트를 반환합니다.
   const getCorrectAnswerText = quiz => {
     const correctOption = String(quiz.correct_answer || "").trim();
-    switch (correctOption) {
-      case "0":
-        return quiz.option_1;
-      case "1":
-        return quiz.option_2;
-      case "2":
-        return quiz.option_3;
-      case "3":
-        return quiz.option_4;
-      default:
-        return "정답 정보 없음";
+    // 만약 백엔드에서 인덱스("0", "1", "2", "3") 형태의 값이 전달된다면 기존 로직대로 처리
+    if (["0", "1", "2", "3"].includes(correctOption)) {
+      switch (correctOption) {
+        case "0":
+          return quiz.option_1;
+        case "1":
+          return quiz.option_2;
+        case "2":
+          return quiz.option_3;
+        case "3":
+          return quiz.option_4;
+      }
     }
+    // 그렇지 않다면(예: "주황" 등) 해당 텍스트를 그대로 반환합니다.
+    return correctOption || "정답 정보 없음";
   };
 
   return (
@@ -112,11 +126,11 @@ const QuizData = ({ selectedCrop }) => {
                   <li className="flex items-center mb-1">
                     <button 
                       className={`mr-2 w-5 h-5 rounded-full border cursor-pointer flex justify-center items-center ${
-                        selectedAnswers[quiz.id] === 1 
-                          ? "bg-blue-500 border-blue-500 text-white"
+                        selectedAnswers[quiz.id] === quiz.option_1 
+                          ? "bg-green-500 border-green-500 text-white"
                           : "bg-white border-gray-300 text-gray-700"
                       }`}
-                      onClick={() => handleOptionSelect(quiz.id, 1)}
+                      onClick={() => handleOptionSelect(quiz.id, quiz.option_1)}
                     >
                       1
                     </button>
@@ -125,11 +139,11 @@ const QuizData = ({ selectedCrop }) => {
                   <li className="flex items-center mb-1">
                     <button 
                       className={`mr-2 w-5 h-5 rounded-full border cursor-pointer flex justify-center items-center ${
-                        selectedAnswers[quiz.id] === 2 
-                          ? "bg-blue-500 border-blue-500 text-white"
+                        selectedAnswers[quiz.id] === quiz.option_2 
+                          ? "bg-green-500 border-green-500 text-white"
                           : "bg-white border-gray-300 text-gray-700"
                       }`}
-                      onClick={() => handleOptionSelect(quiz.id, 2)}
+                      onClick={() => handleOptionSelect(quiz.id, quiz.option_2)}
                     >
                       2
                     </button>
@@ -138,11 +152,11 @@ const QuizData = ({ selectedCrop }) => {
                   <li className="flex items-center mb-1">
                     <button 
                       className={`mr-2 w-5 h-5 rounded-full border cursor-pointer flex justify-center items-center ${
-                        selectedAnswers[quiz.id] === 3 
-                          ? "bg-blue-500 border-blue-500 text-white"
+                        selectedAnswers[quiz.id] === quiz.option_3 
+                          ? "bg-green-500 border-green-500 text-white"
                           : "bg-white border-gray-300 text-gray-700"
                       }`}
-                      onClick={() => handleOptionSelect(quiz.id, 3)}
+                      onClick={() => handleOptionSelect(quiz.id, quiz.option_3)}
                     >
                       3
                     </button>
@@ -151,11 +165,11 @@ const QuizData = ({ selectedCrop }) => {
                   <li className="flex items-center">
                     <button 
                       className={`mr-2 w-5 h-5 rounded-full border cursor-pointer flex justify-center items-center ${
-                        selectedAnswers[quiz.id] === 4 
-                          ? "bg-blue-500 border-blue-500 text-white"
+                        selectedAnswers[quiz.id] === quiz.option_4 
+                          ? "bg-green-500 border-green-500 text-white"
                           : "bg-white border-gray-300 text-gray-700"
                       }`}
-                      onClick={() => handleOptionSelect(quiz.id, 4)}
+                      onClick={() => handleOptionSelect(quiz.id, quiz.option_4)}
                     >
                       4
                     </button>
@@ -177,7 +191,7 @@ const QuizData = ({ selectedCrop }) => {
         <div className="flex justify-center mt-4">
           <button
             onClick={handleSubmitQuiz}
-            className="submit-button px-4 py-2 bg-blue-500 text-white rounded-md"
+            className="submit-button px-4 py-2 bg-green-500 text-white rounded-md"
           >
             결과 확인하기
           </button>
@@ -188,7 +202,7 @@ const QuizData = ({ selectedCrop }) => {
             <ul className="mt-2">
               {result.results.map((item, index) => (
                 <li key={index}>
-                  문제 {item.quiz_id}: {item.is_correct ? "정답" : "오답"}
+                  문제 {index + 1}: {item.is_correct ? "정답" : "오답"}
                 </li>
               ))}
             </ul>

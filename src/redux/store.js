@@ -7,6 +7,7 @@ import writeReducer from "./slices/writeSlice";
 import commentReducer from "./slices/commentSlice";
 import imageModelReducer from "./slices/imageModelSlice";
 import apiReducer from "./slices/apiSlice";
+import calendarReducer from "./slices/calendarSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   comments: commentReducer,
   imageModel: imageModelReducer,
   api: apiReducer,
+  calendar: calendarReducer,
 });
 
 const store = configureStore({
