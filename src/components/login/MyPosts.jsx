@@ -341,14 +341,14 @@ const MyPosts = () => {
 
       {/* 페이지네이션 */}
       {filteredPosts.length > ITEMS_PER_PAGE && (
-        <div className="flex justify-center items-center gap-2 mt-6">
+        <div className="flex justify-center items-center gap-1 md:gap-2 mt-4 md:mt-6">
           {Array.from({ length: Math.ceil(filteredPosts.length / ITEMS_PER_PAGE) }, (_, i) => (
             <button
               key={i + 1}
               onClick={() => setCurrentPage(i + 1)}
-              className={`px-4 py-2 rounded-lg transition-all duration-200 
+              className={`px-3 md:px-4 py-1 md:py-2 text-sm md:text-base rounded-lg transition-all duration-200 
                 ${currentPage === i + 1
-                  ? 'bg-[#3a9d1f] text-white font-medium transform scale-110'
+                  ? 'bg-[#3a9d1f] text-white font-medium transform scale-105'
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
             >
               {i + 1}

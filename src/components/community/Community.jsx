@@ -128,15 +128,14 @@ const Community = () => {
     <div className="container mx-auto p-4">
       <CommunityNavigation />
 
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
+      <div className="flex flex-row justify-between items-center mb-6 space-x-2 overflow-x-auto">
         {communityType !== "freeboard" && (
-          <div ref={dropdownRef} className="flex items-center space-x-2">
-            <span className="text-gray-600">카테고리:</span>
+          <div ref={dropdownRef} className="flex-shrink-0">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="text-gray-600 cursor-pointer hover:text-gray-800 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2"
+              className="text-gray-600 cursor-pointer hover:text-gray-800 border border-gray-300 rounded-lg px-2 py-2 flex items-center space-x-1 text-sm md:text-base md:px-3"
             >
-              <span>{getCategoryName(selectedCategory)}</span>
+              <span className="truncate max-w-[80px] md:max-w-none">{getCategoryName(selectedCategory)}</span>
               <svg 
                 className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'transform rotate-180' : ''}`} 
                 fill="none" 
@@ -166,14 +165,14 @@ const Community = () => {
           </div>
         )}
 
-        <div className="flex items-center space-x-4">
+        <div className="flex-1 mx-2 min-w-0">
           <div className="relative">
             <input
               type="search"
               placeholder="검색"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-4 pr-10 py-2 border rounded-lg w-64"
+              className="w-full pl-4 pr-10 py-2 border rounded-lg text-sm md:text-base"
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
               <svg 
@@ -191,13 +190,14 @@ const Community = () => {
               </svg>
             </div>
           </div>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-[#3a9d1f] text-white px-6 py-2 rounded-lg hover:bg-[#0aab65]"
-          >
-            글쓰기
-          </button>
         </div>
+
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex-shrink-0 bg-[#3a9d1f] text-white px-3 py-2 rounded-lg hover:bg-[#0aab65] text-sm md:text-base md:px-6"
+        >
+          글쓰기
+        </button>
       </div>
 
       <Write posts={filteredPosts} />
