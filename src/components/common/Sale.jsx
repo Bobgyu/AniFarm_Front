@@ -95,9 +95,10 @@ const Sale = () => {
         {/* 콘텐츠 */}
         <div className="absolute inset-0 flex flex-col">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col">
-            <div className="text-center mt-48">
+            {/* 상단 제목 */}
+            <div className="text-center mt-48 md:mt-48 mt-8">
               <h1
-                className="text-4xl text-white mb-4 select-none tracking-widest drop-shadow-xl"
+                className="text-4xl md:text-4xl text-2xl text-white mb-4 select-none tracking-widest drop-shadow-xl"
                 onMouseEnter={handleTitleHover}
               >
                 판매하기
@@ -106,8 +107,8 @@ const Sale = () => {
             </div>
 
             {/* 중앙 텍스트 */}
-            <div className="text-center flex items-start justify-center mt-16 absolute top-1/3 left-0 right-0">
-              <h2 className="text-3xl text-white tracking-wider select-none max-w-4xl mx-auto px-4">
+            <div className="text-center flex items-start justify-center mt-4 md:mt-16 md:absolute md:top-1/3 relative left-0 right-0">
+              <h2 className="text-xl md:text-3xl text-white tracking-wider select-none max-w-4xl mx-auto px-4">
                 {!hoveredContent
                   ? "농산물 판매를 위한 데이터 분석"
                   : hoveredContent === "market"
@@ -125,7 +126,7 @@ const Sale = () => {
             </div>
 
             {/* 하단 버튼 그룹 */}
-            <div className="absolute bottom-24 left-0 right-0">
+            <div className="relative md:absolute bottom-0 md:bottom-24 left-0 right-0 mt-8 md:mt-0">
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 px-4 max-w-4xl mx-auto">
                 {/* 오늘의 가격 카드 */}
                 <Link to="/Today">

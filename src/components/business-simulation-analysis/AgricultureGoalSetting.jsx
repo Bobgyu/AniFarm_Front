@@ -173,25 +173,9 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
               <div className="flex gap-2 w-full sm:w-1/3">
                 <button
                   type="button"
-                  onClick={() => handleAreaUnitChange("pyeong")}
-                  className={`flex-1 px-3 py-2 text-sm sm:text-base rounded-md transition-colors duration-200 ${
-                    areaUnit === "pyeong"
-                      ? "bg-[#3a9d1f] text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                  className="flex-1 px-3 py-2 text-sm sm:text-base rounded-md bg-[#3a9d1f] text-white"
                 >
                   평
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleAreaUnitChange("m2")}
-                  className={`flex-1 px-3 py-2 text-sm sm:text-base rounded-md transition-colors duration-200 ${
-                    areaUnit === "m2"
-                      ? "bg-[#3a9d1f] text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  m²
                 </button>
               </div>
             </div>
