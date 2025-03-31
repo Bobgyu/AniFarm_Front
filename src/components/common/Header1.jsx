@@ -115,6 +115,9 @@ const Header = () => {
         case "날씨":
           path = "/weather";
           break;
+        case "육성캘린더":
+          path = "/CultureCalendar";
+          break;
         case "재배 커뮤니티":
           path = "/community/gardening";
           break;
@@ -174,7 +177,7 @@ const Header = () => {
   };
 
   const menuStructure = {
-    "재배 하기": ["육성법", "병충해", "날씨", "재배 커뮤니티"],
+    "재배 하기": ["육성법", "병충해", "날씨", "육성캘린더", "재배 커뮤니티"],
     "판매 하기": [
       "오늘의 가격",
       "소비 트렌드",
