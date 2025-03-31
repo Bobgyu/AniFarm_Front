@@ -10,14 +10,9 @@ const BusinessSimulation = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [analysisData, setAnalysisData] = useState(null);
 
-  const handleAnalysisMethodSelect = (method) => {
-    setAnalysisData({ ...analysisData, method });
-    setCurrentStep(2);
-  };
-
   const handleGoalSetting = (goals) => {
     setAnalysisData({ ...analysisData, goals });
-    setCurrentStep(3);
+    setCurrentStep(2);
   };
 
   // 단계 이동 처리 함수
@@ -28,15 +23,9 @@ const BusinessSimulation = () => {
       return;
     }
 
-    // 2단계는 작물 선택이 되어있어야 이동 가능
-    if (step === 2 && analysisData?.method) {
+    // 2단계는 재배면적 설정이 되어있어야 이동 가능
+    if (step === 2 && analysisData?.goals) {
       setCurrentStep(2);
-      return;
-    }
-
-    // 3단계는 재배면적 설정이 되어있어야 이동 가능
-    if (step === 3 && analysisData?.goals) {
-      setCurrentStep(3);
       return;
     }
   };
@@ -76,12 +65,12 @@ const BusinessSimulation = () => {
                     : "bg-gray-200 text-gray-400"
                 }`}
                 onClick={() => handleStepClick(1)}
-                title="작물 선택 단계로 이동"
+                title="재배면적 설정 단계로 이동"
               >
-                <FaRegCheckCircle className="w-4 h-4 sm:w-6 sm:h-6" />
+                <GiStairsGoal className="w-4 h-4 sm:w-6 sm:h-6" />
               </div>
               <span className="mt-1 sm:mt-2 text-xs sm:text-sm font-medium text-gray-600">
-                분석 방법
+                재배면적 설정
               </span>
             </div>
             <div
@@ -96,36 +85,9 @@ const BusinessSimulation = () => {
                     ? "bg-[#3a9d1f] text-white transform scale-110"
                     : "bg-gray-200 text-gray-400"
                 } ${
-                  !analysisData?.method ? "cursor-not-allowed opacity-50" : ""
-                }`}
-                onClick={() => handleStepClick(2)}
-                title={
-                  analysisData?.method
-                    ? "재배면적 설정 단계로 이동"
-                    : "작물을 먼저 선택해주세요"
-                }
-              >
-                <GiStairsGoal className="w-4 h-4 sm:w-6 sm:h-6" />
-              </div>
-              <span className="mt-1 sm:mt-2 text-xs sm:text-sm font-medium text-gray-600">
-                재배면적 설정
-              </span>
-            </div>
-            <div
-              className={`w-8 sm:w-32 h-1 sm:h-2 rounded-full transition-all duration-300 ${
-                currentStep >= 3 ? "bg-[#3a9d1f]" : "bg-gray-200"
-              }`}
-            ></div>
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-lg sm:text-xl shadow-md transition-all duration-300 cursor-pointer hover:opacity-80 ${
-                  currentStep >= 3
-                    ? "bg-[#3a9d1f] text-white transform scale-110"
-                    : "bg-gray-200 text-gray-400"
-                } ${
                   !analysisData?.goals ? "cursor-not-allowed opacity-50" : ""
                 }`}
-                onClick={() => handleStepClick(3)}
+                onClick={() => handleStepClick(2)}
                 title={
                   analysisData?.goals
                     ? "분석 결과 보기"
@@ -144,16 +106,14 @@ const BusinessSimulation = () => {
         {/* 단계 설명 */}
         <div className="text-center mb-6 sm:mb-8">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-            {currentStep === 1 && "재배 작물 선택"}
-            {currentStep === 2 && "재배면적 설정"}
-            {currentStep === 3 && "경영 분석 결과"}
+            {currentStep === 1 && "재배면적 설정"}
+            {currentStep === 2 && "경영 분석 결과"}
           </h2>
           <p className="text-sm sm:text-base text-gray-600 mb-4">
-            {currentStep === 1 && "분석을 원하시는 작물을 선택해주세요"}
-            {currentStep === 2 && "재배하실 면적을 입력해주세요 (3.3m² 기준)"}
-            {currentStep === 3 && "설정하신 재배면적 기준 경영 분석 결과입니다"}
+            {currentStep === 1 && "재배하실 면적을 입력해주세요 (3.3m² 기준)"}
+            {currentStep === 2 && "설정하신 재배면적 기준 경영 분석 결과입니다"}
           </p>
-          {currentStep === 2 && (
+          {currentStep === 1 && (
             <div className="bg-blue-50 p-3 sm:p-4 rounded-lg inline-block">
               <p className="text-xs sm:text-sm text-blue-700">
                 입력하신 재배면적을 기준으로 예상 수익과 경영비가 계산됩니다
@@ -166,17 +126,13 @@ const BusinessSimulation = () => {
         <div className="w-full max-w-4xl mx-auto px-4 sm:px-6">
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 transition-all duration-300 hover:shadow-xl">
             {currentStep === 1 && (
-              <AnalysisMethodSelector onSelect={handleAnalysisMethodSelect} />
-            )}
-
-            {currentStep === 2 && (
               <AgricultureGoalSetting
                 onComplete={handleGoalSetting}
-                method={analysisData.method}
+                method="single"
               />
             )}
 
-            {currentStep === 3 && <AnalysisReport data={analysisData} />}
+            {currentStep === 2 && <AnalysisReport data={analysisData} />}
           </div>
         </div>
       </div>
