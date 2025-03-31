@@ -20,6 +20,11 @@ const MainContent = styled.div`
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 428px) {
+    padding: 10px;
+    gap: 10px;
+  }
 `;
 
 const SelectorsContainer = styled.div`
@@ -30,6 +35,18 @@ const SelectorsContainer = styled.div`
   border-radius: 8px;
   align-items: center;
   justify-content: space-between;
+
+  @media (max-width: 428px) {
+    flex-direction: column;
+    padding: 15px;
+    gap: 15px;
+
+    > div {
+      width: 100%;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
 `;
 
 const Select = styled.select`
@@ -38,6 +55,26 @@ const Select = styled.select`
   border-radius: 4px;
   font-size: 14px;
   min-width: 150px;
+
+  @media (max-width: 428px) {
+    width: 100%;
+    min-width: unset;
+  }
+`;
+
+const DateInputContainer = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  @media (max-width: 428px) {
+    width: 100%;
+    flex-direction: column;
+
+    > div {
+      width: 100%;
+    }
+  }
 `;
 
 const DateInput = styled.input`
@@ -45,6 +82,10 @@ const DateInput = styled.input`
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
+
+  @media (max-width: 428px) {
+    width: 100%;
+  }
 `;
 
 const ConfirmButton = styled.button`
@@ -57,6 +98,11 @@ const ConfirmButton = styled.button`
   cursor: pointer;
   transition: background-color 0.2s;
 
+  @media (max-width: 428px) {
+    width: 100%;
+    padding: 12px;
+  }
+
   &:hover {
     background-color: #0aab65;
   }
@@ -65,12 +111,6 @@ const ConfirmButton = styled.button`
     background-color: #ccc;
     cursor: not-allowed;
   }
-`;
-
-const DateInputContainer = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: center;
 `;
 
 const Label = styled.label`
@@ -103,6 +143,36 @@ const StyledCalendar = styled(Calendar)`
   border-radius: 8px;
   padding: 20px;
   margin: 0 auto;
+
+  @media (max-width: 428px) {
+    padding: 10px;
+    font-size: 14px;
+
+    .react-calendar__navigation {
+      margin-bottom: 10px;
+
+      button {
+        min-width: 36px;
+        height: 36px;
+        font-size: 20px;
+        padding: 0;
+
+        &.react-calendar__navigation__label {
+          font-size: 16px;
+        }
+      }
+    }
+
+    .react-calendar__tile {
+      height: 80px;
+      padding: 4px;
+      font-size: 12px;
+    }
+
+    .react-calendar__month-view__weekdays {
+      font-size: 0.7em;
+    }
+  }
 
   .react-calendar__navigation {
     display: flex;
@@ -306,6 +376,16 @@ const GuidanceItem = styled.li`
   border-radius: 4px;
   margin-bottom: 8px;
   
+  @media (max-width: 428px) {
+    padding: 10px;
+    font-size: 13px;
+    flex-wrap: wrap;
+
+    span {
+      margin-left: 4px;
+    }
+  }
+  
   &:last-child {
     border-bottom: none;
   }
@@ -379,6 +459,11 @@ const CalendarContainer = styled.div`
   display: flex;
   gap: 20px;
   align-items: flex-start;
+
+  @media (max-width: 428px) {
+    flex-direction: column;
+    gap: 15px;
+  }
 `;
 
 const SowingGuideContainer = styled.div`
@@ -388,6 +473,12 @@ const SowingGuideContainer = styled.div`
   padding: 16px;
   min-width: 250px;
   max-width: 300px;
+
+  @media (max-width: 428px) {
+    min-width: unset;
+    max-width: unset;
+    width: 100%;
+  }
 `;
 
 const SowingGuideTitle = styled.h4`
@@ -459,15 +550,15 @@ const TodayGuidance = styled.div`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid #ddd;
 
-  h3 {
-    margin: -20px -20px 16px -20px;
-    padding: 12px 20px;
-    color: white;
-    background-color: #3a9d1f;
-    border-radius: 8px 8px 0 0;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  @media (max-width: 428px) {
+    margin-top: 15px;
+    padding: 15px;
+
+    h3 {
+      font-size: 16px;
+      padding: 10px 15px;
+      margin: -15px -15px 12px -15px;
+    }
   }
 `;
 

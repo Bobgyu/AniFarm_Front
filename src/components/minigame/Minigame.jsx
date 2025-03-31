@@ -611,11 +611,11 @@ const Minigame = () => {
   }, [weather, season]);
 
   return (
-    <div className="p-8 min-h-screen flex justify-center">
-      <div className="max-w-6xl w-full">
+    <div className="p-4 sm:p-8 min-h-screen">
+      <div className="max-w-6xl w-full mx-auto">
         {/* 상단 정보 섹션 */}
-        <div className="mb-6 flex justify-between items-center">
-          <div className="flex gap-4 items-center">
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex flex-wrap gap-4 items-center w-full sm:w-auto">
             <div className="text-xl text-green-600">💰 {money}원</div>
             <div className="text-xl">🌞 {season}</div>
             <div className="text-xl relative group">
@@ -647,18 +647,18 @@ const Minigame = () => {
           </div>
           <button 
             onClick={saveGame} 
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto"
           >
             저장하기
           </button>
         </div>
         
         {/* 메인 컨텐츠 영역 */}
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* 왼쪽 열 - 상점 */}
-          <div className="w-64 bg-white p-4 rounded-lg shadow-md">
+          <div className="w-full lg:w-64 bg-white p-4 rounded-lg shadow-md">
             {/* 씨앗 구매 섹션 */}
-        <div className="mb-8">
+            <div className="mb-8">
               <h3 className="text-xl font-bold mb-6">씨앗 구매</h3>
               {['봄', '여름', '가을', '겨울'].map((seasonType) => (
                 <div key={seasonType} className="mb-6">
@@ -668,19 +668,19 @@ const Minigame = () => {
                     seasonType === '가을' ? 'text-orange-600' :
                     'text-blue-600'
                   }`}>{seasonType} 작물</h4>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2">
                     {Object.entries(cropTypes)
                       .filter(([_, info]) => info.season.includes(seasonType))
                       .map(([type, info]) => (
-              <motion.button
-                key={type}
-                whileHover={{ scale: 1.05 }}
+                        <motion.button
+                          key={type}
+                          whileHover={{ scale: 1.05 }}
                           className={`h-14 px-2 py-2 rounded-lg flex flex-col items-center justify-center ${
                             money >= info.price && season === seasonType
-                    ? 'bg-green-500 hover:bg-green-600' 
-                    : 'bg-gray-300'
-                } text-white transition-colors`}
-                onClick={() => plantCrop(type)}
+                            ? 'bg-green-500 hover:bg-green-600' 
+                            : 'bg-gray-300'
+                          } text-white transition-colors`}
+                          onClick={() => plantCrop(type)}
                           disabled={money < info.price || season !== seasonType}
                           title={season !== seasonType ? `${seasonType}에만 심을 수 있습니다` : ''}
                         >
@@ -696,7 +696,7 @@ const Minigame = () => {
             {/* 도구 및 비료 구매 섹션 */}
             <div className="mb-8">
               <h3 className="text-xl font-bold mb-6">도구 및 비료 구매</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-4">
                 {Object.entries(shopItems).map(([item, info]) => (
                   <motion.button
                     key={item}
@@ -705,8 +705,8 @@ const Minigame = () => {
                       money >= info.price ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300'
                     } text-white transition-colors group`}
                     onClick={() => buyItem(item)}
-                disabled={money < info.price}
-              >
+                    disabled={money < info.price}
+                  >
                     <span className="text-base font-medium leading-tight">{item}</span>
                     <span className="text-sm leading-tight">({info.price}원)</span>
                     
@@ -719,13 +719,13 @@ const Minigame = () => {
                         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-white border-r border-b border-gray-200"></div>
                       </div>
                     )}
-              </motion.button>
-            ))}
-          </div>
-        </div>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
 
             {/* 농장 확장 섹션 */}
-        <div className="mb-8">
+            <div className="mb-8">
               <h3 className="text-xl font-bold mb-6">농장 확장</h3>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -745,10 +745,10 @@ const Minigame = () => {
           </div>
 
           {/* 오른쪽 열 - 농장 */}
-          <div className="col-span-2">
+          <div className="lg:col-span-2">
             <div className="sticky top-4">
               <h3 className="text-xl font-bold mb-4">농장 ({crops.length}/{farmSize}칸)</h3>
-          <div className="grid grid-cols-5 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
                 {crops.slice(0, farmSize).map((crop, index) => {
                   const elapsedTime = Date.now() - crop.plantedAt;
                   const totalGrowthTime = calculateTotalGrowthTime(crop);
@@ -756,12 +756,12 @@ const Minigame = () => {
                   const isGrown = elapsedTime >= totalGrowthTime;
 
                   return (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.1 }}
+                    <motion.div
+                      key={index}
+                      whileHover={{ scale: 1.1 }}
                       className="relative text-4xl cursor-pointer p-4 bg-green-100 rounded-lg flex flex-col items-center justify-center w-[100px] h-[100px]"
-                onClick={() => harvestCrop(index)}
-              >
+                      onClick={() => harvestCrop(index)}
+                    >
                       <div className="absolute left-2 top-1 text-xs font-medium text-gray-600">
                         {crop.type}
                       </div>
@@ -816,7 +816,7 @@ const Minigame = () => {
                           💊
                         </div>
                       )}
-              </motion.div>
+                    </motion.div>
                   );
                 })}
                 {[...Array(farmSize - crops.length)].map((_, index) => (
@@ -827,12 +827,12 @@ const Minigame = () => {
                     🟫
                   </div>
                 ))}
-        </div>
+              </div>
 
               {/* 인벤토리 */}
               <div className="mt-6">
-          <h3 className="text-xl font-bold mb-4">인벤토리</h3>
-                <div className="grid grid-cols-4 gap-4">
+                <h3 className="text-xl font-bold mb-4">인벤토리</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                   {Object.entries(inventory).map(([type, count]) => {
                     const currentPrice = marketPrices[type];
                     const basePrice = cropTypes[type].basePrice;
@@ -844,8 +844,8 @@ const Minigame = () => {
                         key={type}
                         whileHover={{ scale: 1.05 }}
                         className="bg-gray-100 p-3 rounded-lg hover:bg-gray-200 w-[130px] h-[80px] flex flex-col items-center justify-center"
-                onClick={() => sellCrop(type)}
-              >
+                        onClick={() => sellCrop(type)}
+                      >
                         <div className="text-2xl">
                           {cropTypes[type].growthStages[1]}
                         </div>
