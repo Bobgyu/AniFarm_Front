@@ -159,7 +159,7 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
 
           <div className="space-y-3 sm:space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-              <div className="w-full sm:flex-1">
+              <div className="w-full sm:w-2/3">
                 <input
                   type="number"
                   name="cultivationArea"
@@ -170,14 +170,14 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
                   min="0"
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-1/3">
                 <button
                   type="button"
                   onClick={() => handleAreaUnitChange("pyeong")}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-md ${
+                  className={`flex-1 px-3 py-2 text-sm sm:text-base rounded-md transition-colors duration-200 ${
                     areaUnit === "pyeong"
                       ? "bg-[#3a9d1f] text-white"
-                      : "bg-gray-100 text-gray-600"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
                   평
@@ -185,10 +185,10 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
                 <button
                   type="button"
                   onClick={() => handleAreaUnitChange("m2")}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-md ${
+                  className={`flex-1 px-3 py-2 text-sm sm:text-base rounded-md transition-colors duration-200 ${
                     areaUnit === "m2"
                       ? "bg-[#3a9d1f] text-white"
-                      : "bg-gray-100 text-gray-600"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
                   m²
