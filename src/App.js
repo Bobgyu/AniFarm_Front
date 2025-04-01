@@ -40,6 +40,7 @@ import CultureCalendar from "./components/calendar/Growthcalendar.jsx";
 import Swal from "sweetalert2";
 import QuizGame from "./components/minigame/QuizGame";
 import Support from "./components/support/Support";
+import YoungFarmer from "./components/youngFarmer/YoungFarmer";
 
 function App() {
   return (
@@ -138,6 +139,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/culture" element={<Culture />} />
+        <Route path="/youngFarmer" element={<YoungFarmer />} />
         <Route path="/sale" element={<Sale />} />
         <Route path="/pricingInformation" element={<PricingInformation />} />
         <Route path="/weather" element={<Weather />} />
@@ -147,11 +149,11 @@ function AppContent() {
         <Route path="/community/:postId" element={<PostDetail />} />
         <Route path="/Community/write" element={<Write />} />
         <Route path="/SalsesInformation" element={<SalsesInformation />} />
+        <Route path="/trainingMethod" element={<TrainingMethod />} />
         <Route path="/pests" element={<Pests />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/mypage" element={<ProtectedMypage />} />
-        <Route path="/trainingMethod" element={<TrainingMethod />} />
         <Route path="/QuizData" element={<QuizData />} />
         <Route path="/CropQuiz" element={<CropQuiz />} />
         <Route path="/Today" element={<Today />} />
@@ -165,7 +167,7 @@ function AppContent() {
       <Footer />
 
       {/* 버튼 컨테이너 - 챗봇 컨테이너와 별도로 분리 */}
-      <div className="fixed bottom-8 right-8 z-50 flex flex-row items-center gap-4">
+      <div className="fixed bottom-4 right-8 z-50 flex flex-row items-center gap-4">
         {/* 미니게임 버튼 */}
         <Link to="/QuizGame">
           <button className="w-14 h-14 bg-[#3a9d1f] hover:bg-[#0aab65] text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center">

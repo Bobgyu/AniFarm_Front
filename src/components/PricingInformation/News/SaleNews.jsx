@@ -6,7 +6,7 @@ const SaleNews = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  // 초기 값을 6으로 설정 (데스크탑 등에서는 6개, 모바일에서는 useEffect에서 업데이트됨)
+  // 초기 값은 데스크탑 기준으로 6개, 모바일에서는 useEffect에서 3으로 업데이트
   const [itemsPerPage, setItemsPerPage] = useState(6);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -28,11 +28,11 @@ const SaleNews = () => {
     fetchNews();
   }, []);
 
-  // 화면 크기에 따라 itemsPerPage 값을 업데이트합니다.
+  // 화면 크기에 따라 itemsPerPage 값을 업데이트 (모바일은 3개, 데스크탑은 6개)
   useEffect(() => {
     const updateItemsPerPage = () => {
       if (window.innerWidth < 768) {
-        setItemsPerPage(4);
+        setItemsPerPage(3);
       } else {
         setItemsPerPage(6);
       }
@@ -71,22 +71,23 @@ const SaleNews = () => {
     <div className="w-full max-w-[1280px] px-4 mx-auto pb-12">
       {news.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+          {/* 모바일 환경에서는 그리드 레이아웃을 단일 컬럼으로 변경 */}
+          <div className={`${isMobile ? 'grid grid-cols-1 gap-4' : 'grid grid-cols-2 md:grid-cols-3 gap-8'}`}>
             {visibleNews.map((article, index) => (
               <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                {/* 이미지 URL이 존재하면 이미지 표시 (클릭 시 기사 링크로 이동) */}
+                {/* 이미지 URL이 존재하면 이미지 표시 */}
                 {article.image && (
                   <a href={article.link} target="_blank" rel="noopener noreferrer">
                     <img
                       src={article.image}
                       alt={article.title}
-                      className="w-full h-44 object-cover"
+                      className={`w-full ${isMobile ? 'h-32' : 'h-44'} object-cover`}
                     />
                   </a>
                 )}
-                {/* 뉴스 제목 */}
-                <div className="p-1 md:p-4">
-                  <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-1 md:p-3">
+                {/* 뉴스 제목과 내용 영역의 패딩을 모바일에 맞게 조정 */}
+                <div className={`${isMobile ? 'p-2' : 'p-1 md:p-4'}`}>
+                  <h3 className={`text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors ${isMobile ? 'p-2' : 'p-1 md:p-3'}`}>
                     <a
                       className="block"
                       style={{
@@ -104,7 +105,7 @@ const SaleNews = () => {
                   </h3>
                   {/* 뉴스 본문(content) 3줄까지만 표시 */}
                   <p 
-                    className="text-gray-600 text-sm mt-2 p-1"
+                    className="text-gray-600 text-sm mt-2"
                     style={{
                       display: '-webkit-box',
                       WebkitLineClamp: 3,

@@ -4,7 +4,7 @@ import axios from 'axios';
 // 청년농 목록 조회
 export const fetchYoungFarmerList = createAsyncThunk(
   'youngFarmer/fetchList',
-  async ({ s_code = "01", page = 1, row_cnt = 10 }) => {
+  async ({ s_code = "01", page = 1, row_cnt = 200 }) => {
     try {
       const response = await axios.get(`http://localhost:8000/api/youth/list`, {
         params: {
