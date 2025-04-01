@@ -524,7 +524,7 @@ const TrainingMethod = () => {
             전문가의 도움을 받아 더 나은 농작물을 기르세요
           </p>
           <div className="flex justify-center items-center gap-4">
-          <Link to="/trainingDetail?cropId=crop1">
+          <Link key="crop7" to={`/trainingDetail?cropId=crop7`}>
             <button className="bg-[#3a9d1f] text-white px-8 py-3 rounded-full hover:bg-[#0aab65]">
               육성 가이드 보기
             </button>

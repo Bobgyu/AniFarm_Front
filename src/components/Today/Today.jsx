@@ -273,14 +273,27 @@ const Today = () => {
           if (Object.keys(latestValidData).length > 0) {
             // 데이터베이스에 저장
             try {
-              await axios.post('http://localhost:8000/api/price/save', 
+              const saveResponse = await axios.post('http://localhost:8000/api/price/save', 
                 Object.entries(latestValidData).map(([item_name, data]) => ({
                   item_name,
-                  ...data
+                  price: data.price,
+                  unit: data.unit,
+                  date: data.date,
+                  previous_date: data.previousDate.replace(/[()]/g, '').trim(),
+                  price_change: data.priceChange,
+                  yesterday_price: data.yesterdayPrice,
+                  category_code: data.category_code,
+                  category_name: data.category_name,
+                  has_dpr1: data.hasDpr1
                 }))
               );
+              
+              if (!saveResponse.data.success) {
+                console.error('데이터베이스 저장 실패:', saveResponse.data.message);
+              }
             } catch (error) {
-              console.error('데이터베이스 저장 중 오류:', error);
+              console.error('데이터베이스 저장 중 오류:', error.response?.data?.detail || error.message);
+              // 에러 발생 시에도 계속 진행
             }
             
             updateData(latestValidData, now, isWeekend, hasValidDpr1Data);

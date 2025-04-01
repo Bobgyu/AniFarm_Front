@@ -31,7 +31,7 @@ const TrainNews = () => {
   useEffect(() => {
     const updateItemsPerPage = () => {
       if (window.innerWidth < 768) {
-        setItemsPerPage(4);
+        setItemsPerPage(3);
       } else {
         setItemsPerPage(6);
       }
@@ -70,7 +70,7 @@ const TrainNews = () => {
     <div className="w-full max-w-[1280px] px-4 mx-auto pb-12">
       {news.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div className={`${isMobile ? 'grid grid-cols-1 gap-4' : 'grid grid-cols-2 md:grid-cols-3 gap-8'}`}>
             {visibleNews.map((article, index) => (
               <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
                 {/* 이미지 URL이 존재하면 이미지 표시 (클릭 시 기사 링크로 이동) */}
@@ -79,13 +79,13 @@ const TrainNews = () => {
                     <img
                       src={article.image}
                       alt={article.title}
-                      className="w-full h-48 object-cover"
+                      className={`w-full ${isMobile ? 'h-32' : 'h-44'} object-cover`}
                     />
                   </a>
                 )}
-                {/* 뉴스 제목 */}
-                <div className="p-1 md:p-4">
-                  <h3 className="text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-1 md:p-3">
+                {/* 뉴스 제목 및 내용 영역 */}
+                <div className={`${isMobile ? 'p-2' : 'p-1 md:p-4'}`}>
+                  <h3 className={`${isMobile ? 'text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-2' : 'text-lg font-semibold text-blue-500 hover:text-blue-700 transition-colors p-1 md:p-3'}`}>
                     <a
                       className="block"
                       style={{
@@ -103,14 +103,12 @@ const TrainNews = () => {
                   </h3>
                   {/* 뉴스 본문(content) 3줄까지만 표시 */}
                   <p 
-                    className="text-gray-600 text-sm mt-2 p-1"
+                    className="text-gray-600 text-sm mt-2"
                     style={{
                       display: '-webkit-box',
                       WebkitLineClamp: 3,
                       WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      lineHeight: '1.5em',
-                      maxHeight: '4.5em'
+                      overflow: 'hidden'
                     }}
                   >
                     {article.content}

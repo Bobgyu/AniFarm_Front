@@ -1,21 +1,12 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
 import AnifarmLogo from "../../assets/main/aniform.png";
 
 const Footer = () => {
-  const navigate = useNavigate();
-
-  const handleCropQuiz = () => {
-    navigate("/CropQuiz");
-  };
-  const handleQuizData = () => {
-    navigate("/QuizData");
-  };
 
   return (
     <footer className="flex items-center md:justify-center border-t w-full h-32 md:h-24">
       <div className="w-full flex-1 md:max-w-7xl px-0 md:px-4">
-        <div className="flex justify-between items-center w-full h-full">
+        <div className="flex flex-col md:flex-row justify-between items-center w-full h-full">
           {/* 로고 및 주소 정보 */}
           <div className="flex items-center">
             <img src={AnifarmLogo} alt="Logo" className="w-[40px] mr-4 ml-2" />
