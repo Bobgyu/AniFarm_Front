@@ -130,7 +130,8 @@ const Home = () => {
           </div>
         </motion.div>
       )}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex space-x-4 z-50">
+      {/* z-0  */}
+      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex space-x-4 z-0">
         <div className="p-2 bg-transparent border-2 border-white rounded-full flex space-x-4">
           <button
             onClick={() => handleDotClick("home")}
