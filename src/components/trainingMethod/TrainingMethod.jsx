@@ -20,31 +20,16 @@ import rice from '../../assets/images/rice2.jpg';
 import green_onion from '../../assets/images/green_onion.jpg';
 
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchYoungFarmerList, setCategory } from '../../redux/slices/youngFarmerSlice';
 
 const TrainingMethod = () => {
-  const dispatch = useDispatch();
-  const { farmerList, loading, selectedCategory } = useSelector(state => state?.youngFarmer) || {
-    farmerList: [],
-    loading: false,
-    selectedCategory: "01"
-  };
-
   const [videos, setVideos] = useState([]);
   const [videosLoading, setVideosLoading] = useState(true);
   const [startIndex, setStartIndex] = useState(0);
   const [[page, direction], setPage] = useState([0, 0]);
-
-  // 유튜브 영상 페이지 네비게이션을 위한 상태
   const [[videoPage, videoDirection], setVideoPageState] = useState([0, 0]);
-  // 화면크기에 따라 한 페이지에 보여질 영상의 개수를 동적으로 설정: 모바일은 1, 데스크탑은 3
   const [videoItemsPerPage, setVideoItemsPerPage] = useState(() =>
     window.innerWidth < 768 ? 1 : 3
   );
-  const totalVideoPages = Math.ceil(videos.length / videoItemsPerPage);
-
-  // 슬라이더 너비를 측정하기 위한 Ref와 상태
   const sliderRef = useRef(null);
   const [sliderWidth, setSliderWidth] = useState(0);
 
@@ -101,22 +86,6 @@ const TrainingMethod = () => {
 
     fetchYoutubeVideos();
   }, []);
-  
-  // 카테고리 정의
-  const categories = [
-    { code: "01", name: "청년농소개", icon: "👨‍🌾" },
-    { code: "02", name: "청년농영상", icon: "🎥" }
-  ];
-
-  // 카테고리 변경 핸들러
-  const handleCategoryChange = (categoryCode) => {
-    dispatch(setCategory(categoryCode));
-    dispatch(fetchYoungFarmerList({ s_code: categoryCode, page: 1, row_cnt: 5 }));
-  };
-
-  useEffect(() => {
-    dispatch(fetchYoungFarmerList({ s_code: selectedCategory, page: 1, row_cnt: 5 }));
-  }, [dispatch]);
 
   const methods = [
     {
@@ -193,85 +162,7 @@ const TrainingMethod = () => {
 
   const visibleImages = allImages.slice(startIndex, startIndex + 4);
 
-  // 사례 카드 컴포넌트에서 링크 처리 수정
-  const renderFarmerCard = (farmer) => (
-    <motion.div 
-      key={farmer.bbsSeq}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-300 border border-gray-100"
-    >
-      <h3 className="text-lg font-semibold mb-3 text-gray-800 line-clamp-2">
-        {farmer.title}
-      </h3>
-      <div className="text-sm text-gray-600 mb-3 space-y-2">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">농업인:</span>
-          <span>{farmer.bbsInfo03}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="font-medium">품목:</span>
-          <span>{farmer.bbsInfo04}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="font-medium">지역:</span>
-          <span>{farmer.area1Nm} {farmer.area2Nm}</span>
-        </div>
-      </div>
-      {farmer.bbsInfo08 && (  // URL이 있을 때만 버튼 표시
-        <a 
-          href={farmer.bbsInfo08} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="inline-block bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors text-sm mt-2 w-full text-center"
-        >
-          자세히 보기
-        </a>
-      )}
-    </motion.div>
-  );
-
-  // 청년농 사례 섹션 렌더링
-  const renderFarmerSection = () => (
-    <div className="w-full max-w-[1280px] px-4 mx-auto mb-12">
-      <h2 className="text-3xl font-bold text-center mt-4 mb-8 text-gray-800">
-        청년농 소개&영상
-      </h2>
-      
-      {/* 카테고리 버튼 그룹 */}
-      <div className="flex flex-wrap justify-center gap-4 mb-8">
-        {categories.map((category) => (
-          <button
-            key={category.code}
-            onClick={() => handleCategoryChange(category.code)}
-            className={`px-6 py-3 rounded-lg transition-all duration-300 flex items-center gap-2
-              ${selectedCategory === category.code 
-                ? "bg-green-500 text-white shadow-lg transform scale-105" 
-                : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"}`}
-          >
-            <span className="text-xl">{category.icon}</span>
-            <span>{category.name}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* 사례 목록 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loading ? (
-          <div className="col-span-full flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-green-500"></div>
-          </div>
-        ) : farmerList && farmerList.length > 0 ? (
-          farmerList.map((farmer) => renderFarmerCard(farmer))
-        ) : (
-          <div className="col-span-full text-center text-gray-500 py-12">
-            해당 카테고리의 사례가 없습니다.
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  const totalVideoPages = Math.ceil(videos.length / videoItemsPerPage);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -383,9 +274,6 @@ const TrainingMethod = () => {
           </motion.div>
         </div>
       </div>
-
-      {/* 청년농 사례 섹션 */}
-      {renderFarmerSection()}
 
       {/* Youtube 영상 섹션 */}
       <div className="w-full max-w-[1280px] px-4 mx-auto pb-2 md:pb-12">

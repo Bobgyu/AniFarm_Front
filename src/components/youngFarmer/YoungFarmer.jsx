@@ -18,8 +18,8 @@ const YoungFarmer = () => {
 
   // 카테고리 정의
   const categories = [
-    { code: "01", name: "청년농소개", icon: "👨‍🌾" },
-    { code: "02", name: "청년농영상", icon: "🎥" }
+    { code: "01", name: "청년 생생이야기", icon: "👨‍🌾" },
+    { code: "02", name: "청년농 홍보영상", icon: "🎥" }
   ];
 
   // 현재 페이지의 데이터만 필터링
