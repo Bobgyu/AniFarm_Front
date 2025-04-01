@@ -141,6 +141,9 @@ const Header = () => {
         case "경영 모의계산":
           path = "/business-simulation";
           break;
+        case "교육&지원":
+          path = "/support";
+          break;
         default:
           path = "/sale";
       }
@@ -159,9 +162,6 @@ const Header = () => {
           return; // 여기서 함수 종료
         case "미니게임":
           path = "/QuizGame";
-          break;
-        case "지원사업소개":
-          path = "/support";
           break;
       }
     }
@@ -184,9 +184,10 @@ const Header = () => {
       "소비 트렌드",
       "가격 예측",
       "경영 모의계산",
-      "판매 커뮤니티",
+      "교육&지원",
+      "판매 커뮤니티"      
     ],
-    "기능/엔터": ["챗봇", "미니게임", "지원사업소개"],
+    "기능/엔터": ["챗봇", "미니게임"],
   };
 
   return (
