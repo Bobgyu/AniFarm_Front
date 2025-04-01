@@ -93,7 +93,6 @@ const AnalysisReport = ({ data }) => {
       .map((crop) => {
         const details = cropData[crop.crop_name];
         if (!details) {
-          console.error(`${crop.crop_name}에 대한 데이터가 없습니다.`);
           return null;
         }
 
