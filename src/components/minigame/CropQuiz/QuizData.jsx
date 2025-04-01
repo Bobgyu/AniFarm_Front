@@ -201,7 +201,10 @@ const QuizData = ({ selectedCrop }) => {
             <div>총 {result.score}개 정답입니다! (총 {result.total_questions}문제 중)</div>
             <ul className="mt-2">
               {result.results.map((item, index) => (
-                <li key={index}>
+                <li 
+                  key={index} 
+                  className={item.is_correct ? "text-green-500" : "text-red-500"}
+                >
                   문제 {index + 1}: {item.is_correct ? "정답" : "오답"}
                 </li>
               ))}

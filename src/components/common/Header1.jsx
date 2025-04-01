@@ -157,8 +157,11 @@ const Header = () => {
           });
           setIsMenuOpen(false); // 메뉴 닫기
           return; // 여기서 함수 종료
-        case "미니게임":
-          path = "/QuizGame";
+        case "재배 시뮬레이션":
+          path = "/Minigame";
+          break;
+        case "작물 퀴즈":
+          path = "/CropQuiz";
           break;
       }
     }
@@ -183,7 +186,7 @@ const Header = () => {
       "경영 모의계산",
       "판매 커뮤니티",
     ],
-    "기능/엔터": ["챗봇", "미니게임"],
+    "기능/엔터": ["챗봇", "재배 시뮬레이션", "작물 퀴즈"],
   };
 
   return (
@@ -272,11 +275,11 @@ const Header = () => {
             onClick={() => setIsMenuOpen(false)}
           >
             <div
-              className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-[600px] md:h-screen overflow-y-auto"
+              className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-[650px] md:h-[750px] md:h-screen overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-4">
-                <div className="flex justify-end items-center mb-4">
+                <div className="flex justify-end items-center">
                   <button
                     onClick={() => setIsMenuOpen(false)}
                     className="p-2 hover:bg-gray-100 rounded-full"
