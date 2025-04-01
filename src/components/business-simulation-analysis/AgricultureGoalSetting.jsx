@@ -12,6 +12,7 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [newCrops, setNewCrops] = useState(["사과", "배추"]);
 
   // 모든 작물 데이터 로드
   useEffect(() => {
@@ -242,10 +243,17 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
                   {filteredCrops.map((crop, index) => (
                     <tr
                       key={index}
-                      className="border-b border-gray-200 hover:bg-gray-50"
+                      className={`border-b border-gray-200 hover:bg-gray-50 ${
+                        newCrops.includes(crop.crop_name) ? "bg-green-50" : ""
+                      }`}
                     >
                       <td className="px-3 sm:px-4 py-2 sm:py-3 text-center text-xs sm:text-sm">
                         {crop.crop_name}
+                        {newCrops.includes(crop.crop_name) && (
+                          <span className="ml-1 text-[#3a9d1f] text-xs">
+                            (신규)
+                          </span>
+                        )}
                       </td>
                       <td className="px-3 sm:px-4 py-2 sm:py-3 text-center text-xs sm:text-sm">
                         {crop.revenue_per_3_3m?.toLocaleString()}원
