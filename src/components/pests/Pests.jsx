@@ -682,7 +682,7 @@ const Pests = () => {
                     {showExample ? "예상 진단 결과" : "진단 결과"}
                   </Typography>
                   <Paper
-                    className={`p-3 h-[calc(100%-3rem)] overflow-y-auto ${
+                    className={`p-3 h-[calc(100%-3rem)] flex items-center justify-center ${
                       (showExample ? getExampleResult() : result)?.status ===
                       "healthy"
                         ? "bg-green-50"
@@ -693,8 +693,8 @@ const Pests = () => {
                     } transition-colors duration-300`}
                     sx={{ boxShadow: "none" }}
                   >
-                    <Box className="space-y-2 text-sm">
-                      <Typography variant="body2">
+                    <Box className="space-y-4 text-sm w-full">
+                      <Typography variant="body2" className="text-center">
                         <span className="font-semibold">진단 결과: </span>
                         {showExample
                           ? getExampleResult().disease
@@ -702,7 +702,7 @@ const Pests = () => {
                       </Typography>
                       <Typography
                         variant="body2"
-                        className="whitespace-pre-wrap border-b border-gray-200 pb-2"
+                        className="whitespace-pre-wrap text-center"
                       >
                         <span className="font-semibold">권장 조치: </span>
                         {showExample
