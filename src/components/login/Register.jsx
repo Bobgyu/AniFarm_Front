@@ -277,7 +277,7 @@ const Register = () => {
               >
                 이메일
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col md:flex-row gap-2">
                 <input
                   type="email"
                   placeholder="Email"
@@ -289,7 +289,7 @@ const Register = () => {
                 <button
                   onClick={handleSendVerification}
                   type="button"
-                  className="px-4 py-3 bg-white text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                  className="px-4 py-3 bg-[#3a9d1f] hover:bg-[#0aab65] text-white border border-gray-300 rounded-xl transition-all duration-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                 >
                   인증코드 발송
                 </button>

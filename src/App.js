@@ -39,7 +39,7 @@ import BusinessSimulation from "./components/business-simulation-analysis/Busine
 import CultureCalendar from "./components/calendar/Growthcalendar.jsx";
 import Swal from "sweetalert2";
 import QuizGame from "./components/minigame/QuizGame";
-import Support from "./components/minigame/Support";
+import Support from "./components/support/Support";
 
 function App() {
   return (
