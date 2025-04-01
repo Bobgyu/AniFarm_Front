@@ -7,6 +7,7 @@ import pests from "../../assets/images/pests.jpg";
 import weather from "../../assets/images/weather.jpg";
 import community from "../../assets/images/community.png";
 import calendar from "../../assets/images/calendar.jpg";
+import youngFarmer1 from "../../assets/images/youngFarmer1.png";
 
 
 const Culture = () => {
@@ -30,6 +31,9 @@ const Culture = () => {
     },
     calendar: {
       image: calendar,
+    },
+    youngFarmer: {
+      image: youngFarmer1,
     },
   }), []);
 
@@ -124,13 +128,16 @@ const Culture = () => {
                   ? "다른 농부들과 의견을 공유하고, 경험을 나눠보세요."
                   : hoveredContent === "calendar"
                   ? "작물 육성 일정을 관리하고, 관리 효율을 높이세요."
+                  : hoveredContent === "youngFarmer"
+                  ? "청년농 관련 정보를 확인해보세요."
                   : "재배하기에 관한 내용"}
               </h2>
             </div>
 
             {/* 하단 버튼 그룹 */}
             <div className="relative md:absolute bottom-0 md:bottom-24 left-0 right-0 mt-8 md:mt-0">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 px-4 max-w-4xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4 max-w-4xl mx-auto">
+                {/* 첫 번째 줄 */}
                 {/* 육성법 카드 */}
                 <Link to="/trainingMethod">
                   <motion.div
@@ -182,8 +189,9 @@ const Culture = () => {
                   </motion.div>
                 </Link>
 
-               {/* 육성캘린더 카드 */}
-               <Link to="/cultureCalendar">
+                {/* 두 번째 줄 */}
+                {/* 육성캘린더 카드 */}
+                <Link to="/cultureCalendar">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -211,6 +219,23 @@ const Culture = () => {
                       <div className="text-2xl mb-2 text-center">👥</div>
                       <h3 className="text-lg font-semibold text-gray-900 text-center">
                         커뮤니티
+                      </h3>
+                    </div>
+                  </motion.div>
+                </Link>
+
+                {/* 청년농 카드 */}
+                <Link to="/youngFarmer">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    onMouseEnter={() => handleMouseEnter("youngFarmer")}
+                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-full"
+                  >
+                    <div className="p-4">
+                      <div className="text-2xl mb-2 text-center">👨‍🌾</div>
+                      <h3 className="text-lg font-semibold text-gray-900 text-center whitespace-nowrap">
+                        청년농 소개&영상
                       </h3>
                     </div>
                   </motion.div>
