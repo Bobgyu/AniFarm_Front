@@ -38,6 +38,7 @@ const Header = () => {
       "/pests",
       "/weather",
       "/community/gardening",
+      "/youngfarmer",
     ];
 
     // 판매하기 관련 경로들
@@ -51,11 +52,11 @@ const Header = () => {
     ];
 
     if (path === "/culture") {
-      return culturePaths.includes(currentPath);
+      return culturePaths.some(p => currentPath.startsWith(p));
     }
 
     if (path === "/sale") {
-      return salePaths.includes(currentPath);
+      return salePaths.some(p => currentPath.startsWith(p));
     }
 
     return false;
@@ -121,6 +122,9 @@ const Header = () => {
         case "재배 커뮤니티":
           path = "/community/gardening";
           break;
+        case "청년농 소개&영상":
+          path = "/youngFarmer";
+          break;
         default:
           path = "/culture";
       }
@@ -181,7 +185,14 @@ const Header = () => {
   };
 
   const menuStructure = {
-    "재배 하기": ["육성법", "병충해", "날씨", "육성캘린더", "재배 커뮤니티"],
+    "재배 하기": [
+      "육성법", 
+      "병충해", 
+      "날씨", 
+      "육성캘린더", 
+      "재배 커뮤니티",
+      "청년농 소개&영상"
+    ],
     "판매 하기": [
       "오늘의 가격",
       "소비 트렌드",

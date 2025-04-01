@@ -40,6 +40,7 @@ import CultureCalendar from "./components/calendar/Growthcalendar.jsx";
 import Swal from "sweetalert2";
 import QuizGame from "./components/minigame/QuizGame";
 import Support from "./components/support/Support";
+import YoungFarmer from "./components/youngFarmer/YoungFarmer";
 
 function App() {
   return (
@@ -138,6 +139,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/culture" element={<Culture />} />
+        <Route path="/youngFarmer" element={<YoungFarmer />} />
         <Route path="/sale" element={<Sale />} />
         <Route path="/pricingInformation" element={<PricingInformation />} />
         <Route path="/weather" element={<Weather />} />
@@ -147,11 +149,11 @@ function AppContent() {
         <Route path="/community/:postId" element={<PostDetail />} />
         <Route path="/Community/write" element={<Write />} />
         <Route path="/SalsesInformation" element={<SalsesInformation />} />
+        <Route path="/trainingMethod" element={<TrainingMethod />} />
         <Route path="/pests" element={<Pests />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/mypage" element={<ProtectedMypage />} />
-        <Route path="/trainingMethod" element={<TrainingMethod />} />
         <Route path="/QuizData" element={<QuizData />} />
         <Route path="/CropQuiz" element={<CropQuiz />} />
         <Route path="/Today" element={<Today />} />
