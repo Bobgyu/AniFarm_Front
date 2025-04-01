@@ -160,6 +160,9 @@ const Header = () => {
         case "미니게임":
           path = "/QuizGame";
           break;
+        case "지원사업소개":
+          path = "/support";
+          break;
       }
     }
 
@@ -183,7 +186,7 @@ const Header = () => {
       "경영 모의계산",
       "판매 커뮤니티",
     ],
-    "기능/엔터": ["챗봇", "미니게임"],
+    "기능/엔터": ["챗봇", "미니게임", "지원사업소개"],
   };
 
   return (
