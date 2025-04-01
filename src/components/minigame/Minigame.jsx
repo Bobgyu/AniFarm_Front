@@ -484,37 +484,6 @@ const Minigame = () => {
     }
   };
 
-  const saveGame = () => {
-    const gameState = {
-      money,
-      inventory,
-      crops,
-      farmSize,
-      tools,
-      fertilizers,
-      season,
-      weather
-    };
-    localStorage.setItem('farmGame', JSON.stringify(gameState));
-    setMessage('게임이 저장되었습니다!');
-  };
-
-  const loadGame = () => {
-    const savedGame = localStorage.getItem('farmGame');
-    if (savedGame) {
-      const gameState = JSON.parse(savedGame);
-      setMoney(gameState.money);
-      setInventory(gameState.inventory);
-      setCrops(gameState.crops);
-      setFarmSize(gameState.farmSize);
-      setTools(gameState.tools);
-      setFertilizers(gameState.fertilizers);
-      setSeason(gameState.season);
-      setWeather(gameState.weather);
-      setMessage('게임을 불러왔습니다!');
-    }
-  };
-
   const buyItem = (itemName) => {
     const item = shopItems[itemName];
     if (money >= item.price) {
@@ -645,12 +614,6 @@ const Minigame = () => {
               호미 내구도: {Math.floor(tools.호미.durability)}%
             </div>
           </div>
-          <button 
-            onClick={saveGame} 
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto"
-          >
-            저장하기
-          </button>
         </div>
         
         {/* 메인 컨텐츠 영역 */}

@@ -410,3 +410,86 @@ body {
   }
 }
 
+/* 챗봇 반응형  */
+@media (max-width: 428px) {
+  .cb-popup {
+    width: 95%;
+    right: 2.5%;
+    bottom: 100px;
+    border-radius: 15px;
+    max-height: 80vh;
+  }
+  
+  .cb-header {
+    padding: 12px 15px;
+    border-radius: 15px 15px 0 0;
+  }
+
+  .header-info svg {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+  }
+
+  .header-info .logo-text {
+    font-size: 1.1rem;
+  }
+  
+  .cb-body {
+    height: calc(80vh - 120px);
+    padding: 15px;
+    margin-bottom: 70px;
+  }
+  
+  .cb-body .message .message-text {
+    max-width: 85%;
+    font-size: 0.9rem;
+    padding: 10px 14px;
+  }
+
+  .cb-body .bot-message svg {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+  }
+  
+  .cb-footer {
+    padding: 10px 15px 15px;
+    border-radius: 0 0 15px 15px;
+  }
+  
+  .cb-footer .chat-form {
+    height: 45px;
+  }
+
+  .chat-form .message-input {
+    height: 45px;
+    font-size: 0.9rem;
+    padding: 0 15px;
+  }
+
+  .chat-form button {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    margin-right: 5px;
+    background: #3a9d1f !important;
+    color: #fff !important;
+  }
+
+  .chat-form button:hover {
+    background: #0aab65 !important;
+  }
+  
+  #cb-toggler {
+    bottom: 20px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+  }
+
+  #cb-toggler span {
+    font-size: 1.3rem;
+  }
+}
+
