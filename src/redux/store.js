@@ -8,6 +8,7 @@ import commentReducer from "./slices/commentSlice";
 import imageModelReducer from "./slices/imageModelSlice";
 import apiReducer from "./slices/apiSlice";
 import calendarReducer from "./slices/calendarSlice";
+import youngFarmerReducer from './slices/youngFarmerSlice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   imageModel: imageModelReducer,
   api: apiReducer,
   calendar: calendarReducer,
+  youngFarmer: youngFarmerReducer,
 });
 
 const store = configureStore({
