@@ -279,7 +279,7 @@ const Header = () => {
             onClick={() => setIsMenuOpen(false)}
           >
             <div
-              className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-[650px] md:h-[750px] md:h-screen overflow-y-auto"
+              className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-[750px] md:h-[750px] md:h-screen overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-4">

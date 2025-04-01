@@ -165,7 +165,7 @@ function AppContent() {
       <Footer />
 
       {/* 버튼 컨테이너 - 챗봇 컨테이너와 별도로 분리 */}
-      <div className="fixed bottom-8 right-8 z-50 flex flex-row items-center gap-4">
+      <div className="fixed bottom-4 right-8 z-50 flex flex-row items-center gap-4">
         {/* 미니게임 버튼 */}
         <Link to="/QuizGame">
           <button className="w-14 h-14 bg-[#3a9d1f] hover:bg-[#0aab65] text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center">
