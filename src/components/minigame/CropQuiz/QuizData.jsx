@@ -108,8 +108,8 @@ const QuizData = ({ selectedCrop }) => {
 
   return (
     <div className="flex flex-col items-center w-full mt-10">
-      <div className="text-left flex flex-col w-full max-w-lg border p-4 mb-2">
-        <div className="text-xl font-semibold mb-2">
+      <div className="text-left flex flex-col w-full max-w-lg p-4 mb-2">
+        <div className="text-xl font-semibold mb-2 ">
           {selectedCrop} 퀴즈 문제 (총 {quizQuestions.length}문제)
         </div>
         {error && (
@@ -120,9 +120,9 @@ const QuizData = ({ selectedCrop }) => {
         <div className="quiz-question-list space-y-4 border-t pt-2">
           {quizQuestions.length > 0 ? (
             quizQuestions.map(quiz => (
-              <div key={quiz.id} className="quiz-card p-4 border rounded-md">
-                <h4 className="mb-2">{quiz.question}</h4>
-                <ul>
+              <div key={quiz.id} className="quiz-card border rounded-md mt-2">
+                <h4 className="mb-2 bg-green-500 text-white p-2 ">{quiz.question}</h4>
+                <ul className="p-4">
                   <li className="flex items-center mb-1">
                     <button 
                       className={`mr-2 w-5 h-5 rounded-full border cursor-pointer flex justify-center items-center ${
@@ -178,7 +178,7 @@ const QuizData = ({ selectedCrop }) => {
                 </ul>
                 {/* 결과 확인 후 각 문제의 정답 옵션 텍스트를 출력 */}
                 {result && (
-                  <div className="mt-2 text-green-600">
+                  <div className="pl-3 mb-2 text-green-600">
                     정답: {getCorrectAnswerText(quiz)}
                   </div>
                 )}
@@ -188,7 +188,7 @@ const QuizData = ({ selectedCrop }) => {
             !error && <div className="text-gray-500">선택된 작물에 대한 퀴즈가 없습니다.</div>
           )}
         </div>
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center mt-4 ">
           <button
             onClick={handleSubmitQuiz}
             className="submit-button px-4 py-2 bg-green-500 text-white rounded-md"
