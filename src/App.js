@@ -39,6 +39,8 @@ import BusinessSimulation from "./components/business-simulation-analysis/Busine
 import CultureCalendar from "./components/calendar/Growthcalendar.jsx";
 import Swal from "sweetalert2";
 import QuizGame from "./components/minigame/QuizGame";
+import Support from "./components/support/Support";
+
 function App() {
   return (
     <Router>
@@ -158,6 +160,7 @@ function AppContent() {
         <Route path="/business-simulation" element={<BusinessSimulation />} />
         <Route path="/cultureCalendar" element={<CultureCalendar />} /> 
         <Route path="/QuizGame" element={<QuizGame />} />
+        <Route path="/support" element={<Support />} />
       </Routes>
       <Footer />
 

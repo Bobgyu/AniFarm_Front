@@ -13,6 +13,11 @@ const BusinessSimulation = () => {
   const handleGoalSetting = (goals) => {
     setAnalysisData({ ...analysisData, goals });
     setCurrentStep(2);
+    // 페이지 상단으로 부드럽게 스크롤
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   // 단계 이동 처리 함수

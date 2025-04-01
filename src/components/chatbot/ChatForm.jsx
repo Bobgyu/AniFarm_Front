@@ -1,9 +1,14 @@
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 
 const ChatForm = ({chatHistory, setChatHistory, generateChatResponse}) => {
 	// console.log(chatHistory, setChatHistory);
 
   const inputRef = useRef();
+
+  useEffect(() => {
+    // 입력 필드에 자동 포커스
+    inputRef.current?.focus();
+  }, []);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -25,8 +30,23 @@ const ChatForm = ({chatHistory, setChatHistory, generateChatResponse}) => {
 
   return (
 	<form className='chat-form' onSubmit={handleFormSubmit}>
-		<input type="text" placeholder='메시지를 입력하세요...' className='message-input' ref={inputRef} required/>
-		<button className='material-symbols-outlined'>arrow_upward</button>
+		<input 
+			type="text" 
+			placeholder='메시지를 입력하세요...' 
+			className='message-input' 
+			ref={inputRef} 
+			required
+			autoComplete="off"
+			autoCorrect="off"
+			spellCheck="false"
+		/>
+		<button 
+			type="submit"
+			className='material-symbols-outlined'
+			aria-label="메시지 전송"
+		>
+			arrow_upward
+		</button>
 	</form>
   )
 }

@@ -64,10 +64,11 @@ const Community = () => {
 
   const categories = getCategoriesByType();
 
-  // 게시글 가져오기
+  // 커뮤니티 타입이 변경될 때마다 카테고리를 '전체'로 초기화
   useEffect(() => {
+    setSelectedCategory("all");
     dispatch(fetchPosts(communityType));
-  }, [dispatch, communityType]);
+  }, [communityType, dispatch]);
 
   // 게시글 필터링
   const filteredPosts = useMemo(() => {
@@ -85,7 +86,6 @@ const Community = () => {
         post.content?.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesCategory =
-        communityType === "freeboard" || 
         selectedCategory === "all" || 
         post.category === selectedCategory;
         
@@ -97,10 +97,22 @@ const Community = () => {
     return filtered;
   }, [postsData, searchTerm, selectedCategory, communityType]);
 
-  // 카테고리 이름 변환 함수 추가
+  // 카테고리 이름 변환 함수 수정
   const getCategoryName = (categoryId) => {
-    const category = categories.find((cat) => cat.id === categoryId);
-    return category ? category.name : categoryId;
+    // 카테고리 매핑 객체 추가
+    const categoryMapping = {
+      all: "전체",
+      general: "일반 토론",
+      food: "식물 재배",
+      indoor: "실내 식물",
+      pests: "병충해 관리",
+      hydroponic: "수경 재배",
+      sell: "판매하기",
+      buy: "구매하기",
+      freeboard: "자유게시판"
+    };
+
+    return categoryMapping[categoryId] || categoryId;
   };
 
   useEffect(() => {
@@ -128,15 +140,14 @@ const Community = () => {
     <div className="container mx-auto p-4">
       <CommunityNavigation />
 
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
+      <div className="flex flex-row items-center mb-6 gap-2 md:justify-between px-4">
         {communityType !== "freeboard" && (
-          <div ref={dropdownRef} className="flex items-center space-x-2">
-            <span className="text-gray-600">카테고리:</span>
+          <div ref={dropdownRef} className="flex-shrink-0">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="text-gray-600 cursor-pointer hover:text-gray-800 border border-gray-300 rounded-lg px-3 py-2 flex items-center space-x-2"
+              className="text-gray-600 cursor-pointer hover:text-gray-800 border border-gray-300 rounded-lg px-2 py-2 flex items-center space-x-1 text-sm md:text-base md:px-3"
             >
-              <span>{getCategoryName(selectedCategory)}</span>
+              <span className="truncate max-w-[80px] md:max-w-none">{getCategoryName(selectedCategory)}</span>
               <svg 
                 className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'transform rotate-180' : ''}`} 
                 fill="none" 
@@ -166,14 +177,14 @@ const Community = () => {
           </div>
         )}
 
-        <div className="flex items-center space-x-4">
-          <div className="relative">
+        <div className="flex items-center gap-2">
+          <div className="relative w-full md:w-64">
             <input
               type="search"
               placeholder="검색"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-4 pr-10 py-2 border rounded-lg w-64"
+              className="w-full pl-4 pr-10 py-2 border rounded-lg text-sm md:text-base"
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
               <svg 
@@ -191,9 +202,10 @@ const Community = () => {
               </svg>
             </div>
           </div>
+
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#3a9d1f] text-white px-6 py-2 rounded-lg hover:bg-[#0aab65]"
+            className="flex-shrink-0 bg-[#3a9d1f] text-white px-3 py-2 rounded-lg hover:bg-[#0aab65] text-sm md:text-base md:px-6"
           >
             글쓰기
           </button>

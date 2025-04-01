@@ -1,14 +1,19 @@
 import Highcharts from "highcharts";
 
 const createTop10Chart = (containerId, data) => {
+  // 모바일 여부 확인
+  const isMobile = window.innerWidth < 768;
+
   return Highcharts.chart(containerId, {
     chart: {
       type: "column",
+      marginLeft: isMobile ? 70 : 60,
+      marginTop: isMobile ? 50 : 40,
     },
     title: {
-      text: "[2024년 1월 1주차 ~ 2025년 3월 1주차] 매출 TOP 10",
+      text: "[2024년 1월 1월차 ~ 2025년 3월 1주차] 매출 TOP 10",
       style: {
-        fontSize: "16px",
+        fontSize: isMobile ? "14px" : "16px",
         fontWeight: "bold",
       },
     },
@@ -16,7 +21,7 @@ const createTop10Chart = (containerId, data) => {
       categories: data.map(item => item.crop_name),
       labels: {
         style: {
-          fontSize: "13px",
+          fontSize: isMobile ? "11px" : "13px",
         },
       },
     },
@@ -24,14 +29,27 @@ const createTop10Chart = (containerId, data) => {
       title: {
         text: "매출액(천원)",
         style: {
-          fontSize: "13px",
+          fontSize: isMobile ? "11px" : "13px",
         },
+        margin: 10
       },
       labels: {
         formatter: function() {
+          if (this.value === 0) return '0';
           return Highcharts.numberFormat(this.value, 0, "", ",");
         },
+        style: {
+          fontSize: isMobile ? "10px" : "12px"
+        },
+        align: 'right',
+        x: -10,
+        reserveSpace: true
       },
+      tickInterval: 100000,
+      min: 0,
+      max: Math.ceil(Math.max(...data.map(item => 
+        Math.max(item.current_year, item.previous_year)
+      )) / 100000) * 100000,
     },
     tooltip: {
       formatter: function() {
@@ -44,15 +62,25 @@ const createTop10Chart = (containerId, data) => {
         dataLabels: {
           enabled: true,
           formatter: function() {
+            if (this.y === 0) return '';
             return Highcharts.numberFormat(this.y, 0, "", ",");
           },
           style: {
-            fontSize: "12px",
+            fontSize: isMobile ? "9px" : "11px",
+            textOutline: 'none',
+            fontWeight: 'normal'
           },
+          rotation: isMobile ? -90 : 0,
+          y: isMobile ? 0 : -10,
+          overflow: 'allow',
+          crop: false,
+          allowOverlap: true
         },
       },
       series: {
-        pointWidth: 40,
+        pointWidth: isMobile ? 15 : 25,
+        groupPadding: 0.1,
+        pointPadding: 0.05
       },
     },
     legend: {
@@ -60,7 +88,7 @@ const createTop10Chart = (containerId, data) => {
       verticalAlign: "bottom",
       layout: "horizontal",
       itemStyle: {
-        fontSize: "13px",
+        fontSize: isMobile ? "11px" : "13px",
       },
     },
     series: [

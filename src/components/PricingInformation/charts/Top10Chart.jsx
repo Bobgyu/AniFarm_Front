@@ -76,7 +76,7 @@ const Top10Chart = () => {
   return (
     <div
       id="top10Chart"
-      className="w-full h-[600px] mt-5 mb-10 border-2 border-gray-300 rounded-lg"
+      className="w-full h-[600px] md:h-[600px] h-[400px] mt-5 mb-10 border-2 border-gray-300 rounded-lg"
     ></div>
   );
 };

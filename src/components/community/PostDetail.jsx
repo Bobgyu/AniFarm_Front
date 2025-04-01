@@ -573,9 +573,9 @@ const PostDetail = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 max-w-4xl">
+    <div className="container mx-auto p-2 max-w-4xl">
       {/* 상단 네비게이션 */}
-      <div className="flex justify-between items-center mt-6 mb-6 md:mb:6">
+      <div className="hidden md:flex justify-between items-center my-2 md:my-6">
         <button
           onClick={() => navigate(`/community/${post.community_type || "gardening"}`)}
           className={buttonStyles.primary}
@@ -587,18 +587,30 @@ const PostDetail = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-4 md:p-6 mb-6 border border-gray-200">
-        <div className="flex justify-between items-center mb-4">
+      {/* 모바일 상단 네비게이션 */}
+      <div className="md:hidden flex items-center my-2">
+        <button
+          onClick={() => navigate(-1)}
+          className="text-[#3a9d1f] font-medium flex items-center"
+        >
+          <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          목록으로
+        </button>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-3 md:p-6 mb-4 border border-gray-200">
+        <div className="flex flex-col mb-3 md:mb-4">
           {isEditing ? (
-            <div className="w-full space-y-4">
+            <div className="w-full space-y-3">
               <input
                 type="text"
                 value={post.title}
                 onChange={(e) => setPost({ ...post, title: e.target.value })}
-                className="text-2xl font-bold w-full p-2 border rounded"
+                className="text-lg md:text-2xl font-bold w-full p-2 border rounded"
                 placeholder="제목을 입력하세요"
               />
-              {/* 카테고리 선택 추가 */}
               <select
                 value={post.category}
                 onChange={(e) => setPost({ ...post, category: e.target.value })}
@@ -612,47 +624,51 @@ const PostDetail = () => {
               </select>
             </div>
           ) : (
-            <div className="flex flex-col gap-2">
-              <h1 className="text-2xl font-bold">{post.title}</h1>
-            </div>
+            <>
+              <h1 className="text-lg md:text-2xl font-bold mb-2">{post.title}</h1>
+              <div className="flex justify-between items-center text-sm md:text-base">
+                <div className="flex flex-col md:flex-row md:gap-4">
+                  <span className="text-gray-600">
+                    작성자: {formatUserEmail(post.email)}
+                  </span>
+                  <span className="text-gray-600">
+                    카테고리: {getCategoryName(post.category)}
+                  </span>
+                </div>
+                <span className="text-gray-500 text-sm">
+                  {new Date(post.date).toLocaleDateString()}
+                </span>
+              </div>
+            </>
           )}
-          <span className="text-gray-500">
-            {new Date(post.date).toLocaleDateString()}
-          </span>
         </div>
-        <div className="mb-4">
-          <span className="text-gray-600 mr-4">
-            작성자: {formatUserEmail(post.email)}
-          </span>
-          <span className="text-gray-600">
-            카테고리: {getCategoryName(post.category)}
-          </span>
-        </div>
-        <div className="border-t border-b py-4 mb-4">
+
+        <div className="border-t border-b py-3 md:py-4 mb-3 md:mb-4">
           {isEditing ? (
             <textarea
               value={post.content}
               onChange={(e) => setPost({ ...post, content: e.target.value })}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded text-sm md:text-base"
               rows="6"
             />
           ) : (
-            <p className="whitespace-pre-wrap">{post.content}</p>
+            <p className="whitespace-pre-wrap text-sm md:text-base">{post.content}</p>
           )}
         </div>
+
         {isPostAuthor() && (
           <div className="flex justify-end space-x-2">
             {isEditing ? (
               <>
                 <button
                   onClick={handleEditPost}
-                  className="px-4 py-2 bg-[#3a9d1f] text-white rounded hover:bg-[#0aab65]"
+                  className="px-3 py-1.5 text-sm md:px-4 md:py-2 bg-[#3a9d1f] text-white rounded hover:bg-[#0aab65]"
                 >
                   저장
                 </button>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                  className="px-3 py-1.5 text-sm md:px-4 md:py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
                 >
                   취소
                 </button>
@@ -661,13 +677,13 @@ const PostDetail = () => {
               <>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  className="px-3 py-1.5 text-sm md:px-4 md:py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
                   수정
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  className="px-3 py-1.5 text-sm md:px-4 md:py-2 bg-red-500 text-white rounded hover:bg-red-600"
                 >
                   삭제
                 </button>
@@ -678,8 +694,8 @@ const PostDetail = () => {
       </div>
 
       {/* 댓글 섹션 */}
-      <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-2 md:mb-6">
-        <h2 className="text-xl font-bold mb-6">댓글</h2>
+      <div className="bg-white rounded-lg shadow-md p-3 md:p-6 border border-gray-200 mb-2">
+        <h2 className="text-lg md:text-xl font-bold mb-4">댓글</h2>
         {isWritingComment && !replyTo && (
           <CommentInputContainer
             onSubmit={handleCommentSubmit}
@@ -687,28 +703,15 @@ const PostDetail = () => {
             buttonText="댓글 작성"
           />
         )}
-        <div className="mt-0 space-y-6 mb:mt-8">
+        <div className="mt-4 space-y-4 md:space-y-6">
           {comments && comments.length > 0 ? (
             renderComments(comments)
           ) : (
-            <div className="text-center text-gray-500 py-8">
+            <div className="text-center text-gray-500 py-6">
               첫 번째 댓글을 작성해보세요!
             </div>
           )}
         </div>
-      </div>
-
-      {/* 하단 네비게이션 */}
-      <div className="flex justify-center mb-6 md:mb-0 mt-6">
-        <button
-          onClick={() => navigate(`/community/${post.community_type || "gardening"}`)}
-          className={buttonStyles.primary}
-        >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          목록으로 돌아가기
-        </button>
       </div>
     </div>
   );

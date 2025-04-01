@@ -269,9 +269,18 @@ const Pests = () => {
                   },
                   scrollbarWidth: "none",
                   "-ms-overflow-style": "none",
+                  "@media (max-width: 768px)": {
+                    padding: "0 8px",
+                    gap: "8px",
+                    WebkitOverflowScrolling: "touch",
+                    scrollSnapType: "x mandatory",
+                    "& > *": {
+                      scrollSnapAlign: "start",
+                    },
+                  },
                 },
                 "& .MuiTabs-indicator": {
-                  backgroundColor: "#3a9d1f",
+                  display: "none",
                 },
               }}
             >
@@ -286,13 +295,35 @@ const Pests = () => {
                     fontWeight: "normal",
                     whiteSpace: "nowrap",
                     color: "#666",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: "8px",
+                    margin: "0 4px",
+                    "@media (max-width: 768px)": {
+                      minWidth: "90px",
+                      fontSize: "0.875rem",
+                      padding: "8px 16px",
+                      margin: "0",
+                      height: "40px",
+                      "& .MuiTab-wrapper": {
+                        padding: "0",
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      },
+                    },
                     "&.Mui-selected": {
                       color: "#3a9d1f",
                       fontWeight: "bold",
+                      backgroundColor: "#e8f5e9",
+                      borderColor: "#3a9d1f",
+                      boxShadow: "0 2px 4px rgba(58, 157, 31, 0.2)",
                     },
                     "&:hover": {
                       color: "#3a9d1f",
-                      opacity: 0.8,
+                      borderColor: "#3a9d1f",
+                      backgroundColor: "#f1f8e9",
                     },
                   }}
                 />
@@ -347,10 +378,10 @@ const Pests = () => {
                       </Box>
                     </label>
 
-                    <Box className="mt-4 p-4 w-full sm:w-[500px] border-2 border-gray-300 rounded-lg">
+                    <Box className="mt-4 p-4 w-full sm:w-[500px] border-2 border-gray-300 rounded-lg h-[150px] overflow-y-auto">
                       <Typography
                         variant="subtitle1"
-                        className="font-semibold mb-2 text-center"
+                        className="font-semibold mb-2 text-center sticky top-0 bg-white"
                       >
                         진단 가능한 병해충
                       </Typography>
@@ -641,9 +672,9 @@ const Pests = () => {
             </Box>
 
             {/* 우측 - 진단 결과 카드 */}
-            <Box className="w-full md:w-1/2 flex items-center justify-start mt-8 md:mt-14">
+            <Box className="w-full md:w-1/2 flex items-start justify-start mt-8 md:mt-0">
               <Box className="w-full sm:w-[500px]">
-                <Box className="w-full sm:w-[500px] h-auto sm:h-[340px] border-2 border-gray-300 rounded-lg p-4">
+                <Box className="w-full sm:w-[500px] h-[520px] border-2 border-gray-300 rounded-lg p-4">
                   <Typography
                     variant="h6"
                     className="mb-3 border-b border-gray-200 pb-2"
@@ -651,7 +682,7 @@ const Pests = () => {
                     {showExample ? "예상 진단 결과" : "진단 결과"}
                   </Typography>
                   <Paper
-                    className={`p-3 ${
+                    className={`p-3 h-[calc(100%-3rem)] overflow-y-auto ${
                       (showExample ? getExampleResult() : result)?.status ===
                       "healthy"
                         ? "bg-green-50"

@@ -102,7 +102,7 @@ const Mypage = () => {
   }
 
   return (
-    <div>
+    <div className="md:mt-8 mt-4 md:mb-0 mb-16">
       <div>
         <div className="flex flex-col md:flex-row gap-6 mt-10 mr-10 ml-11">
           <div className="md:hidden w-full">

@@ -7,6 +7,7 @@ import prediction from "../../assets/images/prediction.jpg"; // 가격예측 이
 import community from "../../assets/images/community.png"; // 커뮤니티 이미지
 import market from "../../assets/images/market.jpg"; // 오늘의 가격 이미지 추가
 import business from "../../assets/images/Business.jpg"; // 경영모의계산 이미지 추가해야함
+import support from "../../assets/images/support.png"; // 교육&지원 이미지
 
 const Sale = () => {
   const [hoveredContent, setHoveredContent] = useState(null);
@@ -28,6 +29,9 @@ const Sale = () => {
       },
       business: {
         image: business,
+      },
+      support: {
+        image: support,
       },
     }),
     []
@@ -121,13 +125,15 @@ const Sale = () => {
                   ? "농산물 판매 커뮤니티에서 직거래를 시작해보세요"
                   : hoveredContent === "business"
                   ? "경영 모의계산을 통해 최적의 경영 방법을 찾아보세요"
+                  : hoveredContent === "support"
+                  ? "농업인을 위한 교육 및 지원 프로그램을 확인해보세요"
                   : "판매하기에 관한 내용"}
               </h2>
             </div>
 
             {/* 하단 버튼 그룹 */}
             <div className="relative md:absolute bottom-0 md:bottom-24 left-0 right-0 mt-8 md:mt-0">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 px-4 max-w-4xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4 max-w-4xl mx-auto">
                 {/* 오늘의 가격 카드 */}
                 <Link to="/Today">
                   <motion.div
@@ -195,6 +201,23 @@ const Sale = () => {
                     </div>
                   </motion.div>
                 </Link>
+                
+                {/* 교육&지원 카드 */}
+                <Link to="/support">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    onMouseEnter={() => handleMouseEnter("support")}
+                    className="bg-white/90 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-full"
+                  >
+                    <div className="p-4">
+                      <div className="text-2xl mb-2 text-center">🎓</div>
+                      <h3 className="text-lg font-semibold text-gray-900 text-center">
+                        교육&지원
+                      </h3>
+                    </div>
+                  </motion.div>
+                </Link>
 
                 {/* 커뮤니티 카드 */}
                 <Link to="/community/marketplace">
@@ -212,6 +235,7 @@ const Sale = () => {
                     </div>
                   </motion.div>
                 </Link>
+
               </div>
             </div>
           </div>
