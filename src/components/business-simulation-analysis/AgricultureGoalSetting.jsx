@@ -12,7 +12,17 @@ const AgricultureGoalSetting = ({ onComplete, method }) => {
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [newCrops, setNewCrops] = useState(["사과", "배추"]);
+  const [newCrops, setNewCrops] = useState([
+    "사과",
+    "배추",
+    "대파",
+    "배",
+    "수박",
+    "쌀",
+    "포도",
+    "옥수수",
+    "밀",
+  ]);
 
   // 모든 작물 데이터 로드
   useEffect(() => {
