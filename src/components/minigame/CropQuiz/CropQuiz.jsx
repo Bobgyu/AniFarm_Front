@@ -19,7 +19,7 @@ const CropQuiz = () => {
         }
       })
       .catch((error) => {
-        console.error("Error fetching crop options:", error);
+        console.error("작물 옵션 데이터를 가져오는데 에러가 발생했습니다:", error);
       });
   }, []);
 
@@ -39,7 +39,7 @@ const CropQuiz = () => {
             <div className="text-3xl font-bold mb-2">작물별 퀴즈</div>
             <div className="mb-6">
               <div className="crop-selection-instruction">
-                퀴즈를 진행할 작물을 선택하세요
+                퀴즈를 진행할 작물을 선택하세요.
               </div>
             </div>
 
@@ -64,7 +64,7 @@ const CropQuiz = () => {
           </div>
         </div>
 
-        {/* 선택된 작물 정보를 기반으로 QuizData 컴포넌트 호출 */}
+        {/* 선택된 작물 정보를 기반으로 QuizData 컴포넌트를 호출 */}
         {selectedOption && <QuizData selectedCrop={selectedOption.crop} />}
       </div>
     </main>
