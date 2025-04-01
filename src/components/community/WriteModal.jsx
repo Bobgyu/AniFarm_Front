@@ -9,7 +9,7 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
   const getInitialCategory = () => {
     switch (communityType) {
       case "gardening":
-        return "전체";
+        return "일반토론";
       case "marketplace":
         return "sell";
       case "freeboard":
@@ -104,7 +104,6 @@ const CreatePostModal = ({ isOpen, onClose, communityType }) => {
       case "gardening":
         return (
           <>
-            <option value="전체">전체</option>
             <option value="일반토론">일반토론</option>
             <option value="식물재배">식물 재배</option>
             <option value="실내식물">실내 식물</option>
