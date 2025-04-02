@@ -217,7 +217,11 @@ const AnalysisReport = ({ data }) => {
   const results = calculateCropResults();
 
   if (loading) {
-    return <div className="text-center p-4">데이터를 불러오는 중...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#3a9d1f] mt-[-100px]" />
+      </div>
+    );
   }
 
   if (error) {
