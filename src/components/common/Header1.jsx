@@ -52,11 +52,11 @@ const Header = () => {
     ];
 
     if (path === "/culture") {
-      return culturePaths.some(p => currentPath.startsWith(p));
+      return culturePaths.some((p) => currentPath.startsWith(p));
     }
 
     if (path === "/sale") {
-      return salePaths.some(p => currentPath.startsWith(p));
+      return salePaths.some((p) => currentPath.startsWith(p));
     }
 
     return false;
@@ -170,6 +170,9 @@ const Header = () => {
         case "작물 퀴즈":
           path = "/CropQuiz";
           break;
+        default:
+          path = "/";
+          break;
       }
     }
 
@@ -186,12 +189,12 @@ const Header = () => {
 
   const menuStructure = {
     "재배 하기": [
-      "육성법", 
-      "병충해", 
-      "날씨", 
-      "육성캘린더", 
+      "육성법",
+      "병충해",
+      "날씨",
+      "육성캘린더",
       "재배 커뮤니티",
-      "청년농 소개&영상"
+      "청년농 소개&영상",
     ],
     "판매 하기": [
       "오늘의 가격",
@@ -199,7 +202,7 @@ const Header = () => {
       "가격 예측",
       "경영 모의계산",
       "교육&지원",
-      "판매 커뮤니티"      
+      "판매 커뮤니티",
     ],
     "기능/엔터": ["챗봇", "재배 시뮬레이션", "작물 퀴즈"],
   };
@@ -290,7 +293,7 @@ const Header = () => {
             onClick={() => setIsMenuOpen(false)}
           >
             <div
-              className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-[650px] md:h-[850px] md:h-screen overflow-y-auto"
+              className="absolute right-0 top-0 w-80 bg-white shadow-lg rounded-l-lg h-[650px] md:h-[850px] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-4">
